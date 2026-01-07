@@ -717,7 +717,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                 ToastUtils.showMsg(requireContext(), getString(R.string.ps_camera))
             } else {
                 ToastUtils.showMsg(requireContext(), getString(R.string.ps_jurisdiction))
-                onBackPressed()
+//                onBackPressed()
             }
         }
         TempDataProvider.getInstance().currentRequestPermission = arrayOf()
