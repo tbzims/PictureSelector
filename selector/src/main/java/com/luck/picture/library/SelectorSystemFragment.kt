@@ -83,7 +83,8 @@ open class SelectorSystemFragment : BaseSelectorFragment() {
             if (onPermissionApplyListener != null) {
                 showCustomPermissionApply(permissionArray)
             } else {
-                PermissionChecker.requestPermissions(this, permissionArray,
+                PermissionChecker.requestPermissions(
+                    this, permissionArray,
                     object : OnPermissionResultListener {
                         override fun onGranted() {
                             showPermissionDescription(false, permissionArray)
@@ -140,9 +141,11 @@ open class SelectorSystemFragment : BaseSelectorFragment() {
                 SYSTEM_AUDIO
                 SYSTEM_VIDEO
             }
+
             MediaType.AUDIO -> {
                 SYSTEM_AUDIO
             }
+
             else -> {
                 SYSTEM_IMAGE
             }
@@ -193,7 +196,7 @@ open class SelectorSystemFragment : BaseSelectorFragment() {
                     return result
                 }
 
-                override fun createIntent(context: Context, mimeType: String?): Intent {
+                override fun createIntent(context: Context, mimeType: String): Intent {
                     val intent = Intent(Intent.ACTION_PICK)
                     intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
                     intent.type = mimeType
@@ -210,7 +213,7 @@ open class SelectorSystemFragment : BaseSelectorFragment() {
                                 val media = MediaUtils.getAssignPathMedia(context, absolutePath)
                                 if (media != null) {
                                     confirmSelect(media, false)
-                                } else{
+                                } else {
                                     SelectorLogUtils.info("createMultipleDocuments: Parsing LocalMedia object as empty")
                                 }
                             }
@@ -247,7 +250,7 @@ open class SelectorSystemFragment : BaseSelectorFragment() {
                     return result
                 }
 
-                override fun createIntent(context: Context, mimeType: String?): Intent {
+                override fun createIntent(context: Context, mimeType: String): Intent {
                     val intent: Intent =
                         when {
                             TextUtils.equals(SYSTEM_VIDEO, mimeType) -> {
@@ -256,12 +259,14 @@ open class SelectorSystemFragment : BaseSelectorFragment() {
                                     MediaStore.Video.Media.EXTERNAL_CONTENT_URI
                                 )
                             }
+
                             TextUtils.equals(SYSTEM_AUDIO, mimeType) -> {
                                 Intent(
                                     Intent.ACTION_PICK,
                                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
                                 )
                             }
+
                             else -> {
                                 Intent(
                                     Intent.ACTION_PICK,
@@ -283,7 +288,7 @@ open class SelectorSystemFragment : BaseSelectorFragment() {
                                 val media = MediaUtils.getAssignPathMedia(context, absolutePath)
                                 if (media != null) {
                                     confirmSelect(media, false)
-                                } else{
+                                } else {
                                     SelectorLogUtils.info("createMultipleContents: Parsing LocalMedia object as empty")
                                 }
                             }
@@ -300,12 +305,12 @@ open class SelectorSystemFragment : BaseSelectorFragment() {
      */
     open fun createSingleDocuments() {
         mDocSingleLauncher =
-            registerForActivityResult(object : ActivityResultContract<String, Uri>() {
+            registerForActivityResult(object : ActivityResultContract<String, Uri?>() {
                 override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
                     return intent?.data
                 }
 
-                override fun createIntent(context: Context, mimeType: String?): Intent {
+                override fun createIntent(context: Context, mimeType: String): Intent {
                     val intent = Intent(Intent.ACTION_PICK)
                     intent.type = mimeType
                     return intent
@@ -340,12 +345,12 @@ open class SelectorSystemFragment : BaseSelectorFragment() {
      */
     open fun createContent() {
         mContentLauncher =
-            registerForActivityResult(object : ActivityResultContract<String, Uri>() {
+            registerForActivityResult(object : ActivityResultContract<String, Uri?>() {
                 override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
                     return intent?.data
                 }
 
-                override fun createIntent(context: Context, mimeType: String?): Intent {
+                override fun createIntent(context: Context, mimeType: String): Intent {
                     val intent: Intent =
                         when {
                             TextUtils.equals(SYSTEM_VIDEO, mimeType) -> {
@@ -354,12 +359,14 @@ open class SelectorSystemFragment : BaseSelectorFragment() {
                                     MediaStore.Video.Media.EXTERNAL_CONTENT_URI
                                 )
                             }
+
                             TextUtils.equals(SYSTEM_AUDIO, mimeType) -> {
                                 Intent(
                                     Intent.ACTION_PICK,
                                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
                                 )
                             }
+
                             else -> {
                                 Intent(
                                     Intent.ACTION_PICK,

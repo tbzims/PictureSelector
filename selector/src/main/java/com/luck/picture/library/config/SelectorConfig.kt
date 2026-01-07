@@ -5,6 +5,7 @@ import android.graphics.Color
 import com.luck.picture.library.R
 import com.luck.picture.library.registry.Registry
 import com.luck.picture.library.constant.SelectorConstant
+import com.luck.picture.library.customengine.GlideEngine
 import com.luck.picture.library.engine.CropEngine
 import com.luck.picture.library.engine.ImageEngine
 import com.luck.picture.library.engine.MediaConverterEngine
@@ -83,7 +84,7 @@ class SelectorConfig {
     var audioOutputDir: String? = null
     var registry = Registry()
     var cropEngine: CropEngine? = null
-    var imageEngine: ImageEngine? = null
+    var imageEngine: ImageEngine? = GlideEngine.create()
     var dataLoader: MediaLoader? = null
     var mediaConverterEngine: MediaConverterEngine? = null
     var magicalInterpolator: MagicalInterpolator? = null
