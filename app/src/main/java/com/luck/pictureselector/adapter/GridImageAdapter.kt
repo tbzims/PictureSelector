@@ -120,15 +120,15 @@ class GridImageAdapter(context: Context, result: MutableList<LocalMedia>) :
             if (hasMimeTypeOfAudio(media.mimeType)) {
                 viewHolder.tvDuration.visibility = View.VISIBLE
                 viewHolder.tvDuration.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ps_ic_audio,
+                    com.luck.picture.lib.R.drawable.ps_ic_audio,
                     0,
                     0,
                     0
                 )
-                viewHolder.mImg.setImageResource(R.drawable.ps_audio_placeholder)
+                viewHolder.mImg.setImageResource(com.luck.picture.lib.R.drawable.ps_audio_placeholder)
             } else {
                 viewHolder.tvDuration.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ps_ic_video,
+                    com.luck.picture.lib.R.drawable.ps_ic_video,
                     0,
                     0,
                     0

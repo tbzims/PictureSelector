@@ -39,7 +39,7 @@ class GlideEngine : ImageEngine {
         Glide.with(context).load(url)
             .override(180, 180)
             .transform(CenterCrop(), RoundedCorners(8))
-            .placeholder(R.drawable.ps_image_placeholder)
+            .placeholder(com.luck.picture.lib.R.drawable.ps_image_placeholder)
             .into(imageView)
     }
 
@@ -50,7 +50,7 @@ class GlideEngine : ImageEngine {
         Glide.with(context).load(url)
             .override(300, 300)
             .centerCrop()
-            .placeholder(R.drawable.ps_image_placeholder)
+            .placeholder(com.luck.picture.lib.R.drawable.ps_image_placeholder)
             .into(imageView)
     }
 

@@ -12,7 +12,7 @@ import kotlin.math.sqrt
 /**
  * Does a whole lot of gesture detecting.
  */
-internal class TextureViewGestureDetector(context: Context?, listener: OnTextureViewGestureListener) {
+internal class TextureViewGestureDetector(context: Context, listener: OnTextureViewGestureListener) {
     private var mActivePointerId = INVALID_POINTER_ID
     private var mActivePointerIndex = 0
     private val mDetector: ScaleGestureDetector

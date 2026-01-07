@@ -640,9 +640,9 @@ class MainActivity : AppCompatActivity() {
     private fun buildWindowAnim(): WindowAnimStyle {
         return WindowAnimStyle().apply {
             if (rbDefaultWindowAnim.isChecked) {
-                of(R.anim.ps_anim_enter, R.anim.ps_anim_exit)
+                of(com.luck.picture.lib.R.anim.ps_anim_enter, com.luck.picture.lib.R.anim.ps_anim_exit)
             } else if (rbWindowUpAnim.isChecked) {
-                of(R.anim.ps_anim_up_in, R.anim.ps_anim_down_out)
+                of(com.luck.picture.lib.R.anim.ps_anim_up_in, com.luck.picture.lib.R.anim.ps_anim_down_out)
             }
         }
     }

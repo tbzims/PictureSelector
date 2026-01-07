@@ -165,15 +165,15 @@ class QueryDataActivity : AppCompatActivity() {
             if (MediaUtils.hasMimeTypeOfAudio(media.mimeType)) {
                 viewHolder.mTvDuration.visibility = View.VISIBLE
                 viewHolder.mTvDuration.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ps_ic_audio,
+                    com.luck.picture.lib.R.drawable.ps_ic_audio,
                     0,
                     0,
                     0
                 )
-                viewHolder.mImg.setImageResource(R.drawable.ps_audio_placeholder)
+                viewHolder.mImg.setImageResource(com.luck.picture.lib.R.drawable.ps_audio_placeholder)
             } else {
                 viewHolder.mTvDuration.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ps_ic_video,
+                    com.luck.picture.lib.R.drawable.ps_ic_video,
                     0,
                     0,
                     0
@@ -181,7 +181,7 @@ class QueryDataActivity : AppCompatActivity() {
                 Glide.with(viewHolder.itemView.context)
                     .load(if (MediaUtils.isContent(path!!)) Uri.parse(path) else path)
                     .centerCrop()
-                    .placeholder(R.drawable.ps_image_placeholder)
+                    .placeholder(com.luck.picture.lib.R.drawable.ps_image_placeholder)
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .into(viewHolder.mImg)
             }
