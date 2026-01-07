@@ -5,8 +5,8 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.luck.picture.lib.engine.ImageEngine
-import com.luck.picture.lib.helper.ActivityCompatHelper
+import com.luck.picture.library.engine.ImageEngine
+import com.luck.picture.library.helper.ActivityCompatHelper
 
 /**
  * @author：luck
@@ -39,7 +39,7 @@ class GlideEngine : ImageEngine {
         Glide.with(context).load(url)
             .override(180, 180)
             .transform(CenterCrop(), RoundedCorners(8))
-            .placeholder(com.luck.picture.lib.R.drawable.ps_image_placeholder)
+            .placeholder(com.luck.picture.library.R.drawable.ps_image_placeholder)
             .into(imageView)
     }
 
@@ -50,7 +50,7 @@ class GlideEngine : ImageEngine {
         Glide.with(context).load(url)
             .override(300, 300)
             .centerCrop()
-            .placeholder(com.luck.picture.lib.R.drawable.ps_image_placeholder)
+            .placeholder(com.luck.picture.library.R.drawable.ps_image_placeholder)
             .into(imageView)
     }
 

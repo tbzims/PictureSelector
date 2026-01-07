@@ -2,9 +2,9 @@ package com.luck.pictureselector
 
 import android.app.Application
 import android.content.Context
-import com.luck.picture.lib.app.IApp
-import com.luck.picture.lib.app.SelectorAppMaster
-import com.luck.picture.lib.app.SelectorEngine
+import com.luck.picture.library.app.IApp
+import com.luck.picture.library.app.SelectorAppMaster
+import com.luck.picture.library.app.SelectorEngine
 
 class App : Application(), IApp {
 

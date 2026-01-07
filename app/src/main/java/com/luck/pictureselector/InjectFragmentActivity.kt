@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.luck.picture.lib.config.MediaType
-import com.luck.picture.lib.entity.LocalMedia
-import com.luck.picture.lib.interfaces.OnResultCallbackListener
-import com.luck.picture.lib.model.PictureSelector
-import com.luck.picture.lib.utils.SelectorLogUtils
+import com.luck.picture.library.config.MediaType
+import com.luck.picture.library.entity.LocalMedia
+import com.luck.picture.library.interfaces.OnResultCallbackListener
+import com.luck.picture.library.model.PictureSelector
+import com.luck.picture.library.utils.SelectorLogUtils
 
 class InjectFragmentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

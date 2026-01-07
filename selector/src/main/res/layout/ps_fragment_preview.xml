@@ -8,7 +8,7 @@
 
     <!--Do not delete or change the View ID-->
 
-    <com.luck.picture.lib.magical.MagicalView
+    <com.luck.picture.library.magical.MagicalView
         android:id="@+id/magical"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -43,7 +43,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ps_status_bar" />
 
-        <com.luck.picture.lib.widget.MarqueeTextView
+        <com.luck.picture.library.widget.MarqueeTextView
             android:id="@+id/ps_tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
             app:layout_constraintTop_toBottomOf="@+id/ps_status_bar"
             tools:text="0/0" />
 
-        <com.luck.picture.lib.widget.MediumBoldTextView
+        <com.luck.picture.library.widget.MediumBoldTextView
             android:id="@+id/ps_tv_selected"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -91,7 +91,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
 
-        <com.luck.picture.lib.widget.MediumBoldTextView
+        <com.luck.picture.library.widget.MediumBoldTextView
             android:id="@+id/ps_tv_editor"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -106,7 +106,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-        <com.luck.picture.lib.widget.MediumBoldTextView
+        <com.luck.picture.library.widget.MediumBoldTextView
             android:id="@+id/ps_tv_original"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -124,7 +124,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="visible" />
 
-        <com.luck.picture.lib.widget.MediumBoldTextView
+        <com.luck.picture.library.widget.MediumBoldTextView
             android:id="@+id/ps_tv_select_num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -140,7 +140,7 @@
             tools:text="1"
             tools:visibility="visible" />
 
-        <com.luck.picture.lib.widget.StyleTextView
+        <com.luck.picture.library.widget.StyleTextView
             android:id="@+id/ps_tv_complete"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

@@ -2,7 +2,6 @@ package com.luck.pictureselector
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,17 +16,17 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.luck.picture.lib.config.MediaType
-import com.luck.picture.lib.constant.SelectorConstant
-import com.luck.picture.lib.entity.LocalMedia
-import com.luck.picture.lib.interfaces.OnRecyclerViewPreloadMoreListener
-import com.luck.picture.lib.loader.MediaLoader
-import com.luck.picture.lib.model.PictureSelector
-import com.luck.picture.lib.utils.DateUtils.formatDurationTime
-import com.luck.picture.lib.utils.DensityUtil.dip2px
-import com.luck.picture.lib.utils.MediaUtils
-import com.luck.picture.lib.utils.SelectorLogUtils
-import com.luck.picture.lib.widget.RecyclerPreloadView
+import com.luck.picture.library.config.MediaType
+import com.luck.picture.library.constant.SelectorConstant
+import com.luck.picture.library.entity.LocalMedia
+import com.luck.picture.library.interfaces.OnRecyclerViewPreloadMoreListener
+import com.luck.picture.library.loader.MediaLoader
+import com.luck.picture.library.model.PictureSelector
+import com.luck.picture.library.utils.DateUtils.formatDurationTime
+import com.luck.picture.library.utils.DensityUtil.dip2px
+import com.luck.picture.library.utils.MediaUtils
+import com.luck.picture.library.utils.SelectorLogUtils
+import com.luck.picture.library.widget.RecyclerPreloadView
 import kotlinx.coroutines.launch
 
 class QueryDataActivity : AppCompatActivity() {
@@ -165,15 +164,15 @@ class QueryDataActivity : AppCompatActivity() {
             if (MediaUtils.hasMimeTypeOfAudio(media.mimeType)) {
                 viewHolder.mTvDuration.visibility = View.VISIBLE
                 viewHolder.mTvDuration.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    com.luck.picture.lib.R.drawable.ps_ic_audio,
+                    com.luck.picture.library.R.drawable.ps_ic_audio,
                     0,
                     0,
                     0
                 )
-                viewHolder.mImg.setImageResource(com.luck.picture.lib.R.drawable.ps_audio_placeholder)
+                viewHolder.mImg.setImageResource(com.luck.picture.library.R.drawable.ps_audio_placeholder)
             } else {
                 viewHolder.mTvDuration.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    com.luck.picture.lib.R.drawable.ps_ic_video,
+                    com.luck.picture.library.R.drawable.ps_ic_video,
                     0,
                     0,
                     0
@@ -181,7 +180,7 @@ class QueryDataActivity : AppCompatActivity() {
                 Glide.with(viewHolder.itemView.context)
                     .load(if (MediaUtils.isContent(path!!)) Uri.parse(path) else path)
                     .centerCrop()
-                    .placeholder(com.luck.picture.lib.R.drawable.ps_image_placeholder)
+                    .placeholder(com.luck.picture.library.R.drawable.ps_image_placeholder)
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .into(viewHolder.mImg)
             }

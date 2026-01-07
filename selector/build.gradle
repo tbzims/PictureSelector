@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
-    namespace = "com.luck.picture.lib"
+    namespace = "com.luck.picture.library"
     compileSdk 36
 
     defaultConfig {

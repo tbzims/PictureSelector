@@ -2,8 +2,8 @@ package com.luck.pictureselector.custom
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.luck.picture.lib.adapter.MediaPreviewAdapter
-import com.luck.picture.lib.adapter.base.BasePreviewMediaHolder
+import com.luck.picture.library.adapter.MediaPreviewAdapter
+import com.luck.picture.library.adapter.base.BasePreviewMediaHolder
 import com.luck.pictureselector.R
 
 /**

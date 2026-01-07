@@ -9,10 +9,10 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.luck.picture.lib.engine.CropEngine
-import com.luck.picture.lib.entity.LocalMedia
-import com.luck.picture.lib.helper.ActivityCompatHelper
-import com.luck.picture.lib.utils.MediaUtils
+import com.luck.picture.library.engine.CropEngine
+import com.luck.picture.library.entity.LocalMedia
+import com.luck.picture.library.helper.ActivityCompatHelper
+import com.luck.picture.library.utils.MediaUtils
 import com.yalantis.ucrop.UCrop
 import com.yalantis.ucrop.UCropImageEngine
 import java.io.File

@@ -1,7 +1,7 @@
 package com.luck.pictureselector
 
-import com.luck.picture.lib.app.SelectorEngine
-import com.luck.picture.lib.engine.ImageEngine
+import com.luck.picture.library.app.SelectorEngine
+import com.luck.picture.library.engine.ImageEngine
 
 /**
  * @author：luck

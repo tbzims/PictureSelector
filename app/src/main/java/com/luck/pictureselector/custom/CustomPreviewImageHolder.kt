@@ -10,9 +10,9 @@ import com.bumptech.glide.request.transition.Transition
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.ImageViewState
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-import com.luck.picture.lib.adapter.PreviewImageHolder
-import com.luck.picture.lib.entity.LocalMedia
-import com.luck.picture.lib.utils.MediaUtils
+import com.luck.picture.library.adapter.PreviewImageHolder
+import com.luck.picture.library.entity.LocalMedia
+import com.luck.picture.library.utils.MediaUtils
 import com.luck.pictureselector.R
 
 /**

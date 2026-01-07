@@ -8,9 +8,9 @@ import android.view.Gravity
 import android.view.Surface
 import android.view.TextureView
 import android.widget.FrameLayout
-import com.luck.picture.lib.player.IMediaPlayer
-import com.luck.picture.lib.player.VideoTextureView
-import com.luck.picture.lib.utils.MediaUtils
+import com.luck.picture.library.player.IMediaPlayer
+import com.luck.picture.library.player.VideoTextureView
+import com.luck.picture.library.utils.MediaUtils
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
 
 /**

@@ -10,11 +10,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.luck.picture.lib.entity.LocalMedia
-import com.luck.picture.lib.utils.DateUtils.formatDurationTime
-import com.luck.picture.lib.utils.MediaUtils.hasMimeTypeOfAudio
-import com.luck.picture.lib.utils.MediaUtils.hasMimeTypeOfVideo
-import com.luck.picture.lib.utils.MediaUtils.isContent
+import com.luck.picture.library.entity.LocalMedia
+import com.luck.picture.library.utils.DateUtils.formatDurationTime
+import com.luck.picture.library.utils.MediaUtils.hasMimeTypeOfAudio
+import com.luck.picture.library.utils.MediaUtils.hasMimeTypeOfVideo
+import com.luck.picture.library.utils.MediaUtils.isContent
 import com.luck.pictureselector.R
 import com.luck.pictureselector.listener.OnItemLongClickListener
 
@@ -120,15 +120,15 @@ class GridImageAdapter(context: Context, result: MutableList<LocalMedia>) :
             if (hasMimeTypeOfAudio(media.mimeType)) {
                 viewHolder.tvDuration.visibility = View.VISIBLE
                 viewHolder.tvDuration.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    com.luck.picture.lib.R.drawable.ps_ic_audio,
+                    com.luck.picture.library.R.drawable.ps_ic_audio,
                     0,
                     0,
                     0
                 )
-                viewHolder.mImg.setImageResource(com.luck.picture.lib.R.drawable.ps_audio_placeholder)
+                viewHolder.mImg.setImageResource(com.luck.picture.library.R.drawable.ps_audio_placeholder)
             } else {
                 viewHolder.tvDuration.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    com.luck.picture.lib.R.drawable.ps_ic_video,
+                    com.luck.picture.library.R.drawable.ps_ic_video,
                     0,
                     0,
                     0

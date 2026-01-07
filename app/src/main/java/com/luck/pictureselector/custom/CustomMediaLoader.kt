@@ -4,12 +4,12 @@ import android.app.Application
 import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
-import com.luck.picture.lib.constant.SelectorConstant
-import com.luck.picture.lib.entity.LocalMedia
-import com.luck.picture.lib.entity.LocalMediaAlbum
-import com.luck.picture.lib.loader.MediaLoader
-import com.luck.picture.lib.loader.PROJECTION
-import com.luck.picture.lib.utils.MediaUtils
+import com.luck.picture.library.constant.SelectorConstant
+import com.luck.picture.library.entity.LocalMedia
+import com.luck.picture.library.entity.LocalMediaAlbum
+import com.luck.picture.library.loader.MediaLoader
+import com.luck.picture.library.loader.PROJECTION
+import com.luck.picture.library.utils.MediaUtils
 import java.io.File
 
 class CustomMediaLoader(private val application: Application) : MediaLoader() {

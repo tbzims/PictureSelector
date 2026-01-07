@@ -61,7 +61,7 @@
 
 
         <service
-            android:name="com.luck.picture.lib.service.ForegroundService"
+            android:name="com.luck.picture.library.service.ForegroundService"
             android:enabled="true"
             android:foregroundServiceType="location" />
 

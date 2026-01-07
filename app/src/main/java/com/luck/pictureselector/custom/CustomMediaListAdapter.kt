@@ -1,6 +1,6 @@
 package com.luck.pictureselector.custom
 
-import com.luck.picture.lib.adapter.MediaListAdapter
+import com.luck.picture.library.adapter.MediaListAdapter
 
 /**
  * @author：luck

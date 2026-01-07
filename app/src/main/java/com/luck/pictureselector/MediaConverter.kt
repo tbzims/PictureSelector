@@ -3,10 +3,10 @@ package com.luck.pictureselector
 import android.content.Context
 import android.os.Environment
 import android.text.TextUtils
-import com.luck.picture.lib.engine.MediaConverterEngine
-import com.luck.picture.lib.entity.LocalMedia
-import com.luck.picture.lib.utils.FileUtils
-import com.luck.picture.lib.utils.MediaUtils
+import com.luck.picture.library.engine.MediaConverterEngine
+import com.luck.picture.library.entity.LocalMedia
+import com.luck.picture.library.utils.FileUtils
+import com.luck.picture.library.utils.MediaUtils
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.default
 import id.zelory.compressor.constraint.destination

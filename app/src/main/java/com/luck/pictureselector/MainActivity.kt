@@ -40,29 +40,29 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.luck.lib.camerax.SimpleCameraX
-import com.luck.picture.lib.adapter.PreviewVideoHolder
-import com.luck.picture.lib.animators.AlphaInAnimationAdapter
-import com.luck.picture.lib.animators.BaseAnimationAdapter
-import com.luck.picture.lib.animators.SlideInBottomAnimationAdapter
-import com.luck.picture.lib.config.LayoutSource
-import com.luck.picture.lib.config.MediaType
-import com.luck.picture.lib.config.SelectionMode
-import com.luck.picture.lib.constant.FileSizeUnitConstant
-import com.luck.picture.lib.constant.SelectorConstant
-import com.luck.picture.lib.entity.LocalMedia
-import com.luck.picture.lib.helper.ActivityCompatHelper
-import com.luck.picture.lib.interfaces.*
-import com.luck.picture.lib.language.Language
-import com.luck.picture.lib.model.PictureSelector
-import com.luck.picture.lib.permissions.OnPermissionResultListener
-import com.luck.picture.lib.permissions.PermissionChecker
-import com.luck.picture.lib.style.StatusBarStyle
-import com.luck.picture.lib.style.WindowAnimStyle
-import com.luck.picture.lib.utils.DensityUtil.dip2px
-import com.luck.picture.lib.utils.MediaUtils
-import com.luck.picture.lib.utils.SelectorLogUtils
-import com.luck.picture.lib.utils.ToastUtils
-import com.luck.picture.lib.widget.MediumBoldTextView
+import com.luck.picture.library.adapter.PreviewVideoHolder
+import com.luck.picture.library.animators.AlphaInAnimationAdapter
+import com.luck.picture.library.animators.BaseAnimationAdapter
+import com.luck.picture.library.animators.SlideInBottomAnimationAdapter
+import com.luck.picture.library.config.LayoutSource
+import com.luck.picture.library.config.MediaType
+import com.luck.picture.library.config.SelectionMode
+import com.luck.picture.library.constant.FileSizeUnitConstant
+import com.luck.picture.library.constant.SelectorConstant
+import com.luck.picture.library.entity.LocalMedia
+import com.luck.picture.library.helper.ActivityCompatHelper
+import com.luck.picture.library.interfaces.*
+import com.luck.picture.library.language.Language
+import com.luck.picture.library.model.PictureSelector
+import com.luck.picture.library.permissions.OnPermissionResultListener
+import com.luck.picture.library.permissions.PermissionChecker
+import com.luck.picture.library.style.StatusBarStyle
+import com.luck.picture.library.style.WindowAnimStyle
+import com.luck.picture.library.utils.DensityUtil.dip2px
+import com.luck.picture.library.utils.MediaUtils
+import com.luck.picture.library.utils.SelectorLogUtils
+import com.luck.picture.library.utils.ToastUtils
+import com.luck.picture.library.widget.MediumBoldTextView
 import com.luck.pictureselector.adapter.GridImageAdapter
 import com.luck.pictureselector.custom.CustomPreviewExoVideoHolder
 import com.luck.pictureselector.custom.CustomPreviewIjkVideoHolder
@@ -640,9 +640,9 @@ class MainActivity : AppCompatActivity() {
     private fun buildWindowAnim(): WindowAnimStyle {
         return WindowAnimStyle().apply {
             if (rbDefaultWindowAnim.isChecked) {
-                of(com.luck.picture.lib.R.anim.ps_anim_enter, com.luck.picture.lib.R.anim.ps_anim_exit)
+                of(com.luck.picture.library.R.anim.ps_anim_enter, com.luck.picture.library.R.anim.ps_anim_exit)
             } else if (rbWindowUpAnim.isChecked) {
-                of(com.luck.picture.lib.R.anim.ps_anim_up_in, com.luck.picture.lib.R.anim.ps_anim_down_out)
+                of(com.luck.picture.library.R.anim.ps_anim_up_in, com.luck.picture.library.R.anim.ps_anim_down_out)
             }
         }
     }

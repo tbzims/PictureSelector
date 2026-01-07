@@ -27,7 +27,7 @@
             android:textSize="14sp" />
     </LinearLayout>
 
-    <com.luck.picture.lib.widget.MediumBoldTextView
+    <com.luck.picture.library.widget.MediumBoldTextView
         android:id="@+id/tv_result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

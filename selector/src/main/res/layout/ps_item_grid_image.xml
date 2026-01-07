@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.luck.picture.lib.widget.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.luck.picture.library.widget.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -9,7 +9,7 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
 
-    <com.luck.picture.lib.widget.StyleTextView
+    <com.luck.picture.library.widget.StyleTextView
         android:id="@+id/ps_tv_check"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,7 +20,7 @@
         android:textColor="@color/ps_color_white"
         android:textSize="12sp" />
 
-    <com.luck.picture.lib.widget.MediumBoldTextView
+    <com.luck.picture.library.widget.MediumBoldTextView
         android:id="@+id/tv_media_tag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,4 +41,4 @@
         android:src="@drawable/ps_ic_editor"
         android:visibility="gone" />
 
-</com.luck.picture.lib.widget.SquareRelativeLayout>
+</com.luck.picture.library.widget.SquareRelativeLayout>

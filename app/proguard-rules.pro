@@ -16,5 +16,5 @@
 #   public *;
 #}
 #PictureSelector Start
--keep class com.luck.picture.lib.** { *; }
+-keep class com.luck.picture.library.** { *; }
 #PictureSelector End

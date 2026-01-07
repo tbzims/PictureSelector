@@ -3,7 +3,6 @@ package com.luck.pictureselector;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -11,8 +10,8 @@ import com.bumptech.glide.Glide;
 import com.luck.lib.camerax.CustomCameraConfig;
 import com.luck.lib.camerax.PictureCameraActivity;
 import com.luck.lib.camerax.SimpleCameraX;
-import com.luck.picture.lib.registry.ImageCaptureComponent;
-import com.luck.picture.lib.registry.VideoCaptureComponent;
+import com.luck.picture.library.registry.ImageCaptureComponent;
+import com.luck.picture.library.registry.VideoCaptureComponent;
 
 import java.io.File;
 import java.util.Objects;

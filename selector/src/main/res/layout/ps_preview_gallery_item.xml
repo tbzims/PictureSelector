@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.luck.picture.lib.widget.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.luck.picture.library.widget.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="60dp"
     android:layout_height="60dp"
     android:gravity="center">
@@ -40,4 +40,4 @@
         android:layout_alignBottom="@id/iv_image"
         android:background="@drawable/ps_preview_gallery_frame" />
 
-</com.luck.picture.lib.widget.SquareRelativeLayout>
+</com.luck.picture.library.widget.SquareRelativeLayout>

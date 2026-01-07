@@ -4,10 +4,10 @@ import android.content.Intent
 import android.net.Uri
 import android.view.View
 import androidx.core.content.FileProvider.getUriForFile
-import com.luck.picture.lib.adapter.PreviewVideoHolder
-import com.luck.picture.lib.utils.MediaUtils
-import com.luck.picture.lib.utils.SdkVersionUtils.isMaxN
-import com.luck.picture.lib.utils.SdkVersionUtils.isQ
+import com.luck.picture.library.adapter.PreviewVideoHolder
+import com.luck.picture.library.utils.MediaUtils
+import com.luck.picture.library.utils.SdkVersionUtils.isMaxN
+import com.luck.picture.library.utils.SdkVersionUtils.isQ
 import java.io.File
 
 /**
