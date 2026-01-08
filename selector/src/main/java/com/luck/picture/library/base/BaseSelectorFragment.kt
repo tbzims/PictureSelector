@@ -237,7 +237,7 @@ abstract class BaseSelectorFragment : Fragment() {
                     }
                 })
         } else {
-            PermissionUtil.goIntentSetting(this, SelectorConstant.REQUEST_GO_SETTING)
+//            PermissionUtil.goIntentSetting(this, SelectorConstant.REQUEST_GO_SETTING)
         }
     }
 
@@ -640,11 +640,8 @@ abstract class BaseSelectorFragment : Fragment() {
                     return SelectedState.INVALID
                 }
             }
-            if (config.mListenerInfo.onSelectFilterListener?.onSelectFilter(
-                    requireContext(),
-                    media
-                ) == true
-            ) {
+            if (config.mListenerInfo.onSelectFilterListener
+                ?.onSelectFilter(requireContext(), media) == true) {
                 return SelectedState.INVALID
             }
         }
@@ -860,22 +857,22 @@ abstract class BaseSelectorFragment : Fragment() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        initAppLanguage()
+//        initAppLanguage()
     }
 
     override fun onAttach(context: Context) {
-        initAppLanguage()
+//        initAppLanguage()
         super.onAttach(context)
     }
 
     open fun initAppLanguage() {
-        if (config.language != Language.UNKNOWN_LANGUAGE) {
-            PictureLanguageUtils.setAppLanguage(
-                requireContext(),
-                config.language,
-                config.defaultLanguage
-            )
-        }
+//        if (config.language != Language.UNKNOWN_LANGUAGE) {
+//            PictureLanguageUtils.setAppLanguage(
+//                requireContext(),
+//                config.language,
+//                config.defaultLanguage
+//            )
+//        }
     }
 
     override fun onRequestPermissionsResult(

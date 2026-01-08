@@ -13,11 +13,11 @@
         android:id="@+id/ps_tv_check"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="7dp"
+        android:layout_margin="@dimen/dp_7"
         android:layout_alignParentEnd="true"
         android:background="@drawable/ps_checkbox_selector"
         android:gravity="center"
-        android:textColor="@color/ps_color_white"
+        android:textColor="?attr/white_100"
         android:textSize="12sp" />
 
     <com.luck.picture.library.widget.MediumBoldTextView

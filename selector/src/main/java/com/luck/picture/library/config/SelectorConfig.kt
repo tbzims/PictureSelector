@@ -3,7 +3,6 @@ package com.luck.picture.library.config
 import android.content.pm.ActivityInfo
 import android.graphics.Color
 import com.luck.picture.library.R
-import com.luck.picture.library.registry.Registry
 import com.luck.picture.library.constant.SelectorConstant
 import com.luck.picture.library.customengine.GlideEngine
 import com.luck.picture.library.engine.CropEngine
@@ -13,8 +12,10 @@ import com.luck.picture.library.entity.LocalMedia
 import com.luck.picture.library.entity.PreviewDataWrap
 import com.luck.picture.library.interfaces.ListenerInfo
 import com.luck.picture.library.interfaces.MagicalInterpolator
+import com.luck.picture.library.interfaces.SelectorExpandViewInjector
 import com.luck.picture.library.language.Language
 import com.luck.picture.library.loader.MediaLoader
+import com.luck.picture.library.registry.Registry
 import com.luck.picture.library.style.StatusBarStyle
 import com.luck.picture.library.style.WindowAnimStyle
 
@@ -89,6 +90,8 @@ class SelectorConfig {
     var mediaConverterEngine: MediaConverterEngine? = null
     var magicalInterpolator: MagicalInterpolator? = null
     var mListenerInfo = ListenerInfo()
+
+    var injectorClasses: ArrayList<Class<out SelectorExpandViewInjector>> = ArrayList()
 
     fun getSelectCount(): Int {
         return if (isAsTotalCount) totalCount else totalCount + maxVideoSelectNum
@@ -169,5 +172,6 @@ class SelectorConfig {
         this.registry.clear()
         this.previewWrap.reset()
         this.mListenerInfo.destroy()
+        this.injectorClasses.clear()
     }
 }

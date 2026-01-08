@@ -1,15 +1,28 @@
 package com.luck.picture.library
 
 import android.Manifest
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.READ_MEDIA_IMAGES
+import android.Manifest.permission.READ_MEDIA_VIDEO
+import android.Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
 import android.annotation.SuppressLint
 import android.app.Service
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.*
 import android.os.VibrationEffect.DEFAULT_AMPLITUDE
 import android.text.TextUtils
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -31,11 +44,14 @@ import com.luck.picture.library.interfaces.*
 import com.luck.picture.library.magical.RecycleItemViewParams
 import com.luck.picture.library.permissions.OnPermissionResultListener
 import com.luck.picture.library.permissions.PermissionChecker
+import com.luck.picture.library.permissions.PermissionUtil
 import com.luck.picture.library.provider.TempDataProvider
 import com.luck.picture.library.utils.*
 import com.luck.picture.library.utils.DensityUtil.getStatusBarHeight
 import com.luck.picture.library.utils.FileUtils
 import com.luck.picture.library.widget.*
+import com.tmmtmm.im.style.R as sR
+import com.tmmtmm.im.style.widget.BottomSheetMenuFragment
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -59,7 +75,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
      * RecyclerView
      */
     lateinit var mRecycler: RecyclerPreloadView
-    var mTvDataEmpty: TextView? = null
+    var mTvDataEmpty: LinearLayout? = null
 
     /**
      * TitleBar
@@ -71,6 +87,13 @@ open class SelectorMainFragment : BaseSelectorFragment() {
     var mIvTitleArrow: ImageView? = null
     var mTvCancel: TextView? = null
     var mTvCurrentDataTime: TextView? = null
+
+    /**
+     * new view
+     * */
+    var groupPermissionView: androidx.constraintlayout.widget.Group? = null
+    var btnManage: Button? = null
+    var psTopExpandBar: FrameLayout? = null
 
     /**
      * BottomNarBar
@@ -128,6 +151,10 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         mTvCancel = view.findViewById(R.id.ps_tv_cancel)
         setStatusBarRectSize(mStatusBar)
 
+        //newView
+        groupPermissionView = view.findViewById(R.id.group_permission_view)
+        btnManage = view.findViewById(R.id.btnManage)
+        psTopExpandBar = view.findViewById(R.id.ps_top_expand_bar)
         // BottomNarBar
         mBottomNarBar = view.findViewById(R.id.ps_bottom_nar_bar)
         mTvPreview = view.findViewById(R.id.ps_tv_preview)
@@ -147,10 +174,6 @@ open class SelectorMainFragment : BaseSelectorFragment() {
     }
 
     open fun setDataEmpty() {
-        mTvDataEmpty?.text =
-            if (config.mediaType == MediaType.AUDIO) getString(R.string.ps_audio_empty) else getString(
-                R.string.ps_empty
-            )
     }
 
     open fun onMergeSelectedSource() {
@@ -211,6 +234,24 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         }
         mTitleBar?.setOnClickListener {
             onTitleBarClick(it)
+        }
+
+        val injectorClasses: ArrayList<Class<out SelectorExpandViewInjector>> =
+            config.injectorClasses
+        if (psTopExpandBar != null) {
+            for (injectorClass: Class<out SelectorExpandViewInjector> in injectorClasses) {
+                try {
+                    val injector:SelectorExpandViewInjector  = injectorClass . newInstance ();
+                    injector.inject(psTopExpandBar){
+                        if (DoubleUtils.isFastDoubleClick()) {
+                            return@inject
+                        }
+                        openSelectedCamera()
+                    }
+                } catch (e:ReflectiveOperationException ) {
+                    throw RuntimeException (e)
+                }
+            }
         }
     }
 
@@ -359,6 +400,24 @@ open class SelectorMainFragment : BaseSelectorFragment() {
     }
 
     open fun initNavbarBar() {
+        btnManage?.setOnClickListener {
+            val menuItems = arrayOf(
+                getString(sR.string.select_more_pictures),
+                getString(sR.string.change_settings)
+            )
+            val menuFragment = BottomSheetMenuFragment()
+            menuFragment.setupMenuItems(menuItems.toList())
+            menuFragment.setOnMenuItemClickListener { position ->
+                when (menuItems[position]) {
+                    getString(sR.string.select_more_pictures) -> openManageMediaPermissionPage()
+                    getString(sR.string.change_settings) -> PermissionUtil.goIntentSetting(
+                        this,
+                        SelectorConstant.REQUEST_GO_SETTING
+                    )
+                }
+            }
+            menuFragment.show(requireActivity().supportFragmentManager, "manage")
+        }
         if (config.selectionMode == SelectionMode.ONLY_SINGLE) {
             mBottomNarBar?.visibility = View.GONE
         } else {
@@ -642,12 +701,28 @@ open class SelectorMainFragment : BaseSelectorFragment() {
 
     open fun checkPermissions() {
         if (PermissionChecker.isCheckReadStorage(requireContext(), config.mediaType)) {
+            groupPermissionView?.visibility = View.GONE
             if (isNeedRestore()) {
                 restoreMemoryData()
             } else {
                 requestData()
             }
         } else {
+            groupPermissionView?.visibility = View.VISIBLE
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                val hasPartialPermission = ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                ) == PackageManager.PERMISSION_GRANTED
+                if (hasPartialPermission) {
+                    if (isNeedRestore()) {
+                        restoreMemoryData()
+                    } else {
+                        requestData()
+                    }
+                    return
+                }
+            }
             val permissionArray = PermissionChecker.getReadPermissionArray(
                 requireContext(),
                 config.mediaType
@@ -668,12 +743,53 @@ open class SelectorMainFragment : BaseSelectorFragment() {
 
                         override fun onDenied() {
                             handlePermissionDenied(permissionArray)
+
                         }
                     })
             }
         }
     }
 
+    /**
+     * 打开系统提供的管理有权访问照片和视频的页面
+     */
+    open fun openManageMediaPermissionPage() {
+        val permissionArray = PermissionChecker.getReadPermissionArray(
+            requireContext(),
+            config.mediaType
+        )
+        PermissionChecker.requestPermissions(
+            this,
+            permissionArray,
+            object : OnPermissionResultListener {
+                override fun onGranted() {
+                    showPermissionDescription(false, permissionArray)
+                    requestData()
+                }
+
+                override fun onDenied() {
+                    handlePermissionDenied(permissionArray)
+
+                }
+            })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            val hasPartialPermission = ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+            ) == PackageManager.PERMISSION_GRANTED
+            if (hasPartialPermission) {
+                if (isNeedRestore()) {
+                    restoreMemoryData()
+                } else {
+                    requestData()
+                }
+            }
+        }
+    }
 
     override fun showCustomPermissionApply(permission: Array<String>) {
         config.mListenerInfo.onPermissionApplyListener?.requestPermission(
@@ -772,7 +888,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         mTvTitle?.text =
             config.defaultAlbumName ?: title ?: if (config.mediaType == MediaType.AUDIO)
                 getString(R.string.ps_all_audio) else getString(
-                R.string.ps_camera_roll
+                com.tmmtmm.im.style.R.string.all_Projects
             )
     }
 
@@ -949,7 +1065,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         val bucketDisplayName =
             config.defaultAlbumName ?: if (MediaUtils.hasMimeTypeOfAudio(media.mimeType))
                 getString(R.string.ps_all_audio) else getString(
-                R.string.ps_camera_roll
+                com.tmmtmm.im.style.R.string.all_Projects
             )
         allMediaAlbum.bucketDisplayName = bucketDisplayName
         allMediaAlbum.bucketDisplayCover = media.path

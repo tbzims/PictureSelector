@@ -823,6 +823,16 @@ class SelectionMainModel constructor(private var selector: PictureSelector, medi
         return this
     }
 
+    fun setInjectorClasses(injectorClasses: MutableList<Class<out SelectorExpandViewInjector>>): SelectionMainModel {
+        config.injectorClasses = ArrayList(injectorClasses)
+        return this
+    }
+
+    fun addInjectorClass(injectorClass: Class<out SelectorExpandViewInjector>): SelectionMainModel {
+        config.injectorClasses.add(injectorClass)
+        return this
+    }
+
     fun forResult(requestCode: Int) {
         forResult(null, requestCode, null)
     }

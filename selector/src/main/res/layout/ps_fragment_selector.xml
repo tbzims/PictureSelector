@@ -3,22 +3,78 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:theme="@style/AppTheme1"
+    android:background="?attr/bg_3">
 
     <!--Do not delete or change the View ID-->
+    <LinearLayout
+        android:id="@+id/no_permission_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_56"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ps_title_bar">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_12"
+            android:layout_marginEnd="@dimen/dp_16"
+            android:layout_weight="1"
+            android:text="@string/tmm_can_only_access_a"
+            android:textColor="?attr/bg_2"
+            android:textSize="@dimen/sp_14" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnManage"
+            android:text="@string/manage"
+            android:background="@drawable/btn_permission_manage_bg"
+            android:textSize="@dimen/sp_15"
+            android:textColor="?attr/white_100"
+            android:layout_width="@dimen/dp_86"
+            android:layout_height="@dimen/dp_32"
+            android:layout_marginEnd="@dimen/dp_12" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/view_no_permission"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_0_5"
+        android:background="?attr/white_10"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/no_permission_view" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_permission_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:constraint_referenced_ids="no_permission_view,view_no_permission"/>
+
+    <android.widget.FrameLayout
+        android:id="@+id/ps_top_expand_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view_no_permission" />
 
     <com.luck.picture.library.widget.RecyclerPreloadView
         android:id="@+id/ps_recycler"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/ps_color_black"
         android:overScrollMode="never"
         app:layout_constraintBottom_toTopOf="@id/ps_bottom_nar_bar"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ps_title_bar" />
+        app:layout_constraintTop_toBottomOf="@id/ps_top_expand_bar" />
 
-    <com.luck.picture.library.widget.MediumBoldTextView
+    <com.luck.picture.library.widget.NoDataEmptyView
         android:id="@+id/ps_tv_data_empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,7 +98,6 @@
         android:id="@+id/ps_title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/ps_color_grey"
         android:clickable="true"
         android:focusable="true"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -61,7 +116,7 @@
         <ImageView
             android:id="@+id/ps_iv_left_back"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/dp_48"
             android:scaleType="centerInside"
             android:src="@drawable/ps_ic_white_back"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -91,7 +146,7 @@
                 android:maxEms="6"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:text="@string/ps_camera_roll"
+                android:text="@string/all_Projects"
                 android:textColor="@color/ps_color_white"
                 android:textSize="18sp" />
 
@@ -133,13 +188,12 @@
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ps_title_bar" />
+        app:layout_constraintTop_toBottomOf="@+id/ps_top_expand_bar" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ps_bottom_nar_bar"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:background="@color/ps_color_grey"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">

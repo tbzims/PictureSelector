@@ -16,6 +16,7 @@ class SelectorSupporterActivity : AppCompatActivity() {
     private val config = SelectorProviders.getInstance().getConfig()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(com.tmmtmm.im.style.R.style.AppTheme1)
         super.onCreate(savedInstanceState)
         immersive()
         setContentView(R.layout.ps_activity_container)

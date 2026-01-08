@@ -218,7 +218,7 @@ open class MediaPagingLoaderImpl(val application: Application) : MediaLoader() {
                     val bucketDisplayName =
                         config.defaultAlbumName ?: if (config.mediaType == MediaType.AUDIO)
                             application.getString(R.string.ps_all_audio) else application.getString(
-                            R.string.ps_camera_roll
+                            com.tmmtmm.im.style.R.string.all_Projects
                         )
                     allMediaAlbum.bucketDisplayName = bucketDisplayName
                     allMediaAlbum.bucketId = SelectorConstant.DEFAULT_ALL_BUCKET_ID

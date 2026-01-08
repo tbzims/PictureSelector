@@ -11,7 +11,7 @@ object SelectorConstant {
     const val DEFAULT_ALL_BUCKET_ID = -1L
     const val DEFAULT_DIR_BUCKET_ID = -2L
     const val DEFAULT_MAX_PAGE_SIZE = 60
-    const val DEFAULT_GRID_ITEM_COUNT = 4
+    const val DEFAULT_GRID_ITEM_COUNT = 3
 
     const val DEFAULT_MAX_SELECT_NUM = 9
     const val CHOOSE_REQUEST = 188

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:theme="@style/AppTheme1"
+    tools:background="@color/black">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animationView"
+        android:layout_width="@dimen/dp_160"
+        android:layout_height="@dimen/dp_120"
+        app:lottie_rawRes="@raw/default_date"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvFirstMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_12"
+        android:text="@string/no_data_available"
+        android:textColor="?attr/white_100"
+        android:textSize="@dimen/sp_17" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvSecondMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_8"
+        android:textSize="@dimen/sp_15"
+        android:textColor="?attr/white_64"
+        android:text="@string/there_is_currently_no_content" />
+</LinearLayout>
