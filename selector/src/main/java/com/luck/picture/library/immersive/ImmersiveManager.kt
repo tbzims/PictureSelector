@@ -98,6 +98,34 @@ object ImmersiveManager {
                         )
                         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
                     }
+                    window.statusBarColor = statusBarColor
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        // Android 11+ 使用 WindowInsetsController 进行更精确的控制
+                        val controller = window.insetsController
+                        if (controller != null) {
+                            window.navigationBarColor = navigationBarColor
+
+                            // 尝试设置导航栏图标颜色 (仅在 Android 10+ 支持)
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                val appearance = if (navigationBarColor == Color.WHITE ||
+                                    (navigationBarColor != Color.BLACK &&
+                                            Integer.valueOf(navigationBarColor shr 16 and 0xFF) > 128)) {
+                                    // 浅色导航栏，使用深色图标
+                                    WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+                                } else {
+                                    // 深色导航栏，使用浅色图标
+                                    0
+                                }
+                                controller.setSystemBarsAppearance(
+                                    appearance,
+                                    WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+                                )
+                            }
+                        }
+                    } else {
+                        // Android 5.0+ 到 10 的处理
+                        window.navigationBarColor = navigationBarColor
+                    }
                 } else if (!isMarginStatusBar) {
                     window.requestFeature(Window.FEATURE_NO_TITLE)
                     window.clearFlags(

@@ -410,8 +410,12 @@ class SelectionMainModel constructor(private var selector: PictureSelector, medi
         if (this.config.mediaType == MediaType.ALL) {
             this.config.maxVideoSelectNum = maxVideoNum
             this.config.isAsTotalCount = isAsTotalCount
-            this.config.isAllWithImageVideo = maxVideoNum > 0
         }
+        return this
+    }
+
+    fun isAllWithImageVideo(isAllWithImageVideo: Boolean): SelectionMainModel {
+        this.config.isAllWithImageVideo = isAllWithImageVideo
         return this
     }
 
@@ -823,7 +827,7 @@ class SelectionMainModel constructor(private var selector: PictureSelector, medi
         return this
     }
 
-    fun setInjectorClasses(injectorClasses: MutableList<Class<out SelectorExpandViewInjector>>): SelectionMainModel {
+    fun setInjectorClasses(injectorClasses: List<Class<out SelectorExpandViewInjector>>): SelectionMainModel {
         config.injectorClasses = ArrayList(injectorClasses)
         return this
     }

@@ -6,6 +6,7 @@ import com.luck.picture.library.factory.ClassFactory
 import com.luck.picture.library.helper.FragmentInjectManager
 import com.luck.picture.library.immersive.ImmersiveManager.immersiveAboveAPI23
 import com.luck.picture.library.provider.SelectorProviders
+import com.tmmtmm.im.style.utils.TmmThemeContext
 
 /**
  * @author：luck
@@ -16,7 +17,7 @@ class SelectorSupporterActivity : AppCompatActivity() {
     private val config = SelectorProviders.getInstance().getConfig()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(com.tmmtmm.im.style.R.style.AppTheme1)
+        setTheme(TmmThemeContext.themeResId)
         super.onCreate(savedInstanceState)
         immersive()
         setContentView(R.layout.ps_activity_container)

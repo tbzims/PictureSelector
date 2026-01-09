@@ -7,6 +7,7 @@ import com.luck.picture.library.factory.ClassFactory
 import com.luck.picture.library.helper.FragmentInjectManager
 import com.luck.picture.library.immersive.ImmersiveManager
 import com.luck.picture.library.provider.SelectorProviders
+import com.tmmtmm.im.style.utils.TmmThemeContext
 
 /**
  * @author：luck
@@ -16,6 +17,7 @@ import com.luck.picture.library.provider.SelectorProviders
 class SelectorTransparentActivity : AppCompatActivity() {
     private val config = SelectorProviders.getInstance().getConfig()
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(TmmThemeContext.themeResId)
         super.onCreate(savedInstanceState)
         immersive()
         setActivitySize()

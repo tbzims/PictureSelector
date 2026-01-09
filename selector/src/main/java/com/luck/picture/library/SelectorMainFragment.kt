@@ -27,6 +27,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.luck.picture.library.adapter.MediaListAdapter
+import com.luck.picture.library.adapter.MediaListNewAdapter
 import com.luck.picture.library.adapter.base.BaseMediaListAdapter
 import com.luck.picture.library.base.BaseSelectorFragment
 import com.luck.picture.library.config.LayoutSource
@@ -92,6 +93,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
      * new view
      * */
     var groupPermissionView: androidx.constraintlayout.widget.Group? = null
+    var tvNoPermission: TextView? = null
     var btnManage: Button? = null
     var psTopExpandBar: FrameLayout? = null
 
@@ -155,12 +157,16 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         groupPermissionView = view.findViewById(R.id.group_permission_view)
         btnManage = view.findViewById(R.id.btnManage)
         psTopExpandBar = view.findViewById(R.id.ps_top_expand_bar)
+        tvNoPermission = view.findViewById(R.id.tv_no_permission)
         // BottomNarBar
         mBottomNarBar = view.findViewById(R.id.ps_bottom_nar_bar)
         mTvPreview = view.findViewById(R.id.ps_tv_preview)
         mTvOriginal = view.findViewById(R.id.ps_tv_original)
         mTvComplete = view.findViewById(R.id.ps_tv_complete)
         mTvSelectNum = view.findViewById(R.id.ps_tv_select_num)
+        mBottomNarBar?.let {
+            applySafeAreaInsets(it)
+        }
     }
 
     open fun initWidgets() {
@@ -241,15 +247,15 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         if (psTopExpandBar != null) {
             for (injectorClass: Class<out SelectorExpandViewInjector> in injectorClasses) {
                 try {
-                    val injector:SelectorExpandViewInjector  = injectorClass . newInstance ();
-                    injector.inject(psTopExpandBar){
+                    val injector: SelectorExpandViewInjector = injectorClass.newInstance();
+                    injector.inject(psTopExpandBar) {
                         if (DoubleUtils.isFastDoubleClick()) {
                             return@inject
                         }
                         openSelectedCamera()
                     }
-                } catch (e:ReflectiveOperationException ) {
-                    throw RuntimeException (e)
+                } catch (e: ReflectiveOperationException) {
+                    throw RuntimeException(e)
                 }
             }
         }
@@ -401,10 +407,11 @@ open class SelectorMainFragment : BaseSelectorFragment() {
 
     open fun initNavbarBar() {
         btnManage?.setOnClickListener {
-            val menuItems = arrayOf(
-                getString(sR.string.select_more_pictures),
-                getString(sR.string.change_settings)
-            )
+            val menuItems = mutableListOf<String>()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                menuItems.add(getString(sR.string.select_more_pictures))
+            }
+            menuItems.add(getString(sR.string.change_settings))
             val menuFragment = BottomSheetMenuFragment()
             menuFragment.setupMenuItems(menuItems.toList())
             menuFragment.setOnMenuItemClickListener { position ->
@@ -520,7 +527,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
      */
     open fun createMediaAdapter(): BaseMediaListAdapter {
         val adapterClass =
-            config.registry.get(MediaListAdapter::class.java)
+            config.registry.get(MediaListNewAdapter::class.java)
         return factory.create(adapterClass)
     }
 
@@ -715,6 +722,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                     Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                 ) == PackageManager.PERMISSION_GRANTED
                 if (hasPartialPermission) {
+                    tvNoPermission?.text = getString(sR.string.tmm_can_only_access_a)
                     if (isNeedRestore()) {
                         restoreMemoryData()
                     } else {
@@ -723,6 +731,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                     return
                 }
             }
+            tvNoPermission?.text = getString(sR.string.tmmTmm_currently_has_no_album)
             val permissionArray = PermissionChecker.getReadPermissionArray(
                 requireContext(),
                 config.mediaType
@@ -751,7 +760,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
     }
 
     /**
-     * 打开系统提供的管理有权访问照片和视频的页面
+     * Open the system-provided page for managing photo and video access permissions
      */
     open fun openManageMediaPermissionPage() {
         val permissionArray = PermissionChecker.getReadPermissionArray(

@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.TextUtils
@@ -17,6 +18,8 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
@@ -200,12 +203,12 @@ abstract class BaseSelectorFragment : Fragment() {
         if (onPermissionDescriptionListener != null) {
             if (PermissionChecker.checkSelfPermission(requireContext(), permission)) {
                 onPermissionDescriptionListener.onDismiss(this)
-            } else{
+            } else {
                 if (isDisplay) {
                     val permissionStatus =
                         PermissionUtil.getPermissionStatus(requireActivity(), permission[0])
                     if (permissionStatus != PermissionUtil.REFUSE_PERMANENT) {
-                        onPermissionDescriptionListener.onDescription(this,permission)
+                        onPermissionDescriptionListener.onDescription(this, permission)
                     }
                 } else {
                     onPermissionDescriptionListener.onDismiss(this)
@@ -368,6 +371,7 @@ abstract class BaseSelectorFragment : Fragment() {
                     MediaUtils.hasMimeTypeOfVideo(it.mimeType) -> {
                         videoSize++
                     }
+
                     MediaUtils.hasMimeTypeOfImage(it.mimeType) -> {
                         imageSize++
                     }
@@ -400,12 +404,14 @@ abstract class BaseSelectorFragment : Fragment() {
                             config.minSelectNum.toString()
                         )
                     }
+
                     MediaType.AUDIO -> {
                         getString(
                             R.string.ps_min_audio_num,
                             config.minSelectNum.toString()
                         )
                     }
+
                     else -> {
                         getString(
                             R.string.ps_min_img_num,
@@ -455,7 +461,8 @@ abstract class BaseSelectorFragment : Fragment() {
                 if (onPermissionApplyListener != null) {
                     showCustomPermissionApply(permission)
                 } else {
-                    PermissionChecker.requestPermissions(this, permission,
+                    PermissionChecker.requestPermissions(
+                        this, permission,
                         object : OnPermissionResultListener {
                             override fun onGranted() {
                                 showPermissionDescription(false, permission)
@@ -641,7 +648,8 @@ abstract class BaseSelectorFragment : Fragment() {
                 }
             }
             if (config.mListenerInfo.onSelectFilterListener
-                ?.onSelectFilter(requireContext(), media) == true) {
+                    ?.onSelectFilter(requireContext(), media) == true
+            ) {
                 return SelectedState.INVALID
             }
         }
@@ -773,6 +781,7 @@ abstract class BaseSelectorFragment : Fragment() {
                     }
                 }
             }
+
             MediaType.IMAGE -> {
                 if (count >= config.totalCount) {
                     showTipsDialog(
@@ -783,6 +792,7 @@ abstract class BaseSelectorFragment : Fragment() {
                     return SelectedState.INVALID
                 }
             }
+
             MediaType.VIDEO -> {
                 if (count >= config.totalCount) {
                     showTipsDialog(
@@ -794,6 +804,7 @@ abstract class BaseSelectorFragment : Fragment() {
                     return SelectedState.INVALID
                 }
             }
+
             MediaType.AUDIO -> {
                 if (count >= config.totalCount) {
                     showTipsDialog(
@@ -1083,5 +1094,109 @@ abstract class BaseSelectorFragment : Fragment() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    /**
+     * Get navigation bar height for Android 16+
+     */
+    open fun getNavigationBarHeight(): Int {
+        var navigationBarHeight = 0
+        val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+        if (resourceId > 0) {
+            navigationBarHeight = resources.getDimensionPixelSize(resourceId)
+        }
+        return navigationBarHeight
+    }
+
+    /**
+     * Check if navigation bar is present and visible
+     */
+    open fun hasNavigationBar(): Boolean {
+        val resources = resources
+        val id = resources.getIdentifier("config_showNavigationBar", "bool", "android")
+        return if (id > 0) {
+            resources.getBoolean(id)
+        } else {
+            // Check if the device has a navigation bar by checking the difference between real screen size and usable screen size
+            val display = requireActivity().windowManager.defaultDisplay
+            val realMetrics = android.util.DisplayMetrics()
+            display.getRealMetrics(realMetrics)
+
+            val metrics = android.util.DisplayMetrics()
+            display.getMetrics(metrics)
+
+            realMetrics.heightPixels != metrics.heightPixels || realMetrics.widthPixels != metrics.widthPixels
+        }
+    }
+
+    /**
+     * Apply navigation bar height as padding to the view
+     */
+    open fun applyNavigationBarAdaptation(view: View?) {
+        view?.let {
+            val navigationBarHeight = getNavigationBarSafeHeight()
+            if (navigationBarHeight > 0) {
+                it.setPadding(
+                    it.paddingLeft,
+                    it.paddingTop,
+                    it.paddingRight,
+                    it.paddingBottom + navigationBarHeight
+                )
+            }
+        }
+    }
+
+    open fun applySafeAreaInsets(view: View) {
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                v.setPadding(
+                    systemBarsInsets.left,
+                    systemBarsInsets.top,
+                    systemBarsInsets.right,
+                    systemBarsInsets.bottom
+                )
+            } else {
+                v.setPadding(
+                    insets.systemWindowInsetLeft,
+                    insets.systemWindowInsetTop,
+                    insets.systemWindowInsetRight,
+                    insets.systemWindowInsetBottom
+                )
+            }
+            insets
+        }
+    }
+
+    fun getNavigationBarSafeHeight(): Int {
+        var safeHeight = 0
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val windowInsets = activity?.window?.decorView?.rootWindowInsets
+            if (windowInsets != null) {
+                val displayCutout = windowInsets.displayCutout
+                if (displayCutout != null) {
+                    // 获取底部安全距离
+                    safeHeight = displayCutout.safeInsetBottom
+                }
+            }
+            // 如果通过 DisplayCutout 获取不到，尝试直接获取系统栏的 insets
+            if (safeHeight == 0) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    // Android 11+ 使用新的 WindowInsets API
+                    val insets = ViewCompat.getRootWindowInsets(requireView())
+                    if (insets != null) {
+                        val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+                        safeHeight = systemBarsInsets.bottom
+                    }
+                } else {
+                    // Android 9-10 的备用方法
+                    val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+                    if (resourceId > 0) {
+                        safeHeight = resources.getDimensionPixelSize(resourceId)
+                    }
+                }
+            }
+        }
+        return safeHeight
     }
 }
