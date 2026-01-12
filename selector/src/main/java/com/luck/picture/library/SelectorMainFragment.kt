@@ -1133,6 +1133,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
             onCheckDuplicateMedia(media)
             onMergeCameraAlbum(media)
             onMergeCameraMedia(media)
+            onStartPreview(0, true, mutableListOf(media))
         } else {
             SelectorLogUtils.info("analysisCameraData: Parsing LocalMedia object as empty")
         }
@@ -1212,7 +1213,8 @@ open class SelectorMainFragment : BaseSelectorFragment() {
             confirmSelect(media, false)
             val position = if (mAdapter.isDisplayCamera()) 1 else 0
             mAdapter.notifyItemInserted(position)
-            mAdapter.notifyItemRangeChanged(position, mAdapter.getData().size)
+            mAdapter.notifyItemRangeChanged(position, mAdapter.getData().size - position)
+            mRecycler.scrollToPosition(0)
         }
     }
 
