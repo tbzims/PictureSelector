@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.date.toast.ToastX
 import com.luck.picture.library.R
 import com.luck.picture.library.SelectorCameraFragment
 import com.luck.picture.library.SelectorExternalPreviewFragment
@@ -62,6 +63,7 @@ import com.luck.picture.library.utils.MediaUtils
 import com.luck.picture.library.utils.SpUtils
 import com.luck.picture.library.viewmodel.GlobalViewModel
 import com.luck.picture.library.viewmodel.SelectorViewModel
+import com.tmmtmm.im.style.dialog.ThemedDialog
 import com.tmmtmm.im.style.R as sR
 import com.tmmtmm.im.style.widget.BottomSheetMenuFragment
 import kotlinx.coroutines.launch
@@ -168,6 +170,16 @@ abstract class BaseSelectorFragment : Fragment() {
         restoreEngine()
         createLoadingDialog()
         setFragmentKeyBackListener()
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            v.setPadding(
+                v.paddingLeft,
+                v.paddingTop,
+                v.paddingRight,
+                navBars.bottom
+            )
+            insets
+        }
     }
 
     fun getSelectResult(): MutableList<LocalMedia> {
@@ -439,10 +451,13 @@ abstract class BaseSelectorFragment : Fragment() {
         }
     }
 
+    protected var isStartCamera = false
+
     /**
      * Activate camera intent based on [MediaType]
      */
     open fun startCameraAction(mode: MediaType) {
+        isStartCamera = true
         if (mode == MediaType.AUDIO) {
             soundRecording()
         } else {
@@ -472,7 +487,25 @@ abstract class BaseSelectorFragment : Fragment() {
                             }
 
                             override fun onDenied() {
-                                handlePermissionDenied(permission)
+//                                handlePermissionDenied(permission)
+                                val title = getString(sR.string.unable_to_read_imagesvideos)
+                                val content =
+                                    getString(sR.string.tmmTmm_requires_camera_permissions_to)
+                                val confirmButton = getString(sR.string.open_open)
+                                ThemedDialog.create(requireContext())
+                                    .setAutoDismiss(true)
+                                    .bindLifecycle(this@BaseSelectorFragment)
+                                    .setConfirmClickListener {
+                                        it.dismiss()
+                                        PermissionUtil.goIntentSetting(
+                                            this@BaseSelectorFragment,
+                                            SelectorConstant.REQUEST_GO_SETTING
+                                        )
+                                    }.show(
+                                        content = content,
+                                        confirmBtnText = confirmButton,
+                                        title = title
+                                    )
                             }
                         })
                 }
@@ -593,6 +626,7 @@ abstract class BaseSelectorFragment : Fragment() {
                 val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
                 if (intent.resolveActivity(context.packageManager) != null) {
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri)
+                    intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, config.recordVideoMaxSecond)
                     intent.putExtra(SelectorConstant.QUICK_CAPTURE, config.isQuickCapture)
                     startActivityForResult(intent, SelectorConstant.REQUEST_CAMERA)
                     ForegroundService.startService(context, config.isForegroundService)
@@ -618,8 +652,13 @@ abstract class BaseSelectorFragment : Fragment() {
         menuFragment.setupMenuItems(menuItems.toList())
         menuFragment.setOnMenuItemClickListener { position ->
             when (menuItems[position]) {
-                getString(sR.string.picture_shot_item) -> startCameraAction(MediaType.IMAGE)
-                getString(sR.string.picture_record_item) -> startCameraAction(MediaType.VIDEO)
+                getString(sR.string.picture_shot_item) -> {
+                    startCameraAction(MediaType.IMAGE)
+                }
+
+                getString(sR.string.picture_record_item) -> {
+                    startCameraAction(MediaType.VIDEO)
+                }
             }
         }
         menuFragment.show(childFragmentManager, "PhotoItemSelectedDialog")
@@ -708,23 +747,39 @@ abstract class BaseSelectorFragment : Fragment() {
                     if (config.isAsTotalCount) {
                         // The number of maxVideoSelectNum in select all mode is included within maxSelectNum
                         if (count >= config.totalCount) {
-                            showTipsDialog(
-                                getString(
-                                    R.string.ps_message_max_num,
-                                    config.totalCount.toString()
+                            ToastX.with(requireActivity())
+                                .text(
+                                    getString(
+                                        sR.string.select_photos_max,
+                                        config.totalCount
+                                    )
                                 )
-                            )
+                                .show()
+//                            showTipsDialog(
+//                                getString(
+//                                    R.string.ps_message_max_num,
+//                                    config.totalCount.toString()
+//                                )
+//                            )
                             return SelectedState.INVALID
                         }
                         if (MediaUtils.hasMimeTypeOfVideo(media.mimeType)) {
                             // If the selected video exceeds the [config.maxVideoSelectNum] limit
                             if (videoSize >= config.maxVideoSelectNum) {
-                                showTipsDialog(
-                                    getString(
-                                        R.string.ps_message_video_max_num,
-                                        config.maxVideoSelectNum.toString()
+                                ToastX.with(requireActivity())
+                                    .text(
+                                        getString(
+                                            sR.string.select_video_max,
+                                            config.maxVideoSelectNum
+                                        )
                                     )
-                                )
+                                    .show()
+//                                showTipsDialog(
+//                                    getString(
+//                                        R.string.ps_message_video_max_num,
+//                                        config.maxVideoSelectNum.toString()
+//                                    )
+//                                )
                                 return SelectedState.INVALID
                             }
                         }
@@ -732,23 +787,39 @@ abstract class BaseSelectorFragment : Fragment() {
                         if (MediaUtils.hasMimeTypeOfVideo(media.mimeType)) {
                             // If the selected video exceeds the [config.maxVideoSelectNum] limit
                             if (videoSize >= config.maxVideoSelectNum) {
-                                showTipsDialog(
-                                    getString(
-                                        R.string.ps_message_video_max_num,
-                                        config.maxVideoSelectNum.toString()
+                                ToastX.with(requireActivity())
+                                    .text(
+                                        getString(
+                                            sR.string.select_video_max,
+                                            config.maxVideoSelectNum
+                                        )
                                     )
-                                )
+                                    .show()
+//                                showTipsDialog(
+//                                    getString(
+//                                        R.string.ps_message_video_max_num,
+//                                        config.maxVideoSelectNum.toString()
+//                                    )
+//                                )
                                 return SelectedState.INVALID
                             }
                         } else if (MediaUtils.hasMimeTypeOfImage(media.mimeType)) {
                             // If the selected image exceeds the [config.maxSelectNum] limit
                             if (imageSize >= config.totalCount) {
-                                showTipsDialog(
-                                    getString(
-                                        R.string.ps_message_max_num,
-                                        config.totalCount.toString()
+                                ToastX.with(requireActivity())
+                                    .text(
+                                        getString(
+                                            sR.string.select_photos_max,
+                                            config.totalCount
+                                        )
                                     )
-                                )
+                                    .show()
+//                                showTipsDialog(
+//                                    getString(
+//                                        R.string.ps_message_max_num,
+//                                        config.totalCount.toString()
+//                                    )
+//                                )
                                 return SelectedState.INVALID
                             }
                         }
@@ -760,33 +831,54 @@ abstract class BaseSelectorFragment : Fragment() {
                         if (MediaUtils.hasMimeTypeOfImage(first.mimeType)) {
                             // Image has been selected
                             if (MediaUtils.hasMimeTypeOfVideo(media.mimeType)) {
-                                showTipsDialog(getString(R.string.ps_rule))
+                                ToastX.with(requireActivity())
+                                    .text(getString(sR.string.moments_post_only))
+                                    .show()
                                 return SelectedState.INVALID
                             }
                             if (count >= config.totalCount) {
-                                showTipsDialog(
-                                    getString(
-                                        R.string.ps_message_max_num,
-                                        config.totalCount.toString()
+                                ToastX.with(requireActivity())
+                                    .text(
+                                        getString(
+                                            sR.string.select_photos_max,
+                                            config.totalCount
+                                        )
                                     )
-                                )
+                                    .show()
+//                                showTipsDialog(
+//                                    getString(
+//                                        R.string.ps_message_max_num,
+//                                        config.totalCount.toString()
+//                                    )
+//                                )
                                 return SelectedState.INVALID
                             }
                         } else if (MediaUtils.hasMimeTypeOfVideo(first.mimeType)) {
                             // Video has been selected
                             if (MediaUtils.hasMimeTypeOfImage(media.mimeType)) {
-                                showTipsDialog(getString(R.string.ps_rule))
+                                ToastX.with(requireActivity())
+                                    .text(getString(sR.string.moments_post_only))
+                                    .show()
                                 return SelectedState.INVALID
                             }
-                            if (count >= config.totalCount) {
-                                showTipsDialog(
-                                    getString(
-                                        R.string.ps_message_video_max_num,
-                                        config.totalCount.toString()
+                            if (count >= config.maxVideoSelectNum) {
+                                ToastX.with(requireActivity())
+                                    .text(
+                                        getString(
+                                            sR.string.select_video_max,
+                                            config.maxVideoSelectNum
+                                        )
                                     )
-                                )
+                                    .show()
+//                                showTipsDialog(
+//                                    getString(
+//                                        R.string.ps_message_video_max_num,
+//                                        config.totalCount.toString()
+//                                    )
+//                                )
                                 return SelectedState.INVALID
                             }
+
                         }
                     }
                 }
@@ -794,23 +886,39 @@ abstract class BaseSelectorFragment : Fragment() {
 
             MediaType.IMAGE -> {
                 if (count >= config.totalCount) {
-                    showTipsDialog(
-                        getString(
-                            R.string.ps_message_max_num, config.totalCount.toString()
+                    ToastX.with(requireActivity())
+                        .text(
+                            getString(
+                                sR.string.select_photos_max,
+                                config.totalCount
+                            )
                         )
-                    )
+                        .show()
+//                    showTipsDialog(
+//                        getString(
+//                            R.string.ps_message_max_num, config.totalCount.toString()
+//                        )
+//                    )
                     return SelectedState.INVALID
                 }
             }
 
             MediaType.VIDEO -> {
                 if (count >= config.totalCount) {
-                    showTipsDialog(
-                        getString(
-                            R.string.ps_message_video_max_num,
-                            config.totalCount.toString()
+                    ToastX.with(requireActivity())
+                        .text(
+                            getString(
+                                sR.string.select_video_max,
+                                config.maxVideoSelectNum
+                            )
                         )
-                    )
+                        .show()
+//                    showTipsDialog(
+//                        getString(
+//                            R.string.ps_message_video_max_num,
+//                            config.totalCount.toString()
+//                        )
+//                    )
                     return SelectedState.INVALID
                 }
             }
@@ -1195,12 +1303,14 @@ abstract class BaseSelectorFragment : Fragment() {
                     // Android 11+ 使用新的 WindowInsets API
                     val insets = ViewCompat.getRootWindowInsets(requireView())
                     if (insets != null) {
-                        val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+                        val systemBarsInsets =
+                            insets.getInsets(WindowInsetsCompat.Type.navigationBars())
                         safeHeight = systemBarsInsets.bottom
                     }
                 } else {
                     // Android 9-10 的备用方法
-                    val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+                    val resourceId =
+                        resources.getIdentifier("navigation_bar_height", "dimen", "android")
                     if (resourceId > 0) {
                         safeHeight = resources.getDimensionPixelSize(resourceId)
                     }

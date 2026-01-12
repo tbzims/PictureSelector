@@ -15,7 +15,9 @@ import com.luck.picture.library.entity.LocalMedia
 import com.luck.picture.library.utils.DensityUtil
 import com.luck.picture.library.utils.MediaUtils
 import com.luck.picture.library.utils.StyleUtils
+import com.luck.picture.library.utils.ToastUtils
 import com.luck.picture.library.widget.StyleTextView
+import com.tmmtmm.im.style.R as sR
 
 /**
  * @author：luck
@@ -47,9 +49,9 @@ open class ListMediaViewHolder(itemView: View) : BaseListViewHolder(itemView) {
             config.imageEngine?.loadListImage(ivCover.context, media.getAvailablePath(), ivCover)
         }
         tvSelectView.setOnClickListener {
-            if (media.isEnabledMask) {
-                return@setOnClickListener
-            }
+//            if (media.isEnabledMask) {
+//                return@setOnClickListener
+//            }
             if (media.id == SelectorConstant.INVALID_DATA) {
                 return@setOnClickListener
             }
@@ -78,18 +80,18 @@ open class ListMediaViewHolder(itemView: View) : BaseListViewHolder(itemView) {
                 }
             }
 
-            if (config.mListenerInfo.onCustomAnimationListener?.onClickItemAnimation(
-                    resultCode == SelectedState.SUCCESS,
-                    ivCover
-                ) != true
-            ) {
-                ivCover.startAnimation(
-                    AnimationUtils.loadAnimation(
-                        it.context,
-                        if (resultCode == SelectedState.SUCCESS) R.anim.ps_zoom_anim_in else R.anim.ps_zoom_anim_out
-                    )
-                )
-            }
+//            if (config.mListenerInfo.onCustomAnimationListener?.onClickItemAnimation(
+//                    resultCode == SelectedState.SUCCESS,
+//                    ivCover
+//                ) != true
+//            ) {
+//                ivCover.startAnimation(
+//                    AnimationUtils.loadAnimation(
+//                        it.context,
+//                        if (resultCode == SelectedState.SUCCESS) R.anim.ps_zoom_anim_in else R.anim.ps_zoom_anim_out
+//                    )
+//                )
+//            }
 
             mGetSelectResultListener?.onSelectResult()?.let { result ->
                 isSelectedMedia(result.contains(media))

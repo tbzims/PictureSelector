@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.luck.picture.library.R
-import com.luck.picture.library.config.LayoutSource
 import com.luck.picture.library.config.SelectorConfig
 import com.luck.picture.library.entity.LocalMedia
 import com.luck.picture.library.interfaces.OnItemClickListener

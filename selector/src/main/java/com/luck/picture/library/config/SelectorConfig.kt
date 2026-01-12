@@ -58,7 +58,7 @@ class SelectorConfig {
     var isPauseResumePlay = false
     var isEmptyResultBack = false
     var isDisplayTimeAxis = true
-    var isFastSlidingSelect = true
+    var isFastSlidingSelect = false
     var isAllWithImageVideo = false
     var isForegroundService = false
     var isPreviewZoomEffect = false
@@ -90,6 +90,7 @@ class SelectorConfig {
     var mediaConverterEngine: MediaConverterEngine? = null
     var magicalInterpolator: MagicalInterpolator? = null
     var mListenerInfo = ListenerInfo()
+    var recordVideoMaxSecond: Int = 60
 
     var injectorClasses: ArrayList<Class<out SelectorExpandViewInjector>> = ArrayList()
 
@@ -122,7 +123,7 @@ class SelectorConfig {
         this.isEmptyResultBack = false
         this.isMaxSelectEnabledMask = false
         this.isDisplayTimeAxis = true
-        this.isFastSlidingSelect = true
+        this.isFastSlidingSelect = false
         this.isQuickCapture = false
         this.isDisplayCamera = false
         this.isNewKeyBackMode = true

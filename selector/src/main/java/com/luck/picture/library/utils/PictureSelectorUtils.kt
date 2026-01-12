@@ -30,6 +30,7 @@ class PictureSelectorUtils(
     val maxSelectVideoNum: Int = 1,
     val isGif: Boolean = false,
     val isWebp: Boolean = false,
+    val isUCrop: Boolean = false,
     val maxFileSize: Long = ALBUM_MAX_SIZE,
     val injectorClasses: List<Class<out SelectorExpandViewInjector>> = emptyList(),
     val showCamera: Boolean = false,
@@ -38,7 +39,7 @@ class PictureSelectorUtils(
 
 
     fun createOnlyCamera(listener: OnResultCallbackListener) {
-        return PictureSelector.Companion.create(context)
+        return PictureSelector.create(context)
             .openCamera(mediaType)
             .setAllOfCameraMode(mediaType)
             .isCameraForegroundService(true)
@@ -81,10 +82,10 @@ class PictureSelectorUtils(
             .isWebp(isWebp)
             .isAllWithImageVideo(isAllWithImageVideo)
             .setMediaConverterEngine(MediaConverter.create())
-            .setCropEngine(UCropEngine())
+            .setCropEngine(if (isUCrop) UCropEngine() else null)
             .setFilterMaxFileSize(maxFileSize)
+            .setFilterMinFileSize(0)
             .setInjectorClasses(injectorClasses)
-
             .forResult(object : OnResultCallbackListener {
                 override fun onResult(result: List<LocalMedia>) {
                     listener.invoke(result)
@@ -95,7 +96,7 @@ class PictureSelectorUtils(
             })
     }
 
-    fun createPicturePreview(position: Int = 0, strings: MutableList<String>) {
+    fun createPictureUrlPreview(position: Int = 0, strings: MutableList<String>) {
         val preview = PictureSelector.create(context).openPreview()
         preview.setStatusBarStyle(StatusBarStyle().apply {
             of(
@@ -105,5 +106,17 @@ class PictureSelectorUtils(
             )
         })
         preview.forPreviewUrl(position, strings, true)
+    }
+
+    fun createPicturePreview(position: Int = 0, strings: MutableList<LocalMedia>) {
+        val preview = PictureSelector.create(context).openPreview()
+        preview.setStatusBarStyle(StatusBarStyle().apply {
+            of(
+                false,
+                context.getColorByAttr(com.tmmtmm.im.style.R.attr.bg_3),
+                context.getColorByAttr(com.tmmtmm.im.style.R.attr.bg_3)
+            )
+        })
+        preview.forPreview(position, strings, true)
     }
 }

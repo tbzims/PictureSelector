@@ -455,6 +455,17 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         )
         previewAdapter?.selectResult = getSelectResult()
         psRvPreview?.adapter = previewAdapter
+        previewAdapter?.setOnItemClickListener(object : OnItemClickListener<LocalMedia> {
+            override fun onItemClick(
+                position: Int,
+                data: LocalMedia
+            ) {
+                if (DoubleUtils.isFastDoubleClick()) {
+                    return
+                }
+                onStartPreview(position, true, getSelectResult())
+            }
+        })
 
         if (config.selectionMode == SelectionMode.ONLY_SINGLE) {
             mBottomNarBar?.visibility = View.GONE
@@ -535,8 +546,6 @@ open class SelectorMainFragment : BaseSelectorFragment() {
 
         if (selectResult.isNotEmpty()) {
             mTvComplete?.text = getString(sR.string.d_Next, selectResult.size)
-//            psRvPreview?.layoutAnimation = AnimationUtils
-//                .loadLayoutAnimation(requireContext(), R.anim.ps_anim_layout_fall_enter)
         } else {
             mTvComplete?.text = getString(sR.string.d_Next, 0)
         }
@@ -851,9 +860,10 @@ open class SelectorMainFragment : BaseSelectorFragment() {
 
     override fun onResume() {
         super.onResume()
-        if (!isFirstVisit) {
+        if (!isFirstVisit && !isStartCamera) {
             checkPermissionsToUpdateUI()
         } else {
+            isStartCamera = false
             isFirstVisit = false
         }
     }

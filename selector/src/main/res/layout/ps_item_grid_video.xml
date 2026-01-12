@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.luck.picture.library.widget.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:theme="@style/AppTheme1">
 
     <ImageView
         android:id="@+id/iv_cover"
@@ -22,16 +24,20 @@
 
     <com.luck.picture.library.widget.MediumBoldTextView
         android:id="@+id/tv_duration"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_20"
+        android:paddingStart="@dimen/dp_8"
+        android:paddingEnd="@dimen/dp_8"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/ps_ic_shadow_bg"
-        android:drawableLeft="@drawable/ps_ic_video"
+        android:background="@drawable/tv_video_duration_bg"
+
+        android:layout_marginEnd="@dimen/dp_6"
+        android:layout_marginBottom="@dimen/dp_6"
+        android:layout_alignParentEnd="true"
         android:drawablePadding="5dp"
         android:gravity="center_vertical"
-        android:paddingLeft="5dp"
         android:text="00:00"
-        android:textColor="@color/ps_color_white"
-        android:textSize="11sp" />
+        android:textColor="?attr/white_100"
+        android:textSize="@dimen/sp_13" />
 
 </com.luck.picture.library.widget.SquareRelativeLayout>
