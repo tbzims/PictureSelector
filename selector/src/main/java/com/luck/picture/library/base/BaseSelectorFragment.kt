@@ -651,12 +651,35 @@ abstract class BaseSelectorFragment : Fragment() {
         val menuFragment = BottomSheetMenuFragment()
         menuFragment.setupMenuItems(menuItems.toList())
         menuFragment.setOnMenuItemClickListener { position ->
+            val count = getSelectResult().size
             when (menuItems[position]) {
                 getString(sR.string.picture_shot_item) -> {
+                    if (count >= config.totalCount) {
+                        ToastX.with(requireActivity())
+                            .text(
+                                getString(
+                                    sR.string.select_photos_max,
+                                    config.totalCount
+                                )
+                            )
+                            .show()
+                        return@setOnMenuItemClickListener
+                    }
                     startCameraAction(MediaType.IMAGE)
                 }
 
                 getString(sR.string.picture_record_item) -> {
+                    if(count >= config.maxVideoSelectNum){
+                        ToastX.with(requireActivity())
+                            .text(
+                                getString(
+                                    sR.string.select_video_max,
+                                    config.maxVideoSelectNum
+                                )
+                            )
+                            .show()
+                        return@setOnMenuItemClickListener
+                    }
                     startCameraAction(MediaType.VIDEO)
                 }
             }
@@ -1214,56 +1237,6 @@ abstract class BaseSelectorFragment : Fragment() {
         }
     }
 
-    /**
-     * Get navigation bar height for Android 16+
-     */
-    open fun getNavigationBarHeight(): Int {
-        var navigationBarHeight = 0
-        val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-        if (resourceId > 0) {
-            navigationBarHeight = resources.getDimensionPixelSize(resourceId)
-        }
-        return navigationBarHeight
-    }
-
-    /**
-     * Check if navigation bar is present and visible
-     */
-    open fun hasNavigationBar(): Boolean {
-        val resources = resources
-        val id = resources.getIdentifier("config_showNavigationBar", "bool", "android")
-        return if (id > 0) {
-            resources.getBoolean(id)
-        } else {
-            // Check if the device has a navigation bar by checking the difference between real screen size and usable screen size
-            val display = requireActivity().windowManager.defaultDisplay
-            val realMetrics = android.util.DisplayMetrics()
-            display.getRealMetrics(realMetrics)
-
-            val metrics = android.util.DisplayMetrics()
-            display.getMetrics(metrics)
-
-            realMetrics.heightPixels != metrics.heightPixels || realMetrics.widthPixels != metrics.widthPixels
-        }
-    }
-
-    /**
-     * Apply navigation bar height as padding to the view
-     */
-    open fun applyNavigationBarAdaptation(view: View?) {
-        view?.let {
-            val navigationBarHeight = getNavigationBarSafeHeight()
-            if (navigationBarHeight > 0) {
-                it.setPadding(
-                    it.paddingLeft,
-                    it.paddingTop,
-                    it.paddingRight,
-                    it.paddingBottom + navigationBarHeight
-                )
-            }
-        }
-    }
-
     open fun applySafeAreaInsets(view: View) {
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -1284,39 +1257,5 @@ abstract class BaseSelectorFragment : Fragment() {
             }
             insets
         }
-    }
-
-    fun getNavigationBarSafeHeight(): Int {
-        var safeHeight = 0
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            val windowInsets = activity?.window?.decorView?.rootWindowInsets
-            if (windowInsets != null) {
-                val displayCutout = windowInsets.displayCutout
-                if (displayCutout != null) {
-                    // 获取底部安全距离
-                    safeHeight = displayCutout.safeInsetBottom
-                }
-            }
-            // 如果通过 DisplayCutout 获取不到，尝试直接获取系统栏的 insets
-            if (safeHeight == 0) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    // Android 11+ 使用新的 WindowInsets API
-                    val insets = ViewCompat.getRootWindowInsets(requireView())
-                    if (insets != null) {
-                        val systemBarsInsets =
-                            insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-                        safeHeight = systemBarsInsets.bottom
-                    }
-                } else {
-                    // Android 9-10 的备用方法
-                    val resourceId =
-                        resources.getIdentifier("navigation_bar_height", "dimen", "android")
-                    if (resourceId > 0) {
-                        safeHeight = resources.getDimensionPixelSize(resourceId)
-                    }
-                }
-            }
-        }
-        return safeHeight
     }
 }
