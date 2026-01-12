@@ -38,7 +38,6 @@ import com.luck.picture.library.config.SelectionMode
 import com.luck.picture.library.constant.CropWrap
 import com.luck.picture.library.constant.SelectedState
 import com.luck.picture.library.constant.SelectorConstant
-import com.luck.picture.library.dialog.PhotoItemSelectedDialog
 import com.luck.picture.library.dialog.PictureLoadingDialog
 import com.luck.picture.library.dialog.ReminderDialog
 import com.luck.picture.library.entity.LocalMedia
@@ -46,10 +45,7 @@ import com.luck.picture.library.factory.ClassFactory
 import com.luck.picture.library.helper.ActivityCompatHelper
 import com.luck.picture.library.immersive.ImmersiveManager.translucentStatusBar
 import com.luck.picture.library.interfaces.OnCallbackListener
-import com.luck.picture.library.interfaces.OnItemClickListener
 import com.luck.picture.library.interfaces.OnRecordAudioListener
-import com.luck.picture.library.language.Language
-import com.luck.picture.library.language.PictureLanguageUtils
 import com.luck.picture.library.media.ScanListener
 import com.luck.picture.library.permissions.OnPermissionResultListener
 import com.luck.picture.library.permissions.PermissionChecker
@@ -66,6 +62,8 @@ import com.luck.picture.library.utils.MediaUtils
 import com.luck.picture.library.utils.SpUtils
 import com.luck.picture.library.viewmodel.GlobalViewModel
 import com.luck.picture.library.viewmodel.SelectorViewModel
+import com.tmmtmm.im.style.R as sR
+import com.tmmtmm.im.style.widget.BottomSheetMenuFragment
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import java.io.File
@@ -613,26 +611,38 @@ abstract class BaseSelectorFragment : Fragment() {
      * [MediaType.ALL] mode, select one option for taking photos and recording videos, pop up the box
      */
     open fun onSelectedOnlyCameraDialog() {
-        val selectedDialog = PhotoItemSelectedDialog.newInstance()
-        selectedDialog.setOnItemClickListener(object : OnItemClickListener<View> {
-            override fun onItemClick(position: Int, data: View) {
-                when (position) {
-                    PhotoItemSelectedDialog.IMAGE_CAMERA -> {
-                        startCameraAction(MediaType.IMAGE)
-                    }
-
-                    PhotoItemSelectedDialog.VIDEO_CAMERA -> {
-                        startCameraAction(MediaType.VIDEO)
-                    }
-                }
-            }
-        })
-        selectedDialog.setOnDismissListener { isCancel, _ ->
-            if (config.isOnlyCamera && isCancel) {
-                onBackPressed()
+        val menuItems = mutableListOf<String>()
+        menuItems.add(getString(sR.string.picture_shot_item))
+        menuItems.add(getString(sR.string.picture_record_item))
+        val menuFragment = BottomSheetMenuFragment()
+        menuFragment.setupMenuItems(menuItems.toList())
+        menuFragment.setOnMenuItemClickListener { position ->
+            when (menuItems[position]) {
+                getString(sR.string.picture_shot_item) -> startCameraAction(MediaType.IMAGE)
+                getString(sR.string.picture_record_item) -> startCameraAction(MediaType.VIDEO)
             }
         }
-        selectedDialog.show(childFragmentManager, "PhotoItemSelectedDialog")
+        menuFragment.show(childFragmentManager, "PhotoItemSelectedDialog")
+//        val selectedDialog = PhotoItemSelectedDialog.newInstance()
+//        selectedDialog.setOnItemClickListener(object : OnItemClickListener<View> {
+//            override fun onItemClick(position: Int, data: View) {
+//                when (position) {
+//                    PhotoItemSelectedDialog.IMAGE_CAMERA -> {
+//                        startCameraAction(MediaType.IMAGE)
+//                    }
+//
+//                    PhotoItemSelectedDialog.VIDEO_CAMERA -> {
+//                        startCameraAction(MediaType.VIDEO)
+//                    }
+//                }
+//            }
+//        })
+//        selectedDialog.setOnDismissListener { isCancel, _ ->
+//            if (config.isOnlyCamera && isCancel) {
+//                onBackPressed()
+//            }
+//        }
+//        selectedDialog.show(childFragmentManager, "PhotoItemSelectedDialog")
     }
 
     /**

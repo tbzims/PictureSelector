@@ -50,7 +50,7 @@ class SelectorConfig {
     var isLoopAutoPlay = false
     var isAsTotalCount = false
     var isQuickCapture = false
-    var isDisplayCamera = true
+    var isDisplayCamera = false
     var isNewKeyBackMode = true
     var isActivityResult = false
     var isOnlySandboxDir = false
@@ -124,8 +124,8 @@ class SelectorConfig {
         this.isDisplayTimeAxis = true
         this.isFastSlidingSelect = true
         this.isQuickCapture = false
-        this.isDisplayCamera = true
-        this.isNewKeyBackMode = true;
+        this.isDisplayCamera = false
+        this.isNewKeyBackMode = true
         this.isLoopAutoPlay = false
         this.systemGallery = false
         this.isAutoPlay = false

@@ -19,10 +19,10 @@ open class CameraViewHolder(itemView: View) : BaseListViewHolder(itemView) {
                 mItemClickListener?.openCamera()
             }
         }
-        if (config.mediaType == MediaType.AUDIO) {
-            tvCamera.text = itemView.context.getString(R.string.ps_tape)
-        } else {
-            tvCamera.text = itemView.context.getString(R.string.ps_take_picture)
-        }
+//        if (config.mediaType == MediaType.AUDIO) {
+//            tvCamera.text = itemView.context.getString(R.string.ps_tape)
+//        } else {
+//            tvCamera.text = itemView.context.getString(R.string.ps_take_picture)
+//        }
     }
 }

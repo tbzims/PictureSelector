@@ -58,6 +58,22 @@ class GlideEngine : ImageEngine {
             .into(imageView)
     }
 
+    override fun loadRoundImage(
+        context: Context,
+        url: String?,
+        imageView: ImageView,
+        round: Int
+    ) {
+        if (!ActivityCompatHelper.assertValidRequest(context)) {
+            return
+        }
+        Glide.with(context).load(url)
+            .transform(CenterCrop(), RoundedCorners(round))
+            .placeholder(R.drawable.ps_image_placeholder)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .into(imageView)
+    }
+
     override fun pauseRequests(context: Context) {
         if (!ActivityCompatHelper.assertValidRequest(context)) {
             return

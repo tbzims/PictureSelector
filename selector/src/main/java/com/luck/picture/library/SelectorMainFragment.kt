@@ -15,19 +15,24 @@ import android.os.VibrationEffect.DEFAULT_AMPLITUDE
 import android.text.TextUtils
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.luck.picture.library.SelectorNumberPreviewFragment.GalleryAdapter
 import com.luck.picture.library.adapter.MediaListAdapter
 import com.luck.picture.library.adapter.MediaListNewAdapter
+import com.luck.picture.library.adapter.PreviewAdapter
 import com.luck.picture.library.adapter.base.BaseMediaListAdapter
 import com.luck.picture.library.base.BaseSelectorFragment
 import com.luck.picture.library.config.LayoutSource
@@ -96,6 +101,8 @@ open class SelectorMainFragment : BaseSelectorFragment() {
     var tvNoPermission: TextView? = null
     var btnManage: Button? = null
     var psTopExpandBar: FrameLayout? = null
+    var psRvPreview: RecyclerView? = null
+    var psBottomPreviewBar: ConstraintLayout? = null
 
     /**
      * BottomNarBar
@@ -104,7 +111,6 @@ open class SelectorMainFragment : BaseSelectorFragment() {
     var mTvPreview: StyleTextView? = null
     var mTvOriginal: TextView? = null
     var mTvComplete: StyleTextView? = null
-    var mTvSelectNum: TextView? = null
 
     private val anyLock = Any()
 
@@ -116,6 +122,10 @@ open class SelectorMainFragment : BaseSelectorFragment() {
     private var intervalClickTime: Long = 0
 
     private var mDragSelectTouchListener: SlideSelectTouchListener? = null
+
+    private var isFirstVisit = true
+
+    private var previewAdapter: PreviewAdapter? = null
 
     open fun getCurrentAlbum(): LocalMediaAlbum {
         return TempDataProvider.getInstance().currentMediaAlbum
@@ -158,12 +168,13 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         btnManage = view.findViewById(R.id.btnManage)
         psTopExpandBar = view.findViewById(R.id.ps_top_expand_bar)
         tvNoPermission = view.findViewById(R.id.tv_no_permission)
+        psRvPreview = view.findViewById(R.id.ps_rv_preview)
+        psBottomPreviewBar = view.findViewById(R.id.ps_bottom_preview_bar)
         // BottomNarBar
         mBottomNarBar = view.findViewById(R.id.ps_bottom_nar_bar)
         mTvPreview = view.findViewById(R.id.ps_tv_preview)
         mTvOriginal = view.findViewById(R.id.ps_tv_original)
         mTvComplete = view.findViewById(R.id.ps_tv_complete)
-        mTvSelectNum = view.findViewById(R.id.ps_tv_select_num)
         mBottomNarBar?.let {
             applySafeAreaInsets(it)
         }
@@ -244,11 +255,12 @@ open class SelectorMainFragment : BaseSelectorFragment() {
 
         val injectorClasses: ArrayList<Class<out SelectorExpandViewInjector>> =
             config.injectorClasses
-        if (psTopExpandBar != null) {
+        val layout = psTopExpandBar
+        if (layout != null) {
             for (injectorClass: Class<out SelectorExpandViewInjector> in injectorClasses) {
                 try {
                     val injector: SelectorExpandViewInjector = injectorClass.newInstance();
-                    injector.inject(psTopExpandBar) {
+                    injector.inject(layout) {
                         if (DoubleUtils.isFastDoubleClick()) {
                             return@inject
                         }
@@ -425,6 +437,25 @@ open class SelectorMainFragment : BaseSelectorFragment() {
             }
             menuFragment.show(requireActivity().supportFragmentManager, "manage")
         }
+        //PreviewInit
+        val layoutManager = LinearLayoutManager(requireContext())
+        layoutManager.orientation = LinearLayoutManager.HORIZONTAL
+        psRvPreview?.layoutManager = layoutManager
+        if (getSelectResult().isNotEmpty()) {
+            psRvPreview?.layoutAnimation = AnimationUtils
+                .loadLayoutAnimation(requireContext(), R.anim.ps_anim_layout_fall_enter)
+        }
+        psRvPreview?.addItemDecoration(
+            HorizontalItemDecoration(Integer.MAX_VALUE, DensityUtil.dip2px(requireContext(), 8F))
+        )
+        previewAdapter = PreviewAdapter(
+            config,
+            false,
+            getSelectResult()
+        )
+        previewAdapter?.selectResult = getSelectResult()
+        psRvPreview?.adapter = previewAdapter
+
         if (config.selectionMode == SelectionMode.ONLY_SINGLE) {
             mBottomNarBar?.visibility = View.GONE
         } else {
@@ -441,9 +472,6 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                     return@setOnClickListener
                 }
                 onStartPreview(0, true, getSelectResult())
-            }
-            mTvSelectNum?.setOnClickListener {
-                mTvComplete?.performClick()
             }
             mTvComplete?.setOnClickListener {
                 onCompleteClick(it)
@@ -480,13 +508,38 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         return isNotifyAll
     }
 
+    private var isShowPreview = false
     override fun onSelectionResultChange(change: LocalMedia?) {
         val selectResult = getSelectResult()
         mTvPreview?.setDataStyle(config, selectResult)
         mTvComplete?.setDataStyle(config, selectResult)
-        mTvSelectNum?.visibility =
-            if (selectResult.isNotEmpty()) View.VISIBLE else View.GONE
-        mTvSelectNum?.text = selectResult.size.toString()
+        if (config.selectionMode != SelectionMode.ONLY_SINGLE) {
+            if (previewAdapter != null) {
+                if (selectResult.isNotEmpty() && !isShowPreview) {
+                    isShowPreview = true
+                    showPreviewBottomBarWithAnimation()
+                } else if (selectResult.isEmpty() && isShowPreview) {
+                    isShowPreview = false
+                    hidePreviewBottomBarWithAnimation()
+                }
+                previewAdapter?.selectResult = getSelectResult()
+                previewAdapter?.notifyDataSetChanged()
+                if (getSelectResult().contains(change)) {
+                    val lastPosition = previewAdapter?.itemCount ?: (0 - 1)
+                    if (lastPosition >= 0) {
+                        psRvPreview?.smoothScrollToPosition(lastPosition)
+                    }
+                }
+            }
+        }
+
+        if (selectResult.isNotEmpty()) {
+            mTvComplete?.text = getString(sR.string.d_Next, selectResult.size)
+//            psRvPreview?.layoutAnimation = AnimationUtils
+//                .loadLayoutAnimation(requireContext(), R.anim.ps_anim_layout_fall_enter)
+        } else {
+            mTvComplete?.text = getString(sR.string.d_Next, 0)
+        }
 
         var totalSize: Long = 0
         selectResult.forEach { media ->
@@ -499,6 +552,19 @@ open class SelectorMainFragment : BaseSelectorFragment() {
             )
         } else {
             mTvOriginal?.text = getString(R.string.ps_default_original_image)
+        }
+
+        if (!selectResult.contains(change)) {
+            val currentItem = mAdapter.getData().indexOf(change)
+            if (currentItem >= 0) {
+                mAdapter.notifyItemChanged(if (mAdapter.isDisplayCamera()) currentItem + 1 else currentItem)
+            }
+        }
+        selectResult.forEach { media ->
+            val position = mAdapter.getData().indexOf(media)
+            if (position >= 0) {
+                mAdapter.notifyItemChanged(if (mAdapter.isDisplayCamera()) position + 1 else position)
+            }
         }
     }
 
@@ -752,7 +818,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
 
                         override fun onDenied() {
                             handlePermissionDenied(permissionArray)
-
+                            mTvDataEmpty?.visibility = View.VISIBLE
                         }
                     })
             }
@@ -785,18 +851,39 @@ open class SelectorMainFragment : BaseSelectorFragment() {
 
     override fun onResume() {
         super.onResume()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            val hasPartialPermission = ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
-            ) == PackageManager.PERMISSION_GRANTED
-            if (hasPartialPermission) {
-                if (isNeedRestore()) {
-                    restoreMemoryData()
-                } else {
-                    requestData()
+        if (!isFirstVisit) {
+            checkPermissionsToUpdateUI()
+        } else {
+            isFirstVisit = false
+        }
+    }
+
+    private fun checkPermissionsToUpdateUI() {
+        if (PermissionChecker.isCheckReadStorage(requireContext(), config.mediaType)) {
+            groupPermissionView?.visibility = View.GONE
+            if (isNeedRestore()) {
+                restoreMemoryData()
+            } else {
+                requestData()
+            }
+        } else {
+            groupPermissionView?.visibility = View.VISIBLE
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                val hasPartialPermission = ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                ) == PackageManager.PERMISSION_GRANTED
+                if (hasPartialPermission) {
+                    tvNoPermission?.text = getString(sR.string.tmm_can_only_access_a)
+                    if (isNeedRestore()) {
+                        restoreMemoryData()
+                    } else {
+                        requestData()
+                    }
+                    return
                 }
             }
+            tvNoPermission?.text = getString(sR.string.tmmTmm_currently_has_no_album)
         }
     }
 
@@ -1119,6 +1206,149 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         }
     }
 
+    /**
+     * Shows the preview bottom bar with animation
+     * Background slides up from bottom (0.3s, fast first then slow)
+     * Images and button fade in after delay (0.2s, delay 0.1s)
+     */
+    private fun showPreviewBottomBarWithAnimation() {
+        val psBottomPreviewBar = this.psBottomPreviewBar // Preview bottom bar background
+        val psRvPreview = this.psRvPreview // Image list
+        val mTvComplete = this.mTvComplete // Complete button
+        val psRecycler = this.mRecycler // RecyclerView that needs to adjust
+
+        // Animate the RecyclerView to shrink its bottom margin to make space for the preview bar
+        if (psRecycler != null) {
+            val layoutParams = psRecycler.layoutParams as ViewGroup.MarginLayoutParams
+            val originalBottomMargin = layoutParams.bottomMargin
+
+            // Calculate the target bottom margin (current margin + height of bottom bar)
+            val targetBottomMargin =
+                originalBottomMargin + resources.getDimension(sR.dimen.dp_56).toInt()
+
+            // Animate the margin change
+            android.animation.ValueAnimator.ofInt(originalBottomMargin, targetBottomMargin).apply {
+                duration = 300
+                interpolator = android.view.animation.DecelerateInterpolator()
+                addUpdateListener { animator ->
+                    val animatedValue = animator.animatedValue as Int
+                    layoutParams.bottomMargin = animatedValue
+                    psRecycler.layoutParams = layoutParams
+                }
+                start()
+            }
+        }
+        if (psBottomPreviewBar != null) {
+            // Set initial position below screen
+            psBottomPreviewBar.translationY = psBottomPreviewBar.height.toFloat()
+
+            // Background slide up animation (0.3s, decelerate interpolator for fast first then slow effect)
+            psBottomPreviewBar.animate()
+                .withStartAction {
+                    psBottomPreviewBar.visibility = View.VISIBLE
+                }
+                .translationY(0f)
+                .setDuration(300)
+                .setInterpolator(android.view.animation.DecelerateInterpolator())
+                .start()
+        }
+
+
+        // Image list and button fade in after delay (0.2s duration with 0.1s delay)
+        psBottomPreviewBar?.postDelayed({
+            if (psRvPreview != null) {
+                psRvPreview.alpha = 0f
+                psRvPreview.animate()
+                    .withStartAction {
+                        psRvPreview.visibility = View.VISIBLE
+                    }
+                    .alpha(1f)
+                    .setDuration(200)
+                    .start()
+            }
+
+            if (mTvComplete != null) {
+                mTvComplete.alpha = 0f
+                mTvComplete.animate()
+                    .withStartAction {
+                        mTvComplete.visibility = View.VISIBLE
+                    }
+                    .alpha(1f)
+                    .setDuration(200)
+                    .start()
+            }
+        }, 100) // Delay 100 milliseconds
+    }
+
+    /**
+     * Hides the preview bottom bar with reverse animation
+     * Images and button fade out first (0.2s)
+     * Background slides down after delay (0.3s, fast first then slow)
+     */
+    private fun hidePreviewBottomBarWithAnimation() {
+        val psBottomPreviewBar = this.psBottomPreviewBar // Preview bottom bar background
+        val psRvPreview = this.psRvPreview // Image list
+        val mTvComplete = this.mTvComplete // Complete button
+        val psRecycler = this.mRecycler // RecyclerView that needs to adjust
+
+        // Image list and button fade out (0.2s)
+        var fadeOutCount = 0
+        val totalCount = listOf(psRvPreview, mTvComplete).count { it != null }
+
+        psRvPreview?.animate()?.alpha(0f)?.setDuration(200)?.withEndAction {
+            fadeOutCount++
+            if (fadeOutCount == totalCount) {
+                animateHideBottomBarAndExpandRecycler(psBottomPreviewBar, psRecycler)
+            }
+        }?.start()
+
+        mTvComplete?.animate()?.alpha(0f)?.setDuration(200)?.withEndAction {
+            fadeOutCount++
+            if (fadeOutCount == totalCount) {
+                animateHideBottomBarAndExpandRecycler(psBottomPreviewBar, psRecycler)
+            }
+        }?.start()
+
+        // If no views to fade out, start background animation immediately
+        if (totalCount == 0) {
+            animateHideBottomBarAndExpandRecycler(psBottomPreviewBar, psRecycler)
+        }
+    }
+
+    /**
+     * Animates the hiding of bottom bar and expansion of recycler
+     */
+    private fun animateHideBottomBarAndExpandRecycler(
+        psBottomPreviewBar: ConstraintLayout?,
+        psRecycler: RecyclerPreloadView?
+    ) {
+        // Start the background slide down animation after a small delay
+        psBottomPreviewBar?.animate()?.translationY(psBottomPreviewBar.height.toFloat())
+            ?.setDuration(300)?.setInterpolator(android.view.animation.DecelerateInterpolator())
+            ?.withEndAction {
+                psBottomPreviewBar.visibility = View.GONE
+            }?.start()
+
+        // Animate the RecyclerView to expand back to original size
+        if (psRecycler != null) {
+            val layoutParams = psRecycler.layoutParams as ViewGroup.MarginLayoutParams
+            val currentBottomMargin = layoutParams.bottomMargin
+            val targetBottomMargin = 0 // Reset to original (assuming it was 0 initially)
+
+            // Animate the margin change back to original
+            android.animation.ValueAnimator.ofInt(currentBottomMargin, targetBottomMargin).apply {
+                duration = 300
+                interpolator = android.view.animation.DecelerateInterpolator()
+
+                addUpdateListener { animator ->
+                    val animatedValue = animator.animatedValue as Int
+                    layoutParams.bottomMargin = animatedValue
+                    psRecycler.layoutParams = layoutParams
+                }
+                start()
+            }
+        }
+    }
 
     override fun onDestroy() {
         mDragSelectTouchListener?.stopAutoScroll()

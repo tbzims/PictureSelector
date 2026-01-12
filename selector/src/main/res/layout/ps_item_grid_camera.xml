@@ -13,7 +13,7 @@
         android:layout_centerHorizontal="true"
         android:drawableTop="@drawable/ps_ic_camera"
         android:gravity="center"
-        android:text="@string/ps_take_picture"
+        android:text="@string/picture_shot_item"
         android:textColor="@color/ps_color_white"
         android:textSize="14sp" />
 

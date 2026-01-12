@@ -1,6 +1,8 @@
 package com.luck.picture.library.adapter
 
 import android.graphics.ColorFilter
+import android.graphics.Rect
+import android.view.TouchDelegate
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
@@ -10,6 +12,7 @@ import com.luck.picture.library.config.SelectionMode
 import com.luck.picture.library.constant.SelectedState
 import com.luck.picture.library.constant.SelectorConstant
 import com.luck.picture.library.entity.LocalMedia
+import com.luck.picture.library.utils.DensityUtil
 import com.luck.picture.library.utils.MediaUtils
 import com.luck.picture.library.utils.StyleUtils
 import com.luck.picture.library.widget.StyleTextView
@@ -31,6 +34,7 @@ open class ListMediaViewHolder(itemView: View) : BaseListViewHolder(itemView) {
 
 
     open fun bindData(media: LocalMedia, position: Int) {
+        setupTouchDelegate()
         tvSelectView.visibility =
             if (config.selectionMode == SelectionMode.ONLY_SINGLE) View.GONE else View.VISIBLE
 
@@ -175,6 +179,26 @@ open class ListMediaViewHolder(itemView: View) : BaseListViewHolder(itemView) {
                 tvSelectView.isSelected = isSelected
             }
             ivCover.colorFilter = if (isSelected) selectColorFilter else defaultColorFilter
+        }
+    }
+
+    private fun setupTouchDelegate() {
+        val tvSelectView = this.tvSelectView ?: return
+        val parent = tvSelectView.parent as? View ?: return
+
+        tvSelectView.post {
+            val rect = Rect()
+            tvSelectView.getHitRect(rect)
+
+            // 扩展触摸区域，增加可点击范围
+            val extraSpace = DensityUtil.dip2px(tvSelectView.context, 7F) // 定义扩展空间大小（像素）
+            rect.left -= extraSpace
+            rect.top -= extraSpace
+            rect.right += extraSpace
+            rect.bottom += extraSpace
+
+            val touchDelegate = TouchDelegate(rect, tvSelectView)
+            parent.touchDelegate = touchDelegate
         }
     }
 }

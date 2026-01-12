@@ -3,5 +3,5 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:theme="@style/AppTheme1">
     <solid android:color="?attr/brand_1" />
-    <corners android:radius="@dimen/dp_12" />
+    <corners android:radius="@dimen/dp_8" />
 </shape>

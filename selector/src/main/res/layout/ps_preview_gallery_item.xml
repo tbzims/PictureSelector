@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.luck.picture.library.widget.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="60dp"
-    android:layout_height="60dp"
+    android:layout_width="@dimen/dp_40"
+    android:layout_height="@dimen/dp_40"
+    xmlns:tools="http://schemas.android.com/tools"
     android:gravity="center">
 
     <ImageView
@@ -28,7 +29,8 @@
         android:layout_margin="3dp"
         android:scaleType="centerInside"
         android:src="@drawable/ps_ic_video"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <View
         android:id="@+id/view_border"

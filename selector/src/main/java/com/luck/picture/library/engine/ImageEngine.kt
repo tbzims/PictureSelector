@@ -48,6 +48,14 @@ interface ImageEngine {
     fun loadListImage(context: Context, url: String?, imageView: ImageView)
 
     /**
+     * Load round images
+     * @param context
+     * @param url
+     * @param imageView
+     * */
+    fun loadRoundImage(context: Context, url: String?, imageView: ImageView, round: Int)
+
+    /**
      * When the recyclerview slides quickly, the callback can be used to pause the loading of resources
      *
      * @param context
