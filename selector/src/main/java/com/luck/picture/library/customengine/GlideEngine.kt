@@ -9,6 +9,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.luck.picture.library.R
 import com.luck.picture.library.engine.ImageEngine
 import com.luck.picture.library.helper.ActivityCompatHelper
+import com.luck.picture.library.utils.DensityUtil
 
 /**
  * @author：luck
@@ -40,7 +41,7 @@ class GlideEngine : ImageEngine {
         }
         Glide.with(context).load(url)
             .override(180, 180)
-            .transform(CenterCrop(), RoundedCorners(8))
+            .transform(CenterCrop(), RoundedCorners(DensityUtil.dip2px(context, 4f)))
             .placeholder(R.drawable.ps_image_placeholder)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(imageView)

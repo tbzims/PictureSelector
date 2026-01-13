@@ -50,11 +50,14 @@ open class MediaAlbumAdapter(var config: SelectorConfig) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val mediaAlbum = albumList[position]
         holder.itemView.isSelected = mediaAlbum.isSelected
-        holder.tvAlbumName.text = holder.itemView.context.getString(
-            R.string.ps_camera_roll_num,
-            mediaAlbum.bucketDisplayName,
-            mediaAlbum.totalCount
-        )
+//        holder.tvAlbumName.text = holder.itemView.context.getString(
+//            R.string.ps_camera_roll_num,
+//            mediaAlbum.bucketDisplayName,
+//            mediaAlbum.totalCount
+//        )
+        holder.tvAlbumName.text = mediaAlbum.bucketDisplayName
+        holder.tvAlbumCount.text = mediaAlbum.totalCount.toString()
+
         if (MediaUtils.hasMimeTypeOfAudio(mediaAlbum.bucketDisplayMimeType)) {
             holder.ivFirstCover.setImageResource(R.drawable.ps_audio_placeholder)
         } else {
@@ -85,6 +88,7 @@ open class MediaAlbumAdapter(var config: SelectorConfig) :
         var ivFirstCover: ImageView = itemView.findViewById(R.id.ps_iv_first_cover)
         var tvSelectTag: TextView = itemView.findViewById(R.id.ps_tv_select_tag)
         var tvAlbumName: TextView = itemView.findViewById(R.id.ps_tv_album_name)
+        var tvAlbumCount: TextView = itemView.findViewById(R.id.ps_tv_album_count)
     }
 
     private var mItemClickListener: OnItemClickListener<LocalMediaAlbum>? = null

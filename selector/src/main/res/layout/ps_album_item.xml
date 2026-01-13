@@ -4,13 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/ps_item_select_bg"
-    android:padding="6dp">
+    tools:theme="@style/AppTheme1"
+    tools:background="@color/black">
 
     <ImageView
         android:id="@+id/ps_iv_first_cover"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="@dimen/dp_58"
+        android:layout_height="@dimen/dp_58"
+        android:layout_marginTop="@dimen/dp_16"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginBottom="@dimen/dp_16"
         android:layout_centerVertical="true"
         android:scaleType="centerCrop"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -33,12 +36,35 @@
         android:id="@+id/ps_tv_album_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="@dimen/dp_14"
         android:text="@string/ps_camera_roll_num"
-        android:textColor="@color/ps_color_4d"
-        android:textSize="16sp"
+        android:textColor="?attr/white_85"
+        android:textSize="@dimen/sp_15"
+        app:layout_constraintBottom_toTopOf="@+id/ps_tv_album_count"
         app:layout_constraintLeft_toRightOf="@id/ps_iv_first_cover"
         app:layout_constraintTop_toTopOf="@id/ps_iv_first_cover"
         tools:text="Album (999)" />
 
+    <com.luck.picture.library.widget.MediumBoldTextView
+        android:id="@+id/ps_tv_album_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_14"
+        android:text="999"
+        android:textColor="?attr/white_85"
+        android:textSize="@dimen/sp_13"
+        app:layout_constraintBottom_toBottomOf="@+id/ps_iv_first_cover"
+        app:layout_constraintLeft_toRightOf="@id/ps_tv_album_name"
+        app:layout_constraintStart_toEndOf="@+id/ps_iv_first_cover"
+        app:layout_constraintTop_toBottomOf="@+id/ps_tv_album_name" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_0_5"
+        android:background="?attr/white_10"
+        android:layout_marginTop="@dimen/dp_16"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ps_iv_first_cover"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
