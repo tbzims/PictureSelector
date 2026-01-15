@@ -64,6 +64,7 @@ import com.luck.picture.library.utils.SpUtils
 import com.luck.picture.library.viewmodel.GlobalViewModel
 import com.luck.picture.library.viewmodel.SelectorViewModel
 import com.tmmtmm.im.style.dialog.ThemedDialog
+import com.tmmtmm.im.style.utils.getColorByAttr
 import com.tmmtmm.im.style.R as sR
 import com.tmmtmm.im.style.widget.BottomSheetMenuFragment
 import kotlinx.coroutines.launch
@@ -495,6 +496,7 @@ abstract class BaseSelectorFragment : Fragment() {
                                 ThemedDialog.create(requireContext())
                                     .setAutoDismiss(true)
                                     .bindLifecycle(this@BaseSelectorFragment)
+                                    .setConfirmTextColor(requireContext().getColorByAttr(sR.attr.brand_2))
                                     .setConfirmClickListener {
                                         it.dismiss()
                                         PermissionUtil.goIntentSetting(
@@ -655,29 +657,25 @@ abstract class BaseSelectorFragment : Fragment() {
             when (menuItems[position]) {
                 getString(sR.string.picture_shot_item) -> {
                     if (count >= config.totalCount) {
-                        ToastX.with(requireActivity())
-                            .text(
-                                getString(
-                                    sR.string.select_photos_max,
-                                    config.totalCount
-                                )
+                        ToastX.show(
+                            requireActivity(), getString(
+                                sR.string.select_photos_max,
+                                config.totalCount
                             )
-                            .show()
+                        )
                         return@setOnMenuItemClickListener
                     }
                     startCameraAction(MediaType.IMAGE)
                 }
 
                 getString(sR.string.picture_record_item) -> {
-                    if(count >= config.maxVideoSelectNum){
-                        ToastX.with(requireActivity())
-                            .text(
-                                getString(
-                                    sR.string.select_video_max,
-                                    config.maxVideoSelectNum
-                                )
+                    if (count >= config.maxVideoSelectNum) {
+                        ToastX.show(
+                            requireActivity(), getString(
+                                sR.string.select_video_max,
+                                config.maxVideoSelectNum.toString()
                             )
-                            .show()
+                        )
                         return@setOnMenuItemClickListener
                     }
                     startCameraAction(MediaType.VIDEO)
@@ -789,14 +787,12 @@ abstract class BaseSelectorFragment : Fragment() {
                         if (MediaUtils.hasMimeTypeOfVideo(media.mimeType)) {
                             // If the selected video exceeds the [config.maxVideoSelectNum] limit
                             if (videoSize >= config.maxVideoSelectNum) {
-                                ToastX.with(requireActivity())
-                                    .text(
-                                        getString(
-                                            sR.string.select_video_max,
-                                            config.maxVideoSelectNum
-                                        )
+                                ToastX.show(
+                                    requireActivity(), getString(
+                                        sR.string.select_video_max,
+                                        config.maxVideoSelectNum.toString()
                                     )
-                                    .show()
+                                )
 //                                showTipsDialog(
 //                                    getString(
 //                                        R.string.ps_message_video_max_num,
@@ -810,14 +806,12 @@ abstract class BaseSelectorFragment : Fragment() {
                         if (MediaUtils.hasMimeTypeOfVideo(media.mimeType)) {
                             // If the selected video exceeds the [config.maxVideoSelectNum] limit
                             if (videoSize >= config.maxVideoSelectNum) {
-                                ToastX.with(requireActivity())
-                                    .text(
-                                        getString(
-                                            sR.string.select_video_max,
-                                            config.maxVideoSelectNum
-                                        )
+                                ToastX.show(
+                                    requireActivity(), getString(
+                                        sR.string.select_video_max,
+                                        config.maxVideoSelectNum.toString()
                                     )
-                                    .show()
+                                )
 //                                showTipsDialog(
 //                                    getString(
 //                                        R.string.ps_message_video_max_num,
@@ -885,14 +879,10 @@ abstract class BaseSelectorFragment : Fragment() {
                                 return SelectedState.INVALID
                             }
                             if (count >= config.maxVideoSelectNum) {
-                                ToastX.with(requireActivity())
-                                    .text(
-                                        getString(
-                                            sR.string.select_video_max,
-                                            config.maxVideoSelectNum
-                                        )
-                                    )
-                                    .show()
+                                ToastX.show(requireActivity(),getString(
+                                    sR.string.select_video_max,
+                                    config.maxVideoSelectNum.toString()
+                                ))
 //                                showTipsDialog(
 //                                    getString(
 //                                        R.string.ps_message_video_max_num,
@@ -928,14 +918,12 @@ abstract class BaseSelectorFragment : Fragment() {
 
             MediaType.VIDEO -> {
                 if (count >= config.totalCount) {
-                    ToastX.with(requireActivity())
-                        .text(
-                            getString(
-                                sR.string.select_video_max,
-                                config.maxVideoSelectNum
-                            )
+                    ToastX.show(
+                        requireActivity(), getString(
+                            sR.string.select_video_max,
+                            config.maxVideoSelectNum.toString()
                         )
-                        .show()
+                    )
 //                    showTipsDialog(
 //                        getString(
 //                            R.string.ps_message_video_max_num,

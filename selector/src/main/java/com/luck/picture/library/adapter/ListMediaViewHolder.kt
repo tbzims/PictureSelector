@@ -82,6 +82,14 @@ open class ListMediaViewHolder(itemView: View) : BaseListViewHolder(itemView) {
                         )
                     )
                 }
+//                if(resultCode == SelectedState.REMOVE){
+//                    tvSelectView.startAnimation(
+//                        AnimationUtils.loadAnimation(
+//                            it.context,
+//                            R.anim.item_scale_in
+//                        )
+//                    )
+//                }
             }
 
 //            if (config.mListenerInfo.onCustomAnimationListener?.onClickItemAnimation(

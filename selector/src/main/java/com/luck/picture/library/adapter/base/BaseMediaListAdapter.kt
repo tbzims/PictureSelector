@@ -75,6 +75,19 @@ abstract class BaseMediaListAdapter :
         }
     }
 
+    override fun onBindViewHolder(holder: BaseListViewHolder, position: Int, payloads: List<Any?>) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
+        } else {
+            if (getItemViewType(position) == MediaAdapterType.TYPE_CAMERA) {
+                (holder as CameraViewHolder).bindData(position)
+            } else {
+                val adapterPosition = if (isDisplayCamera) position - 1 else position
+                bindData(holder as ListMediaViewHolder, mData[adapterPosition], adapterPosition)
+            }
+        }
+    }
+
     open fun bindData(holder: ListMediaViewHolder, media: LocalMedia, position: Int) {
         holder.bindData(mData[position], position)
     }
