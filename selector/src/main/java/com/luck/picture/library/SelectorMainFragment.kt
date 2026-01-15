@@ -280,7 +280,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                     openSelectedCamera()
                 }
 
-                override fun finish() = onKeyBackAction()
+                override fun finish() =  requireActivity().finish()
 
             }
 
