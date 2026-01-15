@@ -6,6 +6,8 @@ import android.view.TouchDelegate
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import com.luck.picture.library.R
 import com.luck.picture.library.adapter.base.BaseListViewHolder
 import com.luck.picture.library.config.SelectionMode
@@ -15,8 +17,8 @@ import com.luck.picture.library.entity.LocalMedia
 import com.luck.picture.library.utils.DensityUtil
 import com.luck.picture.library.utils.MediaUtils
 import com.luck.picture.library.utils.StyleUtils
-import com.luck.picture.library.utils.ToastUtils
 import com.luck.picture.library.widget.StyleTextView
+import com.tmmtmm.im.style.utils.getColorByAttr
 import com.tmmtmm.im.style.R as sR
 
 /**
@@ -28,12 +30,14 @@ open class ListMediaViewHolder(itemView: View) : BaseListViewHolder(itemView) {
     var tvSelectView: StyleTextView = itemView.findViewById(R.id.ps_tv_check)
     var ivCover: ImageView = itemView.findViewById(R.id.iv_cover)
     var defaultColorFilter: ColorFilter =
-        StyleUtils.getColorFilter(itemView.context, R.color.ps_color_20)!!
-    var selectColorFilter: ColorFilter =
-        StyleUtils.getColorFilter(itemView.context, R.color.ps_color_80)!!
-    var maskWhiteColorFilter: ColorFilter =
-        StyleUtils.getColorFilter(itemView.context, R.color.ps_color_half_white)!!
+        StyleUtils.getColorFilter(itemView.context, sR.color.transparent)!!
 
+    //    var selectColorFilter: ColorFilter =
+//        StyleUtils.getColorFilter(itemView.context, R.color.ps_color_80)!!
+    var maskWhiteColorFilter: ColorFilter =
+        BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+            itemView.context.getColorByAttr(sR.attr.black_50), BlendModeCompat.SRC_ATOP
+        )!!
 
     open fun bindData(media: LocalMedia, position: Int) {
         setupTouchDelegate()
@@ -74,7 +78,7 @@ open class ListMediaViewHolder(itemView: View) : BaseListViewHolder(itemView) {
                     tvSelectView.startAnimation(
                         AnimationUtils.loadAnimation(
                             it.context,
-                            R.anim.ps_anim_modal_in
+                            R.anim.item_scale_in
                         )
                     )
                 }
@@ -113,12 +117,15 @@ open class ListMediaViewHolder(itemView: View) : BaseListViewHolder(itemView) {
                 MediaUtils.hasMimeTypeOfImage(media.mimeType) -> {
                     config.isEnablePreviewImage
                 }
+
                 MediaUtils.hasMimeTypeOfVideo(media.mimeType) -> {
                     config.isEnablePreviewVideo
                 }
+
                 MediaUtils.hasMimeTypeOfAudio(media.mimeType) -> {
                     config.isEnablePreviewAudio
                 }
+
                 else -> {
                     false
                 }
@@ -127,12 +134,14 @@ open class ListMediaViewHolder(itemView: View) : BaseListViewHolder(itemView) {
                 isPreview -> {
                     mItemClickListener?.onItemClick(tvSelectView, position, media)
                 }
+
                 config.selectionMode == SelectionMode.ONLY_SINGLE -> {
                     mItemClickListener?.onComplete(
                         tvSelectView.isSelected, position,
                         media
                     )
                 }
+
                 else -> {
                     tvSelectView.performClick()
                 }
@@ -180,7 +189,8 @@ open class ListMediaViewHolder(itemView: View) : BaseListViewHolder(itemView) {
             if (tvSelectView.isSelected != isSelected) {
                 tvSelectView.isSelected = isSelected
             }
-            ivCover.colorFilter = if (isSelected) selectColorFilter else defaultColorFilter
+//            ivCover.colorFilter = if (isSelected) selectColorFilter else defaultColorFilter
+            ivCover.colorFilter = defaultColorFilter
         }
     }
 
