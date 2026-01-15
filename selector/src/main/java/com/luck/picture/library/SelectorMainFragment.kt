@@ -1,17 +1,16 @@
 package com.luck.picture.library
 
 import android.Manifest
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.Manifest.permission.READ_MEDIA_IMAGES
-import android.Manifest.permission.READ_MEDIA_VIDEO
-import android.Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
 import android.annotation.SuppressLint
 import android.app.Service
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Looper
+import android.os.SystemClock
+import android.os.VibrationEffect
 import android.os.VibrationEffect.DEFAULT_AMPLITUDE
+import android.os.Vibrator
 import android.text.TextUtils
 import android.view.View
 import android.view.ViewGroup
@@ -21,16 +20,12 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
-import com.luck.picture.library.SelectorNumberPreviewFragment.GalleryAdapter
-import com.luck.picture.library.adapter.MediaListAdapter
 import com.luck.picture.library.adapter.MediaListNewAdapter
 import com.luck.picture.library.adapter.PreviewAdapter
 import com.luck.picture.library.adapter.base.BaseMediaListAdapter
@@ -46,20 +41,40 @@ import com.luck.picture.library.entity.LocalMediaAlbum
 import com.luck.picture.library.entity.PreviewDataWrap
 import com.luck.picture.library.factory.ClassFactory
 import com.luck.picture.library.helper.FragmentInjectManager
-import com.luck.picture.library.interfaces.*
+import com.luck.picture.library.interfaces.OnItemClickListener
+import com.luck.picture.library.interfaces.OnMediaItemClickListener
+import com.luck.picture.library.interfaces.OnRecyclerViewPreloadMoreListener
+import com.luck.picture.library.interfaces.OnRecyclerViewScrollListener
+import com.luck.picture.library.interfaces.OnRecyclerViewScrollStateListener
+import com.luck.picture.library.interfaces.OnRequestPermissionListener
+import com.luck.picture.library.interfaces.SelectorExpandViewInjector
+import com.luck.picture.library.interfaces.ViewInjectorController
 import com.luck.picture.library.magical.RecycleItemViewParams
 import com.luck.picture.library.permissions.OnPermissionResultListener
 import com.luck.picture.library.permissions.PermissionChecker
 import com.luck.picture.library.permissions.PermissionUtil
 import com.luck.picture.library.provider.TempDataProvider
-import com.luck.picture.library.utils.*
+import com.luck.picture.library.utils.AnimUtils
+import com.luck.picture.library.utils.DateUtils
+import com.luck.picture.library.utils.DensityUtil
 import com.luck.picture.library.utils.DensityUtil.getStatusBarHeight
+import com.luck.picture.library.utils.DoubleUtils
 import com.luck.picture.library.utils.FileUtils
-import com.luck.picture.library.widget.*
-import com.tmmtmm.im.style.R as sR
+import com.luck.picture.library.utils.MediaUtils
+import com.luck.picture.library.utils.SdkVersionUtils
+import com.luck.picture.library.utils.SelectorLogUtils
+import com.luck.picture.library.utils.ToastUtils
+import com.luck.picture.library.widget.GridSpacingItemDecoration
+import com.luck.picture.library.widget.HorizontalItemDecoration
+import com.luck.picture.library.widget.RecyclerPreloadView
+import com.luck.picture.library.widget.SlideSelectTouchListener
+import com.luck.picture.library.widget.SlideSelectionHandler
+import com.luck.picture.library.widget.StyleTextView
+import com.luck.picture.library.widget.WrapContentGridLayoutManager
 import com.tmmtmm.im.style.widget.BottomSheetMenuFragment
 import kotlinx.coroutines.launch
 import java.io.File
+import com.tmmtmm.im.style.R as sR
 
 /**
  * @author：luck
@@ -257,15 +272,22 @@ open class SelectorMainFragment : BaseSelectorFragment() {
             config.injectorClasses
         val layout = psTopExpandBar
         if (layout != null) {
+            val controller = object : ViewInjectorController {
+                override fun takePhoto() {
+                    if (DoubleUtils.isFastDoubleClick()) {
+                        return
+                    }
+                    openSelectedCamera()
+                }
+
+                override fun finish() = onKeyBackAction()
+
+            }
+
             for (injectorClass: Class<out SelectorExpandViewInjector> in injectorClasses) {
                 try {
-                    val injector: SelectorExpandViewInjector = injectorClass.newInstance();
-                    injector.inject(layout) {
-                        if (DoubleUtils.isFastDoubleClick()) {
-                            return@inject
-                        }
-                        openSelectedCamera()
-                    }
+                    val injector = injectorClass.getConstructor().newInstance()
+                    injector.inject(layout, controller)
                 } catch (e: ReflectiveOperationException) {
                     throw RuntimeException(e)
                 }
