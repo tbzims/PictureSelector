@@ -1,18 +1,14 @@
 package com.luck.picture.library.utils
 
 import android.content.Context
-import android.content.Intent
-import android.graphics.Color
-import androidx.activity.result.ActivityResultLauncher
+import android.util.SizeF
 import com.luck.picture.library.R
 import com.luck.picture.library.config.MediaType
 import com.luck.picture.library.config.SelectionMode
-import com.luck.picture.library.constant.SelectorConstant
 import com.luck.picture.library.customengine.CustomPreviewExoVideoHolder
 import com.luck.picture.library.customengine.MediaConverter
 import com.luck.picture.library.customengine.UCropEngine
 import com.luck.picture.library.entity.LocalMedia
-import com.luck.picture.library.interfaces.OnExternalPreviewListener
 import com.luck.picture.library.interfaces.OnResultCallbackListener
 import com.luck.picture.library.interfaces.SelectorExpandViewInjector
 import com.luck.picture.library.model.PictureSelector
@@ -31,6 +27,7 @@ class PictureSelectorUtils(
     val isGif: Boolean = false,
     val isWebp: Boolean = false,
     val isUCrop: Boolean = false,
+    val uCropRatio: SizeF = SizeF(-1f, -1f),
     val maxFileSize: Long = ALBUM_MAX_SIZE,
     val injectorClasses: List<Class<out SelectorExpandViewInjector>> = emptyList(),
     val showCamera: Boolean = false,
@@ -38,14 +35,21 @@ class PictureSelectorUtils(
 ) {
 
 
-    fun createOnlyCamera(listener: OnResultCallbackListener) {
+    fun createOnlyCamera(listener: (List<LocalMedia>) -> Unit) {
         return PictureSelector.create(context)
             .openCamera(mediaType)
             .setAllOfCameraMode(mediaType)
             .isCameraForegroundService(true)
             .setMediaConverterEngine(MediaConverter.Companion.create())
-            .setCropEngine(UCropEngine())
-            .forResult(listener)
+            .setCropEngine(if (isUCrop) UCropEngine(uCropRatio) else null)
+            .forResult(object : OnResultCallbackListener {
+                override fun onResult(result: List<LocalMedia>) {
+                    listener(result)
+                }
+
+                override fun onCancel() = Unit
+
+            })
     }
 
     fun createPictureSelector(listener: (List<LocalMedia>) -> Unit) {
@@ -82,7 +86,7 @@ class PictureSelectorUtils(
             .isWebp(isWebp)
             .isAllWithImageVideo(isAllWithImageVideo)
             .setMediaConverterEngine(MediaConverter.create())
-            .setCropEngine(if (isUCrop) UCropEngine() else null)
+            .setCropEngine(if (isUCrop) UCropEngine(uCropRatio) else null)
             .setFilterMaxFileSize(maxFileSize)
             .setFilterMinFileSize(0)
             .setInjectorClasses(injectorClasses)

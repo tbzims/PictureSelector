@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.util.SizeF
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
@@ -22,7 +23,9 @@ import java.io.File
  * @date：2022-5-24 22:30
  * @describe：图片裁剪
  */
-class UCropEngine : CropEngine {
+class UCropEngine(
+    private val uCropRatio: SizeF = SizeF(-1f, -1f)
+) : CropEngine {
 
     override fun onCrop(fragment: Fragment, dataSource: MutableList<LocalMedia>, requestCode: Int) {
         val first = dataSource.first()
@@ -80,6 +83,7 @@ class UCropEngine : CropEngine {
                     })
             }
         })
-        uCrop.start(fragment.requireContext(), fragment, requestCode)
+        uCrop.withAspectRatio(uCropRatio.width, uCropRatio.height)
+            .start(fragment.requireContext(), fragment, requestCode)
     }
 }
