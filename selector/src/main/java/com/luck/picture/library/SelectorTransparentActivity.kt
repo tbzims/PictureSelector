@@ -2,6 +2,7 @@ package com.luck.picture.library
 
 import android.os.Bundle
 import android.view.Gravity
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.luck.picture.library.factory.ClassFactory
 import com.luck.picture.library.helper.FragmentInjectManager
@@ -19,7 +20,8 @@ class SelectorTransparentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(TmmThemeContext.themeResId)
         super.onCreate(savedInstanceState)
-        immersive()
+        enableEdgeToEdge()
+//        immersive()
         setActivitySize()
         setContentView(R.layout.ps_empty)
         val registry = config.registry
@@ -47,6 +49,7 @@ class SelectorTransparentActivity : AppCompatActivity() {
     }
 
     private fun immersive() {
+
         ImmersiveManager.immersiveAboveAPI23(
             this,
             config.statusBarStyle.getStatusBarColor(),

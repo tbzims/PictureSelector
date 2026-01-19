@@ -41,11 +41,16 @@ import com.luck.picture.library.magical.MagicalView
 import com.luck.picture.library.magical.OnMagicalViewListener
 import com.luck.picture.library.magical.RecycleItemViewParams
 import com.luck.picture.library.provider.TempDataProvider
-import com.luck.picture.library.utils.*
+import com.luck.picture.library.utils.DensityUtil
+import com.luck.picture.library.utils.FileUtils
+import com.luck.picture.library.utils.MediaUtils
+import com.luck.picture.library.utils.SdkVersionUtils
+import com.luck.picture.library.utils.SelectorLogUtils
 import com.luck.picture.library.widget.StyleTextView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.tmmtmm.im.style.R as sR
 
 /**
  * @author：luck
@@ -76,8 +81,8 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
     var mTvEditor: TextView? = null
     var mTvOriginal: TextView? = null
     var mTvSelected: TextView? = null
+
     var mTvComplete: StyleTextView? = null
-    var mTvSelectNum: TextView? = null
     var mBottomNarBar: ViewGroup? = null
     var titleViews: MutableList<View> = mutableListOf()
     var navBarViews: MutableList<View> = mutableListOf()
@@ -151,7 +156,6 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
         mTvEditor = view.findViewById(R.id.ps_tv_editor)
         mTvOriginal = view.findViewById(R.id.ps_tv_original)
         mTvComplete = view.findViewById(R.id.ps_tv_complete)
-        mTvSelectNum = view.findViewById(R.id.ps_tv_select_num)
         mBottomNarBar?.let {
             navBarViews.add(it)
         }
@@ -219,9 +223,6 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
             if (config.isOriginalControl) View.VISIBLE else View.GONE
         mTvOriginal?.setOnClickListener { tvOriginal ->
             onOriginalClick(tvOriginal)
-        }
-        mTvSelectNum?.setOnClickListener {
-            mTvComplete?.performClick()
         }
         mTvComplete?.setOnClickListener {
             onCompleteClick(it)
@@ -300,9 +301,13 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
 
     override fun onSelectionResultChange(change: LocalMedia?) {
         mTvComplete?.setDataStyle(config, getSelectResult())
-        mTvSelectNum?.visibility =
-            if (getSelectResult().isNotEmpty()) View.VISIBLE else View.GONE
-        mTvSelectNum?.text = getSelectResult().size.toString()
+
+        if (getSelectResult().isNotEmpty()) {
+            mTvComplete?.text = getString(sR.string.d_Next, getSelectResult().size)
+            mTvComplete?.visibility = View.VISIBLE
+        } else {
+            mTvComplete?.visibility = View.GONE
+        }
 
         var totalSize: Long = 0
         getSelectResult().forEach { media ->

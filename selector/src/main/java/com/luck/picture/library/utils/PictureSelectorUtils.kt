@@ -16,7 +16,7 @@ import com.luck.picture.library.style.StatusBarStyle
 import com.luck.picture.library.style.WindowAnimStyle
 import com.tmmtmm.im.style.utils.getColorByAttr
 
-const val ALBUM_MAX_SIZE = 1 * 1024 * 1024 * 1024L
+const val ALBUM_MAX_SIZE = 200 * 1024 * 1024L
 
 class PictureSelectorUtils(
     val context: Context,
@@ -88,6 +88,7 @@ class PictureSelectorUtils(
             .setMediaConverterEngine(MediaConverter.create())
             .setCropEngine(if (isUCrop) UCropEngine(uCropRatio) else null)
             .setFilterMaxFileSize(maxFileSize)
+            .setFilterVideoMaxSecond(15 * 60)
             .setFilterMinFileSize(0)
             .setInjectorClasses(injectorClasses)
             .forResult(object : OnResultCallbackListener {
@@ -123,4 +124,6 @@ class PictureSelectorUtils(
         })
         preview.forPreview(position, strings, true)
     }
+
+
 }

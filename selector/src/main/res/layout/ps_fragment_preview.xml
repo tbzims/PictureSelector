@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="?attr/bg_3"
     android:layout_height="match_parent"
+    android:background="?attr/bg_3"
     tools:theme="@style/AppTheme1">
 
 
@@ -48,15 +48,15 @@
             android:id="@+id/ps_tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:ellipsize="marquee"
             android:focusable="true"
             android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:includeFontPadding="false"
             android:marqueeRepeatLimit="marquee_forever"
             android:maxEms="6"
             android:scrollHorizontally="true"
             android:singleLine="true"
-            android:includeFontPadding="false"
             android:textColor="@color/ps_color_white"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -67,11 +67,11 @@
 
         <com.luck.picture.library.widget.MediumBoldTextView
             android:id="@+id/ps_tv_selected"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
+            android:layout_marginEnd="20dp"
             android:background="@drawable/ps_checkbox_selector"
             android:gravity="center"
-            android:layout_marginRight="5dp"
             android:textColor="@color/ps_color_white"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -124,41 +124,22 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="visible" />
 
-        <com.luck.picture.library.widget.MediumBoldTextView
-            android:id="@+id/ps_tv_select_num"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:background="@drawable/ps_default_num_oval"
-            android:gravity="center"
-            android:textColor="@color/ps_color_white"
-            android:textSize="11sp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/ps_tv_complete"
-            app:layout_constraintRight_toLeftOf="@+id/ps_tv_complete"
-            app:layout_constraintTop_toTopOf="@+id/ps_tv_complete"
-            tools:text="1"
-            tools:visibility="visible" />
-
         <com.luck.picture.library.widget.StyleTextView
             android:id="@+id/ps_tv_complete"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="3dp"
+            android:layout_height="@dimen/dp_32"
+            android:layout_marginEnd="@dimen/dp_16"
+            android:background="@drawable/btn_complete_bg"
             android:gravity="center"
-            android:paddingRight="15dp"
+            android:paddingHorizontal="@dimen/dp_16"
             android:text="@string/next"
-            android:textColor="@color/ps_color_9b"
-            android:textSize="14sp"
+            android:textColor="?attr/white_100"
+            android:textSize="@dimen/sp_15"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:psNormalText="@string/next"
-            app:psNormalTextColor="@color/ps_color_9b"
-            app:psNormalTextSize="14sp"
-            app:psSelectedText="@string/next"
-            app:psSelectedTextColor="@color/ps_color_fa632d"
-            app:psSelectedTextSize="14sp" />
+            tools:visibility="visible" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
