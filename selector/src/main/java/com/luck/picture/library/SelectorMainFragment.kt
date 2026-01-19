@@ -142,6 +142,8 @@ open class SelectorMainFragment : BaseSelectorFragment() {
 
     private var previewAdapter: PreviewAdapter? = null
 
+    private var isPermissionType = 0//0:none 1:have permission 2:partial permissions 3:No permission
+
     open fun getCurrentAlbum(): LocalMediaAlbum {
         return TempDataProvider.getInstance().currentMediaAlbum
     }
@@ -296,7 +298,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                     openSelectedCamera()
                 }
 
-                override fun finish() =  requireActivity().finish()
+                override fun finish() = requireActivity().finish()
 
             }
 
@@ -819,6 +821,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
 
     open fun checkPermissions() {
         if (PermissionChecker.isCheckReadStorage(requireContext(), config.mediaType)) {
+            isPermissionType = 1
             groupPermissionView?.visibility = View.GONE
             if (isNeedRestore()) {
                 restoreMemoryData()
@@ -826,6 +829,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                 requestData()
             }
         } else {
+            isPermissionType = 3
             groupPermissionView?.visibility = View.VISIBLE
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 val hasPartialPermission = ContextCompat.checkSelfPermission(
@@ -833,6 +837,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                     Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                 ) == PackageManager.PERMISSION_GRANTED
                 if (hasPartialPermission) {
+                    isPermissionType = 2
                     tvNoPermission?.text = getString(sR.string.tmm_can_only_access_a)
                     if (isNeedRestore()) {
                         restoreMemoryData()
@@ -862,6 +867,17 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                         }
 
                         override fun onDenied() {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                val hasPartialPermission = ContextCompat.checkSelfPermission(
+                                    requireContext(),
+                                    Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                                ) == PackageManager.PERMISSION_GRANTED
+                                isPermissionType = if (hasPartialPermission) {
+                                    2
+                                } else {
+                                    3
+                                }
+                            }
                             handlePermissionDenied(permissionArray)
                             mTvDataEmpty?.visibility = View.VISIBLE
                         }
@@ -907,11 +923,6 @@ open class SelectorMainFragment : BaseSelectorFragment() {
     private fun checkPermissionsToUpdateUI() {
         if (PermissionChecker.isCheckReadStorage(requireContext(), config.mediaType)) {
             groupPermissionView?.visibility = View.GONE
-            if (isNeedRestore()) {
-                restoreMemoryData()
-            } else {
-                requestData()
-            }
         } else {
             groupPermissionView?.visibility = View.VISIBLE
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {

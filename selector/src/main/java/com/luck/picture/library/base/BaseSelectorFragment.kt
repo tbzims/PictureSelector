@@ -65,12 +65,12 @@ import com.luck.picture.library.viewmodel.GlobalViewModel
 import com.luck.picture.library.viewmodel.SelectorViewModel
 import com.tmmtmm.im.style.dialog.ThemedDialog
 import com.tmmtmm.im.style.utils.getColorByAttr
-import com.tmmtmm.im.style.R as sR
 import com.tmmtmm.im.style.widget.BottomSheetMenuFragment
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import java.io.File
 import java.io.FileOutputStream
+import com.tmmtmm.im.style.R as sR
 
 /**
  * @author：luck
@@ -458,7 +458,6 @@ abstract class BaseSelectorFragment : Fragment() {
      * Activate camera intent based on [MediaType]
      */
     open fun startCameraAction(mode: MediaType) {
-        isStartCamera = true
         if (mode == MediaType.AUDIO) {
             soundRecording()
         } else {
@@ -551,6 +550,7 @@ abstract class BaseSelectorFragment : Fragment() {
      * System camera takes pictures
      */
     open fun takePictures() {
+        isStartCamera = true
         val context = requireContext()
         val outputDir = config.imageOutputDir
         val defaultFileName = "${FileUtils.createFileName("IMG")}.jpg"
@@ -598,6 +598,7 @@ abstract class BaseSelectorFragment : Fragment() {
      * System camera recording video
      */
     open fun recordVideo() {
+        isStartCamera = true
         val context = requireContext()
         val outputDir = config.videoOutputDir
         val defaultFileName = "${FileUtils.createFileName("VID")}.mp4"
@@ -879,10 +880,12 @@ abstract class BaseSelectorFragment : Fragment() {
                                 return SelectedState.INVALID
                             }
                             if (count >= config.maxVideoSelectNum) {
-                                ToastX.show(requireActivity(),getString(
-                                    sR.string.select_video_max,
-                                    config.maxVideoSelectNum.toString()
-                                ))
+                                ToastX.show(
+                                    requireActivity(), getString(
+                                        sR.string.select_video_max,
+                                        config.maxVideoSelectNum.toString()
+                                    )
+                                )
 //                                showTipsDialog(
 //                                    getString(
 //                                        R.string.ps_message_video_max_num,

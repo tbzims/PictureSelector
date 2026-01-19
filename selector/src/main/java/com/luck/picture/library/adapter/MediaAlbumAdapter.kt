@@ -25,6 +25,7 @@ open class MediaAlbumAdapter(var config: SelectorConfig) :
     private var lastSelectPosition = 0
 
     fun setAlbumList(albumList: MutableList<LocalMediaAlbum>) {
+        this.albumList.clear()
         this.albumList.addAll(albumList)
         this.albumList.forEach { mediaAlbum ->
             this.albumMap[mediaAlbum.bucketId] = mediaAlbum

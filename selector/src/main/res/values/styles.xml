@@ -15,6 +15,7 @@
         <item name="android:windowBackground">@color/ps_color_transparent</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="PictureThemeWindowStyle">

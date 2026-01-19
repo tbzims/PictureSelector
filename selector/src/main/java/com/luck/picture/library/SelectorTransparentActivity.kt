@@ -1,12 +1,14 @@
 package com.luck.picture.library
 
+import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
+import android.view.WindowInsetsController
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.luck.picture.library.factory.ClassFactory
 import com.luck.picture.library.helper.FragmentInjectManager
-import com.luck.picture.library.immersive.ImmersiveManager
 import com.luck.picture.library.provider.SelectorProviders
 import com.tmmtmm.im.style.utils.TmmThemeContext
 
@@ -20,8 +22,7 @@ class SelectorTransparentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(TmmThemeContext.themeResId)
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-//        immersive()
+        immersive()
         setActivitySize()
         setContentView(R.layout.ps_empty)
         val registry = config.registry
@@ -36,10 +37,12 @@ class SelectorTransparentActivity : AppCompatActivity() {
                 }
                 FragmentInjectManager.injectFragment(this, instance.getFragmentTag(), instance)
             }
+
             config.systemGallery -> {
                 val instance = factory.create(SelectorSystemFragment::class.java)
                 FragmentInjectManager.injectFragment(this, instance.getFragmentTag(), instance)
             }
+
             else -> {
                 // Only Using Camera Fragment
                 val instance = factory.create(registry.get(SelectorCameraFragment::class.java))
@@ -49,13 +52,23 @@ class SelectorTransparentActivity : AppCompatActivity() {
     }
 
     private fun immersive() {
-
-        ImmersiveManager.immersiveAboveAPI23(
-            this,
-            config.statusBarStyle.getStatusBarColor(),
-            config.statusBarStyle.getNavigationBarColor(),
-            config.statusBarStyle.isDarkStatusBar()
-        )
+        enableEdgeToEdge()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.setSystemBarsAppearance(
+                0,
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility =
+                window.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+        }
+//        ImmersiveManager.immersiveAboveAPI23(
+//            this,
+//            config.statusBarStyle.getStatusBarColor(),
+//            config.statusBarStyle.getNavigationBarColor(),
+//            config.statusBarStyle.isDarkStatusBar()
+//        )
     }
 
     private fun setActivitySize() {

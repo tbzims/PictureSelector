@@ -1,10 +1,13 @@
 package com.luck.picture.library
 
+import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.WindowInsetsController
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.luck.picture.library.factory.ClassFactory
 import com.luck.picture.library.helper.FragmentInjectManager
-import com.luck.picture.library.immersive.ImmersiveManager.immersiveAboveAPI23
 import com.luck.picture.library.provider.SelectorProviders
 import com.tmmtmm.im.style.utils.TmmThemeContext
 
@@ -18,8 +21,9 @@ class SelectorSupporterActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(TmmThemeContext.themeResId)
-        super.onCreate(savedInstanceState)
         immersive()
+        super.onCreate(savedInstanceState)
+
         setContentView(R.layout.ps_activity_container)
         val instance = ClassFactory.NewInstance()
             .create(config.registry.get(SelectorMainFragment::class.java))
@@ -27,12 +31,30 @@ class SelectorSupporterActivity : AppCompatActivity() {
     }
 
     private fun immersive() {
-        immersiveAboveAPI23(
-            this,
-            config.statusBarStyle.getStatusBarColor(),
-            config.statusBarStyle.getNavigationBarColor(),
-            config.statusBarStyle.isDarkStatusBar()
-        )
+        enableEdgeToEdge()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.let { controller ->
+                controller.setSystemBarsAppearance(
+                    0,
+                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+                )
+
+                controller.setSystemBarsAppearance(
+                    0,
+                    WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+                )
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility =
+                window.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+        }
+//        immersiveAboveAPI23(
+//            this,
+//            config.statusBarStyle.getStatusBarColor(),
+//            config.statusBarStyle.getNavigationBarColor(),
+//            config.statusBarStyle.isDarkStatusBar()
+//        )
     }
 
 
