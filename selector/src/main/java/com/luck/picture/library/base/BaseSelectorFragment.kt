@@ -708,6 +708,10 @@ abstract class BaseSelectorFragment : Fragment() {
                     globalViewMode.setSelectResultLiveData(getSelectResult().first())
                     getSelectResult().clear()
                 }
+            } else if (config.selectionMode == SelectionMode.ONLY_SINGLE) {
+                if (getSelectResult().isNotEmpty()) {
+                    getSelectResult().clear()
+                }
             }
             if (!getSelectResult().contains(media)) {
                 getSelectResult().add(media)

@@ -11,7 +11,11 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.NonNull
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import com.luck.picture.library.*
+import com.luck.picture.library.R
+import com.luck.picture.library.SelectorMainFragment
+import com.luck.picture.library.SelectorNumberMainFragment
+import com.luck.picture.library.SelectorNumberPreviewFragment
+import com.luck.picture.library.SelectorSupporterActivity
 import com.luck.picture.library.config.LayoutSource
 import com.luck.picture.library.config.MediaType
 import com.luck.picture.library.config.SelectionMode
@@ -24,7 +28,23 @@ import com.luck.picture.library.engine.MediaConverterEngine
 import com.luck.picture.library.entity.LocalMedia
 import com.luck.picture.library.factory.ClassFactory
 import com.luck.picture.library.helper.FragmentInjectManager
-import com.luck.picture.library.interfaces.*
+import com.luck.picture.library.interfaces.MagicalInterpolator
+import com.luck.picture.library.interfaces.OnAnimationAdapterWrapListener
+import com.luck.picture.library.interfaces.OnConfirmListener
+import com.luck.picture.library.interfaces.OnCustomAnimationListener
+import com.luck.picture.library.interfaces.OnCustomCameraListener
+import com.luck.picture.library.interfaces.OnCustomLoadingListener
+import com.luck.picture.library.interfaces.OnEditorMediaListener
+import com.luck.picture.library.interfaces.OnFragmentLifecycleListener
+import com.luck.picture.library.interfaces.OnPermissionApplyListener
+import com.luck.picture.library.interfaces.OnPermissionDeniedListener
+import com.luck.picture.library.interfaces.OnPermissionDescriptionListener
+import com.luck.picture.library.interfaces.OnQueryFilterListener
+import com.luck.picture.library.interfaces.OnRecordAudioListener
+import com.luck.picture.library.interfaces.OnReplaceFileNameListener
+import com.luck.picture.library.interfaces.OnResultCallbackListener
+import com.luck.picture.library.interfaces.OnSelectFilterListener
+import com.luck.picture.library.interfaces.SelectorExpandViewInjector
 import com.luck.picture.library.language.Language
 import com.luck.picture.library.loader.MediaLoader
 import com.luck.picture.library.magical.MagicalView
@@ -462,6 +482,24 @@ class SelectionMainModel constructor(private var selector: PictureSelector, medi
             this.config.filterMinFileSize = sizeKb;
         } else {
             this.config.filterMinFileSize = sizeKb * FileSizeUnitConstant.KB;
+        }
+        return this
+    }
+
+    fun setFilterMaxVideoFileSize(sizeKb: Long): SelectionMainModel {
+        if (sizeKb >= FileSizeUnitConstant.MB) {
+            this.config.filterMaxVideoFileSize = sizeKb
+        } else {
+            this.config.filterMaxVideoFileSize = sizeKb * FileSizeUnitConstant.KB
+        }
+        return this
+    }
+
+    fun setFilterMinVideoFileSize(sizeKb: Long): SelectionMainModel {
+        if (sizeKb >= FileSizeUnitConstant.MB) {
+            this.config.filterMinVideoFileSize = sizeKb
+        } else {
+            this.config.filterMinVideoFileSize = sizeKb * FileSizeUnitConstant.KB
         }
         return this
     }

@@ -28,7 +28,11 @@ class PictureSelectorUtils(
     val isWebp: Boolean = false,
     val isUCrop: Boolean = false,
     val uCropRatio: SizeF = SizeF(-1f, -1f),
+    val isPreviewImage: Boolean = isMultiple,
+    val isPreviewVideo: Boolean = isMultiple,
     val maxFileSize: Long = ALBUM_MAX_SIZE,
+    val maxVideoFileSize: Long = ALBUM_MAX_SIZE,
+    val videoMaxSecond: Long = 15 * 60,
     val injectorClasses: List<Class<out SelectorExpandViewInjector>> = emptyList(),
     val showCamera: Boolean = false,
     val isAllWithImageVideo: Boolean = false
@@ -70,14 +74,16 @@ class PictureSelectorUtils(
             })
             .setSelectionMode(if (isMultiple) SelectionMode.MULTIPLE else SelectionMode.ONLY_SINGLE)
             .setImageSpanCount(3)
+            .isPreviewImage(isPreviewImage)
+            .isPreviewVideo(isPreviewVideo)
             .setMaxSelectNum(
                 maxSelectTotalNum,
                 maxSelectVideoNum,
                 true
             )
             .isPreviewZoomEffect(
-                true,
-                true
+                isPreviewEffect = false,
+                isFullScreen = true
             )
             .isDisplayCamera(showCamera)
             .isMaxSelectEnabledMask(true)
@@ -88,7 +94,8 @@ class PictureSelectorUtils(
             .setMediaConverterEngine(MediaConverter.create())
             .setCropEngine(if (isUCrop) UCropEngine(uCropRatio) else null)
             .setFilterMaxFileSize(maxFileSize)
-            .setFilterVideoMaxSecond(15 * 60)
+            .setFilterMaxVideoFileSize(maxVideoFileSize)
+            .setFilterVideoMaxSecond(videoMaxSecond)
             .setFilterMinFileSize(0)
             .setInjectorClasses(injectorClasses)
             .forResult(object : OnResultCallbackListener {

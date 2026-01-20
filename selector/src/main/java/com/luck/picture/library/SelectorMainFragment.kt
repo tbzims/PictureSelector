@@ -504,7 +504,11 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                 if (DoubleUtils.isFastDoubleClick()) {
                     return@setOnClickListener
                 }
-                onStartPreview(0, true, getSelectResult())
+                if (config.selectionMode == SelectionMode.ONLY_SINGLE) {
+                    mTvComplete?.performClick()
+                } else {
+                    onStartPreview(0, true, getSelectResult())
+                }
             }
             mTvComplete?.setOnClickListener {
                 onCompleteClick(it)
@@ -695,7 +699,13 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                     val statusBarHeight = getStatusBarHeight(requireContext())
                     RecycleItemViewParams.build(mRecycler, if (isFullScreen) 0 else statusBarHeight)
                 }
-                onStartPreview(0, true, mutableListOf(media))
+                onStartPreview(0, false, mutableListOf(media))
+//                if (config.selectionMode == SelectionMode.ONLY_SINGLE) {
+////                    mTvComplete?.performClick()
+//                    handleSelectResult(media)
+//                } else {
+//
+//                }
             }
 
             override fun onComplete(isSelected: Boolean, position: Int, media: LocalMedia) {
@@ -1133,7 +1143,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
             this.bucketId = getCurrentAlbum().bucketId
             this.isBottomPreview = isBottomPreview
             this.isDisplayCamera = mAdapter.isDisplayCamera()
-            if (config.isOnlySandboxDir) {
+            if (config.isOnlySandboxDir || source.size <= 1) {
                 this.totalCount = source.size
             } else {
                 this.totalCount = if (isBottomPreview) source.size else getCurrentAlbum().totalCount

@@ -10,7 +10,19 @@ import com.luck.picture.library.config.MediaType
 import com.luck.picture.library.constant.SelectorConstant
 import com.luck.picture.library.entity.LocalMedia
 import com.luck.picture.library.entity.LocalMediaAlbum
-import com.luck.picture.library.loader.*
+import com.luck.picture.library.loader.BUCKET_DISPLAY_NAME
+import com.luck.picture.library.loader.BUCKET_ID
+import com.luck.picture.library.loader.DURATION
+import com.luck.picture.library.loader.MEDIA_TYPE
+import com.luck.picture.library.loader.MediaLoader
+import com.luck.picture.library.loader.NOT_BMP
+import com.luck.picture.library.loader.NOT_GIF
+import com.luck.picture.library.loader.NOT_HEIC
+import com.luck.picture.library.loader.NOT_VND_WAP_BMP
+import com.luck.picture.library.loader.NOT_WEBP
+import com.luck.picture.library.loader.NOT_XMS_BMP
+import com.luck.picture.library.loader.ORIENTATION
+import com.luck.picture.library.loader.PROJECTION
 import com.luck.picture.library.provider.SelectorProviders
 import com.luck.picture.library.utils.MediaUtils
 import com.luck.picture.library.utils.MediaUtils.getMimeType
@@ -19,7 +31,7 @@ import com.luck.picture.library.utils.SdkVersionUtils.isQ
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.*
+import java.util.Locale
 import kotlin.math.max
 
 /**
@@ -46,12 +58,15 @@ open class MediaPagingLoaderImpl(val application: Application) : MediaLoader() {
             MediaType.ALL -> { // query the image or video
                 "($MEDIA_TYPE=?${getImageMimeTypeCondition()} OR $MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration) AND $fileSize"
             }
+
             MediaType.IMAGE -> { // query the image
                 "$MEDIA_TYPE=?${getImageMimeTypeCondition()} AND $fileSize"
             }
+
             MediaType.VIDEO -> { // query the video
                 "$MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration"
             }
+
             MediaType.AUDIO -> { // query the audio
                 "$MEDIA_TYPE=?${getAudioMimeTypeCondition()} AND $duration"
             }
@@ -61,14 +76,17 @@ open class MediaPagingLoaderImpl(val application: Application) : MediaLoader() {
     override fun getSelection(bucketId: Long): String {
         val duration = getDurationCondition()
         val fileSize = getFileSizeCondition()
+        val videoFileSize = getVideoFileSizeCondition()
         when (config.mediaType) {
             MediaType.ALL -> { // query the image or video
                 return if (bucketId == SelectorConstant.DEFAULT_ALL_BUCKET_ID) {
-                    "($MEDIA_TYPE=?${getImageMimeTypeCondition()} OR $MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration) AND $fileSize"
+//                    "($MEDIA_TYPE=?${getImageMimeTypeCondition()} OR $MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $videoFileSize AND $duration) AND $fileSize"
+                    "($MEDIA_TYPE=?${getImageMimeTypeCondition()} AND $fileSize) OR ($MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $videoFileSize AND $duration)"
                 } else {
                     "($MEDIA_TYPE=?${getImageMimeTypeCondition()} OR $MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration) AND $fileSize AND $BUCKET_ID=?"
                 }
             }
+
             MediaType.IMAGE -> { // query the image
                 return if (bucketId == SelectorConstant.DEFAULT_ALL_BUCKET_ID) {
                     "($MEDIA_TYPE=?${getImageMimeTypeCondition()}) AND $fileSize"
@@ -76,6 +94,7 @@ open class MediaPagingLoaderImpl(val application: Application) : MediaLoader() {
                     "($MEDIA_TYPE=?${getImageMimeTypeCondition()}) AND $fileSize AND $BUCKET_ID=?"
                 }
             }
+
             MediaType.VIDEO -> { // query the video
                 return if (bucketId == SelectorConstant.DEFAULT_ALL_BUCKET_ID) {
                     "($MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration) AND $fileSize"
@@ -83,6 +102,7 @@ open class MediaPagingLoaderImpl(val application: Application) : MediaLoader() {
                     "($MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration) AND $fileSize AND $BUCKET_ID=?"
                 }
             }
+
             MediaType.AUDIO -> { // query the audio
                 return if (bucketId == SelectorConstant.DEFAULT_ALL_BUCKET_ID) {
                     "($MEDIA_TYPE=?${getAudioMimeTypeCondition()} AND $duration) AND $fileSize"
@@ -101,12 +121,15 @@ open class MediaPagingLoaderImpl(val application: Application) : MediaLoader() {
                     MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString()
                 )
             }
+
             MediaType.IMAGE -> {
                 return arrayOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString())
             }
+
             MediaType.VIDEO -> {
                 return arrayOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString())
             }
+
             MediaType.AUDIO -> {
                 return arrayOf(MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO.toString())
             }
@@ -394,6 +417,17 @@ open class MediaPagingLoaderImpl(val application: Application) : MediaLoader() {
             "%d <%s " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= %d",
             max(0, config.filterMinFileSize), "=", maxS
         )
+    }
+
+    open fun getVideoFileSizeCondition(): String {
+        val maxS =
+            if (config.filterMaxVideoFileSize == 0L) Long.MAX_VALUE else config.filterMaxVideoFileSize
+        return "${config.filterMinVideoFileSize} <= ${MediaStore.MediaColumns.SIZE} and ${MediaStore.MediaColumns.SIZE} <= $maxS "
+//        String.format(
+//            Locale.CHINA,
+//            "%d <%s " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= %d",
+//            0, "=", maxS
+//        )
     }
 
     /**

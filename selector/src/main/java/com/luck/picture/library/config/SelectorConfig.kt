@@ -37,9 +37,11 @@ class SelectorConfig {
     var minVideoSelectNum = 0
     var filterMaxFileSize = 0L
     var filterMinFileSize = 0L
+    var filterMaxVideoFileSize = 0L
+    var filterMinVideoFileSize = 0L
     var filterVideoMaxSecond = 0L
     var filterVideoMinSecond = 0L
-    var activityOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+    var activityOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     var isGif = false
     var isBmp = false
     var isHeic = false
@@ -114,7 +116,7 @@ class SelectorConfig {
         this.maxVideoSelectNum = 0
         this.minVideoSelectNum = 0
         this.minSelectNum = 0
-        this.activityOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        this.activityOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         this.isGif = false
         this.isWebp = false
         this.isBmp = false
@@ -145,6 +147,8 @@ class SelectorConfig {
         this.pageSize = SelectorConstant.DEFAULT_MAX_PAGE_SIZE
         this.filterMaxFileSize = 0L
         this.filterMinFileSize = 0L
+        this.filterMaxVideoFileSize = 0L
+        this.filterMinVideoFileSize = 0L
         this.filterVideoMaxSecond = 0L
         this.filterVideoMinSecond = 0L
         this.sortOrder = null
