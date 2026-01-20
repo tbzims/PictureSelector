@@ -101,7 +101,6 @@ open class SelectorMainFragment : BaseSelectorFragment() {
     /**
      * TitleBar
      */
-    var mStatusBar: View? = null
     var mTitleBar: ViewGroup? = null
     var mIvLeftBack: ImageView? = null
     var mTvTitle: TextView? = null
@@ -142,8 +141,6 @@ open class SelectorMainFragment : BaseSelectorFragment() {
 
     private var previewAdapter: PreviewAdapter? = null
 
-    private var isPermissionType = 0//0:none 1:have permission 2:partial permissions 3:No permission
-
     open fun getCurrentAlbum(): LocalMediaAlbum {
         return TempDataProvider.getInstance().currentMediaAlbum
     }
@@ -153,6 +150,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        initFitScreen(view)
         super.onViewCreated(view, savedInstanceState)
         initViews(view)
         onMergeSelectedSource()
@@ -172,13 +170,11 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         mTvCurrentDataTime = view.findViewById(R.id.ps_tv_current_data_time)
         setDataEmpty()
         // TitleBar
-        mStatusBar = view.findViewById(R.id.ps_status_bar)
         mTitleBar = view.findViewById(R.id.ps_title_bar)
         mIvLeftBack = view.findViewById(R.id.ps_iv_left_back)
         mTvTitle = view.findViewById(R.id.ps_tv_title)
         mIvTitleArrow = view.findViewById(R.id.ps_iv_arrow)
         mTvCancel = view.findViewById(R.id.ps_tv_cancel)
-        setStatusBarRectSize(mStatusBar)
 
         //newView
         groupPermissionView = view.findViewById(R.id.group_permission_view)
@@ -192,9 +188,6 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         mTvPreview = view.findViewById(R.id.ps_tv_preview)
         mTvOriginal = view.findViewById(R.id.ps_tv_original)
         mTvComplete = view.findViewById(R.id.ps_tv_complete)
-        mBottomNarBar?.let {
-            applySafeAreaInsets(it)
-        }
     }
 
     open fun initWidgets() {
@@ -354,17 +347,6 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         handleSelectResult()
     }
 
-    open fun setStatusBarRectSize(statusBarRectView: View?) {
-        if (config.isPreviewFullScreenMode) {
-            statusBarRectView?.layoutParams?.height =
-                getStatusBarHeight(requireContext())
-            statusBarRectView?.visibility = View.VISIBLE
-        } else {
-            statusBarRectView?.layoutParams?.height = 0
-            statusBarRectView?.visibility = View.GONE
-        }
-    }
-
     open fun setCurrentMediaCreateTimeText() {
         if (config.isDisplayTimeAxis) {
             val position = mRecycler.getFirstVisiblePosition()
@@ -381,7 +363,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
     }
 
     open fun showCurrentMediaCreateTimeUI() {
-        if (config.isDisplayTimeAxis && mAdapter.getData().size > 0) {
+        if (config.isDisplayTimeAxis && mAdapter.getData().isNotEmpty()) {
             if (mTvCurrentDataTime?.alpha == 0f) {
                 mTvCurrentDataTime?.animate()?.setDuration(150)?.alphaBy(1.0f)?.start()
             }
@@ -713,7 +695,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                     val statusBarHeight = getStatusBarHeight(requireContext())
                     RecycleItemViewParams.build(mRecycler, if (isFullScreen) 0 else statusBarHeight)
                 }
-                onStartPreview(position, false, mAdapter.getData())
+                onStartPreview(0, true, mutableListOf(media))
             }
 
             override fun onComplete(isSelected: Boolean, position: Int, media: LocalMedia) {
@@ -821,7 +803,6 @@ open class SelectorMainFragment : BaseSelectorFragment() {
 
     open fun checkPermissions() {
         if (PermissionChecker.isCheckReadStorage(requireContext(), config.mediaType)) {
-            isPermissionType = 1
             groupPermissionView?.visibility = View.GONE
             if (isNeedRestore()) {
                 restoreMemoryData()
@@ -829,7 +810,6 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                 requestData()
             }
         } else {
-            isPermissionType = 3
             groupPermissionView?.visibility = View.VISIBLE
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 val hasPartialPermission = ContextCompat.checkSelfPermission(
@@ -837,7 +817,6 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                     Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                 ) == PackageManager.PERMISSION_GRANTED
                 if (hasPartialPermission) {
-                    isPermissionType = 2
                     tvNoPermission?.text = getString(sR.string.tmm_can_only_access_a)
                     if (isNeedRestore()) {
                         restoreMemoryData()
@@ -867,17 +846,6 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                         }
 
                         override fun onDenied() {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                                val hasPartialPermission = ContextCompat.checkSelfPermission(
-                                    requireContext(),
-                                    Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
-                                ) == PackageManager.PERMISSION_GRANTED
-                                isPermissionType = if (hasPartialPermission) {
-                                    2
-                                } else {
-                                    3
-                                }
-                            }
                             handlePermissionDenied(permissionArray)
                             mTvDataEmpty?.visibility = View.VISIBLE
                         }
@@ -1180,6 +1148,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
             onCheckDuplicateMedia(media)
             onMergeCameraAlbum(media)
             onMergeCameraMedia(media)
+
             onStartPreview(0, true, mutableListOf(media))
         } else {
             SelectorLogUtils.info("analysisCameraData: Parsing LocalMedia object as empty")

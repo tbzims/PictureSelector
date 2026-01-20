@@ -2,10 +2,12 @@ package com.luck.picture.library
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.WindowInsetsController
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.blankj.utilcode.util.AppUtils
 import com.luck.picture.library.factory.ClassFactory
 import com.luck.picture.library.helper.FragmentInjectManager
 import com.luck.picture.library.provider.SelectorProviders
@@ -23,6 +25,9 @@ class SelectorSupporterActivity : AppCompatActivity() {
         setTheme(TmmThemeContext.themeResId)
         immersive()
         super.onCreate(savedInstanceState)
+        if (SelectorProviders.getInstance().getConfigQueue().isEmpty()) {
+            AppUtils.relaunchApp(true)
+        }
 
         setContentView(R.layout.ps_activity_container)
         val instance = ClassFactory.NewInstance()
@@ -64,5 +69,10 @@ class SelectorSupporterActivity : AppCompatActivity() {
             R.anim.ps_anim_fade_in,
             config.windowAnimStyle.getExitAnimRes()
         )
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("SelectorSupporterActivity", "onDestroy")
     }
 }

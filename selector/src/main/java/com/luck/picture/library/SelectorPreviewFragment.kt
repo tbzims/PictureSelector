@@ -20,6 +20,8 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewModelScope
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
@@ -69,8 +71,6 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
 
     var screenWidth = 0
     var screenHeight = 0
-
-    var mStatusBar: View? = null
     var mTitleBar: ViewGroup? = null
     var mIvLeftBack: ImageView? = null
     var mTvTitle: TextView? = null
@@ -103,7 +103,19 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
     }
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
-        return if (isHasMagicalEffect()) null else super.onCreateAnimation(transit, enter, nextAnim)
+        return if (isHasMagicalEffect()) null else {
+            if (enter) {
+                AnimationUtils.loadAnimation(
+                    requireContext(),
+                    R.anim.ps_anim_slide_in_right
+                )
+            } else {
+                AnimationUtils.loadAnimation(
+                    requireContext(),
+                    R.anim.ps_anim_slide_out_right
+                )
+            }
+        }
     }
 
     private fun isHasMagicalEffect(): Boolean {
@@ -119,6 +131,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
         screenWidth = DensityUtil.getRealScreenWidth(requireContext())
         screenHeight = DensityUtil.getScreenHeight(requireContext())
         initViews(view)
+        initFitScreen(view)
         attachPreview()
         initTitleBar()
         initNavbarBar()
@@ -126,6 +139,18 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
         initViewPagerData()
         registerLiveData()
         initWidgets()
+    }
+
+    override fun initFitScreen(view: View) {
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            mTitleBar?.setPadding(0, statusBars.top, 0, 0)
+            val params = mBottomNarBar?.layoutParams as? ViewGroup.MarginLayoutParams
+            params?.bottomMargin = navBars.bottom
+            mBottomNarBar?.layoutParams = params
+            insets
+        }
     }
 
     private fun registerLiveData() {
@@ -142,12 +167,12 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
 
     open fun initViews(view: View) {
         // TitleBar
-        mStatusBar = view.findViewById(R.id.ps_status_bar)
         mTitleBar = view.findViewById(R.id.ps_title_bar)
         mIvLeftBack = view.findViewById(R.id.ps_iv_left_back)
         mTvTitle = view.findViewById(R.id.ps_tv_title)
+        mTvTitle?.visibility = if (getPreviewWrap().totalCount > 1) View.VISIBLE else View.GONE
+
         mTvSelected = view.findViewById(R.id.ps_tv_selected)
-        setStatusBarRectSize(mStatusBar)
         mTitleBar?.let {
             titleViews.add(it)
         }
@@ -173,17 +198,6 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
             setPreviewWrap(config.previewWrap.copy())
             viewModel.page = getPreviewWrap().page
             config.previewWrap.source.clear()
-        }
-    }
-
-    open fun setStatusBarRectSize(statusBarRectView: View?) {
-        if (config.isPreviewFullScreenMode) {
-            statusBarRectView?.layoutParams?.height =
-                DensityUtil.getStatusBarHeight(requireContext())
-            statusBarRectView?.visibility = View.VISIBLE
-        } else {
-            statusBarRectView?.layoutParams?.height = 0
-            statusBarRectView?.visibility = View.GONE
         }
     }
 
@@ -213,7 +227,13 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
     }
 
     open fun initNavbarBar() {
-        val media = getPreviewWrap().source[getPreviewWrap().position]
+        val media =
+            if (getPreviewWrap().source.isNotEmpty()) getPreviewWrap().source[getPreviewWrap().position] else null
+//        val media = getPreviewWrap().source[getPreviewWrap().position]
+        if (media == null) {
+            activity?.finish()
+            return
+        }
         mTvEditor?.visibility =
             if (!MediaUtils.hasMimeTypeOfAudio(media.mimeType) && config.mListenerInfo.onEditorMediaListener != null) View.VISIBLE else View.GONE
         mTvEditor?.setOnClickListener {
@@ -328,9 +348,11 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
             isFullScreen() -> {
                 previewFullScreenMode()
             }
+
             isHasMagicalEffect() -> {
                 mMagicalView?.backToMin()
             }
+
             else -> {
                 onBackPressed()
             }

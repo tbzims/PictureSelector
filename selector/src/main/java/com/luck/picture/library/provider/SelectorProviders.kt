@@ -2,7 +2,7 @@ package com.luck.picture.library.provider
 
 import com.luck.picture.library.config.SelectorConfig
 import com.luck.picture.library.utils.SelectorLogUtils
-import java.util.*
+import java.util.LinkedList
 
 /**
  * @author：luck
@@ -14,6 +14,10 @@ class SelectorProviders {
 
     fun addConfigQueue(config: SelectorConfig) {
         configQueue.add(config)
+    }
+
+    fun getConfigQueue(): LinkedList<SelectorConfig> {
+        return configQueue
     }
 
     fun getConfig(): SelectorConfig {
