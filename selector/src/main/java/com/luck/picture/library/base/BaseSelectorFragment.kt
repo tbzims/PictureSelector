@@ -8,6 +8,8 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.view.KeyEvent
@@ -553,7 +555,6 @@ abstract class BaseSelectorFragment : Fragment() {
      * System camera takes pictures
      */
     open fun takePictures() {
-        isStartCamera = true
         val context = requireContext()
         val outputDir = config.imageOutputDir
         val defaultFileName = "${FileUtils.createFileName("IMG")}.jpg"
@@ -595,13 +596,15 @@ abstract class BaseSelectorFragment : Fragment() {
                 ForegroundService.startService(context, config.isForegroundService)
             }
         }
+        Handler(Looper.getMainLooper()).postDelayed({
+            isStartCamera = true
+        }, 500)
     }
 
     /**
      * System camera recording video
      */
     open fun recordVideo() {
-        isStartCamera = true
         val context = requireContext()
         val outputDir = config.videoOutputDir
         val defaultFileName = "${FileUtils.createFileName("VID")}.mp4"
@@ -645,6 +648,9 @@ abstract class BaseSelectorFragment : Fragment() {
                 ForegroundService.startService(context, config.isForegroundService)
             }
         }
+        Handler(Looper.getMainLooper()).postDelayed({
+            isStartCamera = true
+        }, 500)
     }
 
     /**

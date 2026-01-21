@@ -12,6 +12,7 @@ import android.os.VibrationEffect
 import android.os.VibrationEffect.DEFAULT_AMPLITUDE
 import android.os.Vibrator
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
@@ -890,6 +891,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
 
     override fun onResume() {
         super.onResume()
+        Log.d("selectorMainFragment", "onResume isStartCamera:$isStartCamera")
         if (!isFirstVisit && !isStartCamera) {
             checkPermissionsToUpdateUI()
         } else {
@@ -901,6 +903,11 @@ open class SelectorMainFragment : BaseSelectorFragment() {
     private fun checkPermissionsToUpdateUI() {
         if (PermissionChecker.isCheckReadStorage(requireContext(), config.mediaType)) {
             groupPermissionView?.visibility = View.GONE
+            if (isNeedRestore()) {
+                restoreMemoryData()
+            } else {
+                requestData()
+            }
         } else {
             groupPermissionView?.visibility = View.VISIBLE
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {

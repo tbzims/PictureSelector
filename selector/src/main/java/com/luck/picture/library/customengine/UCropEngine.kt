@@ -14,6 +14,8 @@ import com.luck.picture.library.engine.CropEngine
 import com.luck.picture.library.entity.LocalMedia
 import com.luck.picture.library.helper.ActivityCompatHelper
 import com.luck.picture.library.utils.MediaUtils
+import com.tmmtmm.im.style.R
+import com.tmmtmm.im.style.utils.getColorByAttr
 import com.yalantis.ucrop.UCrop
 import com.yalantis.ucrop.UCropImageEngine
 import java.io.File
@@ -30,7 +32,8 @@ class UCropEngine(
     override fun onCrop(fragment: Fragment, dataSource: MutableList<LocalMedia>, requestCode: Int) {
         val first = dataSource.first()
         val path = first.getAvailablePath() ?: return
-        val sourceUri = if (MediaUtils.isContent(path)) Uri.parse(path) else Uri.fromFile(File(path))
+        val sourceUri =
+            if (MediaUtils.isContent(path)) Uri.parse(path) else Uri.fromFile(File(path))
         val destinationUri = Uri.fromFile(
             File(fragment.requireContext().cacheDir, "${System.currentTimeMillis()}.jpg")
         )
@@ -83,7 +86,15 @@ class UCropEngine(
                     })
             }
         })
+        val options = UCrop.Options()
+        options.setToolbarColor(fragment.requireContext().getColor(R.color.transparent))
+        options.setRootViewBackgroundColor(fragment.requireContext().getColorByAttr(R.attr.bg_3))
+        options.setDimmedLayerColor(fragment.requireContext().getColorByAttr(R.attr.black_70))
+
+        options.setToolbarWidgetColor(fragment.requireContext().getColorByAttr(R.attr.bg_1))
+        options.setHideBottomControls(true)
         uCrop.withAspectRatio(uCropRatio.width, uCropRatio.height)
+            .withOptions(options)
             .start(fragment.requireContext(), fragment, requestCode)
     }
 }
