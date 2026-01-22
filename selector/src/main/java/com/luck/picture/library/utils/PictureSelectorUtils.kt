@@ -113,25 +113,19 @@ class PictureSelectorUtils(
 
     fun createPictureUrlPreview(position: Int = 0, strings: MutableList<String>) {
         val preview = PictureSelector.create(context).openPreview()
-        preview.setStatusBarStyle(StatusBarStyle().apply {
-            of(
-                false,
-                context.getColorByAttr(com.tmmtmm.im.style.R.attr.bg_3),
-                context.getColorByAttr(com.tmmtmm.im.style.R.attr.bg_3)
-            )
-        })
+//        preview.setStatusBarStyle(StatusBarStyle().apply {
+//            of(
+//                false,
+//                context.getColorByAttr(com.tmmtmm.im.style.R.attr.bg_3),
+//                context.getColorByAttr(com.tmmtmm.im.style.R.attr.bg_3)
+//            )
+//        })
         preview.forPreviewUrl(position, strings, true)
     }
 
     fun createPicturePreview(position: Int = 0, strings: MutableList<LocalMedia>) {
         val preview = PictureSelector.create(context).openPreview()
-        preview.setStatusBarStyle(StatusBarStyle().apply {
-            of(
-                false,
-                context.getColorByAttr(com.tmmtmm.im.style.R.attr.bg_3),
-                context.getColorByAttr(com.tmmtmm.im.style.R.attr.bg_3)
-            )
-        })
+//            preview.isPreviewZoomEffect(false,true)
         preview.forPreview(position, strings, true)
     }
 

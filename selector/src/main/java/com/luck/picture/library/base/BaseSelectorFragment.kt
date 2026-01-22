@@ -353,6 +353,7 @@ abstract class BaseSelectorFragment : Fragment() {
                 } else {
                     config.mListenerInfo.onResultCallbackListener?.onResult(selectResult)
                 }
+
                 if (!config.isNotRequestMode) {
                     if (!isStateSaved) {
                         if (isNormalDefaultEnter()) {
@@ -363,8 +364,9 @@ abstract class BaseSelectorFragment : Fragment() {
                             }
                         }
                     }
-                    SelectorProviders.getInstance().destroy()
                 }
+                TempDataProvider.getInstance().reset()
+                SelectorProviders.getInstance().destroy()
             }
         }
     }

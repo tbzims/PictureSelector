@@ -27,6 +27,7 @@ class SelectorSupporterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         if (SelectorProviders.getInstance().getConfigQueue().isEmpty()) {
             AppUtils.relaunchApp(true)
+            return
         }
 
         setContentView(R.layout.ps_activity_container)

@@ -13,7 +13,6 @@ import android.os.VibrationEffect
 import android.os.VibrationEffect.DEFAULT_AMPLITUDE
 import android.os.Vibrator
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
@@ -259,7 +258,21 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         }
         viewModel.mediaLiveData.observe(viewLifecycleOwner) { mediaList ->
             onMediaSourceChange(mediaList)
-            SelectorLogUtils.info("当前数量->${mAdapter.getData().size}")
+            if (getSelectResult().isNotEmpty()) {
+                val selectResult = getSelectResult()
+                val iterator = selectResult.iterator()
+                while (iterator.hasNext()) {
+                    val selectedMedia = iterator.next()
+                    if (!mAdapter.getData().contains(selectedMedia)) {
+                        iterator.remove()
+                    }
+                }
+                mAdapter.notifyDataSetChanged()
+                onSelectionResultChange(null)
+//                mAdapter.setData(getSelectResult())
+            }
+            SelectorLogUtils.info("当前选中数量->${getSelectResult().size}")
+            SelectorLogUtils.info("当前数量->${mAdapter.getData().size},mediaList:${mediaList.size}")
         }
     }
 
@@ -293,7 +306,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                     openSelectedCamera()
                 }
 
-                override fun finish() = requireActivity().finish()
+                override fun finish() = onBackPressed()
 
             }
 
@@ -573,7 +586,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         }
 
         if (selectResult.isNotEmpty()) {
-            mTvComplete?.text = getString(sR.string.d_Next, selectResult.size)
+            mTvComplete?.text = "${selectResult.size} ${getString(sR.string.next)}"
         }
 
         var totalSize: Long = 0
@@ -701,7 +714,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                     val statusBarHeight = getStatusBarHeight(requireContext())
                     RecycleItemViewParams.build(mRecycler, if (isFullScreen) 0 else statusBarHeight)
                 }
-                onStartPreview(0, false, mutableListOf(media))
+                onStartPreview(0, true, mutableListOf(media))
 //                if (config.selectionMode == SelectionMode.ONLY_SINGLE) {
 ////                    mTvComplete?.performClick()
 //                    handleSelectResult(media)
@@ -892,7 +905,6 @@ open class SelectorMainFragment : BaseSelectorFragment() {
 
     override fun onResume() {
         super.onResume()
-        Log.d("selectorMainFragment", "onResume isStartCamera:$isStartCamera")
         if (!isFirstVisit && !isStartCamera) {
             checkPermissionsToUpdateUI()
         } else {

@@ -323,7 +323,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
         mTvComplete?.setDataStyle(config, getSelectResult())
 
         if (getSelectResult().isNotEmpty()) {
-            mTvComplete?.text = getString(sR.string.d_Next, getSelectResult().size)
+            mTvComplete?.text = "${getSelectResult().size} ${getString(sR.string.next)}"
             mTvComplete?.visibility = View.VISIBLE
         } else {
             mTvComplete?.visibility = View.GONE
