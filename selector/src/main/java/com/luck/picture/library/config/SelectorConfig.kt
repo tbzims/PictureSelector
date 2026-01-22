@@ -96,6 +96,8 @@ class SelectorConfig {
 
     var injectorClasses: ArrayList<Class<out SelectorExpandViewInjector>> = ArrayList()
 
+    var isNotRequestMode = false
+
     fun getSelectCount(): Int {
         return if (isAsTotalCount) totalCount else totalCount + maxVideoSelectNum
     }
@@ -166,6 +168,7 @@ class SelectorConfig {
         this.imageOutputDir = null
         this.videoOutputDir = null
         this.audioOutputDir = null
+        this.isNotRequestMode = false
     }
 
     fun destroy() {
@@ -177,6 +180,5 @@ class SelectorConfig {
         this.registry.clear()
         this.previewWrap.reset()
         this.mListenerInfo.destroy()
-        this.injectorClasses.clear()
     }
 }

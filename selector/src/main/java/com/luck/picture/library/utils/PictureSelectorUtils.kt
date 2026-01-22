@@ -16,7 +16,9 @@ import com.luck.picture.library.style.StatusBarStyle
 import com.luck.picture.library.style.WindowAnimStyle
 import com.tmmtmm.im.style.utils.getColorByAttr
 
-const val ALBUM_MAX_SIZE = 200 * 1024 * 1024L
+const val IMAGE_MAX_SIZE = 300 * 1024 * 1024L
+const val VIDEO_MAX_SIZE = 1024 * 1024 * 1024L
+const val VIDEO_MAX_SECOND = 15 * 60L
 
 class PictureSelectorUtils(
     val context: Context,
@@ -30,12 +32,13 @@ class PictureSelectorUtils(
     val uCropRatio: SizeF = SizeF(-1f, -1f),
     val isPreviewImage: Boolean = isMultiple,
     val isPreviewVideo: Boolean = isMultiple,
-    val maxFileSize: Long = ALBUM_MAX_SIZE,
-    val maxVideoFileSize: Long = ALBUM_MAX_SIZE,
-    val videoMaxSecond: Long = 15 * 60,
+    val maxFileSize: Long = IMAGE_MAX_SIZE,
+    val maxVideoFileSize: Long = VIDEO_MAX_SIZE,
+    val videoMaxSecond: Long = VIDEO_MAX_SECOND,
     val injectorClasses: List<Class<out SelectorExpandViewInjector>> = emptyList(),
     val showCamera: Boolean = false,
-    val isAllWithImageVideo: Boolean = false
+    val isAllWithImageVideo: Boolean = false,
+    val isNotRequest: Boolean = injectorClasses.isNotEmpty()
 ) {
 
 
@@ -81,6 +84,7 @@ class PictureSelectorUtils(
                 maxSelectVideoNum,
                 true
             )
+            .isNotRequestMode(isNotRequest)
             .isPreviewZoomEffect(
                 isPreviewEffect = false,
                 isFullScreen = true
@@ -96,7 +100,6 @@ class PictureSelectorUtils(
             .setFilterMaxFileSize(maxFileSize)
             .setFilterMaxVideoFileSize(maxVideoFileSize)
             .setFilterVideoMaxSecond(videoMaxSecond)
-            .setFilterMinFileSize(0)
             .setInjectorClasses(injectorClasses)
             .forResult(object : OnResultCallbackListener {
                 override fun onResult(result: List<LocalMedia>) {

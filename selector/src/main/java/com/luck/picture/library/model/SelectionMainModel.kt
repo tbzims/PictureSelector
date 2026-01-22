@@ -875,6 +875,11 @@ class SelectionMainModel constructor(private var selector: PictureSelector, medi
         return this
     }
 
+    fun isNotRequestMode(isNotRequest: Boolean): SelectionMainModel {
+        config.isNotRequestMode = isNotRequest
+        return this
+    }
+
     fun forResult(requestCode: Int) {
         forResult(null, requestCode, null)
     }

@@ -54,9 +54,11 @@ open class MediaPagingLoaderImpl(val application: Application) : MediaLoader() {
     override fun getAlbumSelection(): String {
         val duration = getDurationCondition()
         val fileSize = getFileSizeCondition()
+        val videoFileSize = getVideoFileSizeCondition()
         return when (config.mediaType) {
             MediaType.ALL -> { // query the image or video
-                "($MEDIA_TYPE=?${getImageMimeTypeCondition()} OR $MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration) AND $fileSize"
+//                "($MEDIA_TYPE=?${getImageMimeTypeCondition()} OR $MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration) AND $fileSize"
+                "($MEDIA_TYPE=?${getImageMimeTypeCondition()} AND $fileSize) OR ($MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $videoFileSize AND $duration)"
             }
 
             MediaType.IMAGE -> { // query the image
@@ -414,15 +416,15 @@ open class MediaPagingLoaderImpl(val application: Application) : MediaLoader() {
             if (config.filterMaxFileSize == 0L) Long.MAX_VALUE else config.filterMaxFileSize
         return String.format(
             Locale.CHINA,
-            "%d <%s " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= %d",
-            max(0, config.filterMinFileSize), "=", maxS
+            "%d < " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= %d",
+            max(0, config.filterMinFileSize), maxS
         )
     }
 
     open fun getVideoFileSizeCondition(): String {
         val maxS =
             if (config.filterMaxVideoFileSize == 0L) Long.MAX_VALUE else config.filterMaxVideoFileSize
-        return "${config.filterMinVideoFileSize} <= ${MediaStore.MediaColumns.SIZE} and ${MediaStore.MediaColumns.SIZE} <= $maxS "
+        return "${config.filterMinVideoFileSize} < ${MediaStore.MediaColumns.SIZE} and ${MediaStore.MediaColumns.SIZE} <= $maxS "
 //        String.format(
 //            Locale.CHINA,
 //            "%d <%s " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= %d",

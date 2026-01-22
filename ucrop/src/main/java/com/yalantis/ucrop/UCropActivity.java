@@ -162,7 +162,7 @@ public class UCropActivity extends AppCompatActivity {
             }
         } else {
             getWindow().getDecorView().setSystemUiVisibility(
-                    getWindow().getDecorView().getSystemUiVisibility() &
+                    getWindow().getDecorView().getSystemUiVisibility() |
                             View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             );
         }

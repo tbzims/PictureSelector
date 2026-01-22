@@ -18,6 +18,7 @@ import com.luck.picture.library.utils.DensityUtil
 import com.luck.picture.library.utils.MediaUtils
 import com.luck.picture.library.utils.StyleUtils
 import com.luck.picture.library.widget.StyleTextView
+import com.tmmtmm.im.style.utils.ClickUtil
 import com.tmmtmm.im.style.utils.getColorByAttr
 import com.tmmtmm.im.style.R as sR
 
@@ -53,6 +54,9 @@ open class ListMediaViewHolder(itemView: View) : BaseListViewHolder(itemView) {
             config.imageEngine?.loadListImage(ivCover.context, media.getAvailablePath(), ivCover)
         }
         tvSelectView.setOnClickListener {
+            if (ClickUtil.isFastClick(500)) {
+                return@setOnClickListener
+            }
 //            if (media.isEnabledMask) {
 //                return@setOnClickListener
 //            }

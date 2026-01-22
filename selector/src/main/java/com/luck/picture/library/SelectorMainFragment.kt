@@ -1,6 +1,7 @@
 package com.luck.picture.library
 
 import android.Manifest
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Service
 import android.content.pm.PackageManager
@@ -554,11 +555,11 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         if (config.selectionMode != SelectionMode.ONLY_SINGLE) {
             if (previewAdapter != null) {
                 if (selectResult.isNotEmpty() && !isShowPreview) {
-                    isShowPreview = true
                     showPreviewBottomBarWithAnimation()
+                    isShowPreview = true
                 } else if (selectResult.isEmpty() && isShowPreview) {
-                    isShowPreview = false
                     hidePreviewBottomBarWithAnimation()
+                    isShowPreview = false
                 }
                 previewAdapter?.selectResult = getSelectResult()
                 previewAdapter?.notifyDataSetChanged()
@@ -1251,12 +1252,19 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         }
     }
 
+
+    private var bottomAnimator: ValueAnimator? = null
+
     /**
      * Shows the preview bottom bar with animation
      * Background slides up from bottom (0.3s, fast first then slow)
      * Images and button fade in after delay (0.2s, delay 0.1s)
      */
+    @Synchronized
     private fun showPreviewBottomBarWithAnimation() {
+        if (bottomAnimator != null && bottomAnimator?.isRunning == true) {
+            bottomAnimator?.cancel()
+        }
         val psBottomPreviewBar = this.psBottomPreviewBar // Preview bottom bar background
         val psRvPreview = this.psRvPreview // Image list
         val mTvComplete = this.mTvComplete // Complete button
@@ -1265,23 +1273,23 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         // Animate the RecyclerView to shrink its bottom margin to make space for the preview bar
         if (psRecycler != null) {
             val layoutParams = psRecycler.layoutParams as ViewGroup.MarginLayoutParams
-            val originalBottomMargin = layoutParams.bottomMargin
+//            val originalBottomMargin = layoutParams.bottomMargin
 
             // Calculate the target bottom margin (current margin + height of bottom bar)
-            val targetBottomMargin =
-                originalBottomMargin + resources.getDimension(sR.dimen.dp_56).toInt()
+            val targetBottomMargin = resources.getDimension(sR.dimen.dp_56).toInt()
 
             // Animate the margin change
-            android.animation.ValueAnimator.ofInt(originalBottomMargin, targetBottomMargin).apply {
-                duration = 300
-                interpolator = android.view.animation.DecelerateInterpolator()
-                addUpdateListener { animator ->
-                    val animatedValue = animator.animatedValue as Int
-                    layoutParams.bottomMargin = animatedValue
-                    psRecycler.layoutParams = layoutParams
+            bottomAnimator = ValueAnimator.ofInt(0, targetBottomMargin)
+                .apply {
+                    duration = 300
+                    interpolator = android.view.animation.DecelerateInterpolator()
+                    addUpdateListener { animator ->
+                        val animatedValue = animator.animatedValue as Int
+                        layoutParams.bottomMargin = animatedValue
+                        psRecycler.layoutParams = layoutParams
+                    }
+                    start()
                 }
-                start()
-            }
         }
         if (psBottomPreviewBar != null) {
             // Set initial position below screen
@@ -1375,13 +1383,16 @@ open class SelectorMainFragment : BaseSelectorFragment() {
             }?.start()
 
         // Animate the RecyclerView to expand back to original size
+        if (bottomAnimator != null && bottomAnimator?.isRunning == true) {
+            bottomAnimator?.cancel()
+        }
         if (psRecycler != null) {
             val layoutParams = psRecycler.layoutParams as ViewGroup.MarginLayoutParams
             val currentBottomMargin = layoutParams.bottomMargin
             val targetBottomMargin = 0 // Reset to original (assuming it was 0 initially)
 
             // Animate the margin change back to original
-            android.animation.ValueAnimator.ofInt(currentBottomMargin, targetBottomMargin).apply {
+            bottomAnimator = ValueAnimator.ofInt(currentBottomMargin, targetBottomMargin).apply {
                 duration = 300
                 interpolator = android.view.animation.DecelerateInterpolator()
 
