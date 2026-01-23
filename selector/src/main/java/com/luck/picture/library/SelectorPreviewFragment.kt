@@ -170,7 +170,6 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
         mTitleBar = view.findViewById(R.id.ps_title_bar)
         mIvLeftBack = view.findViewById(R.id.ps_iv_left_back)
         mTvTitle = view.findViewById(R.id.ps_tv_title)
-        mTvTitle?.visibility = if (getPreviewWrap().totalCount > 1) View.VISIBLE else View.GONE
 
         mTvSelected = view.findViewById(R.id.ps_tv_selected)
         mTitleBar?.let {
@@ -199,6 +198,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
             viewModel.page = getPreviewWrap().page
             config.previewWrap.source.clear()
         }
+        mTvTitle?.visibility = if (getPreviewWrap().totalCount > 1) View.VISIBLE else View.GONE
     }
 
     open fun initTitleBar() {
