@@ -3,15 +3,17 @@ package com.luck.picture.library
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.view.WindowInsetsController
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.blankj.utilcode.util.AppUtils
 import com.luck.picture.library.factory.ClassFactory
 import com.luck.picture.library.helper.FragmentInjectManager
+import com.luck.picture.library.immersive.ImmersiveManager.immersiveAboveAPI23
+import com.luck.picture.library.immersive.ImmersiveManager.translucentStatusBar
 import com.luck.picture.library.provider.SelectorProviders
 import com.tmmtmm.im.style.utils.TmmThemeContext
+import com.tmmtmm.im.style.utils.getColorByAttr
 
 /**
  * @author：luck
@@ -23,8 +25,10 @@ class SelectorSupporterActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(TmmThemeContext.themeResId)
-        immersive()
+
         super.onCreate(savedInstanceState)
+        immersive()
+
         if (SelectorProviders.getInstance().getConfigQueue().isEmpty()) {
             AppUtils.relaunchApp(true)
             return
@@ -37,8 +41,9 @@ class SelectorSupporterActivity : AppCompatActivity() {
     }
 
     private fun immersive() {
-        enableEdgeToEdge()
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            enableEdgeToEdge()
             window.insetsController?.let { controller ->
                 controller.setSystemBarsAppearance(
                     0,
@@ -51,16 +56,17 @@ class SelectorSupporterActivity : AppCompatActivity() {
                 )
             }
         } else {
-            @Suppress("DEPRECATION")
-            window.decorView.systemUiVisibility =
-                window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            immersiveAboveAPI23(
+                this,
+                getColorByAttr(com.tmmtmm.im.style.R.attr.bg_3),
+                getColorByAttr(com.tmmtmm.im.style.R.attr.bg_3),
+                false
+            )
+            translucentStatusBar(
+                this,
+                false
+            )
         }
-//        immersiveAboveAPI23(
-//            this,
-//            config.statusBarStyle.getStatusBarColor(),
-//            config.statusBarStyle.getNavigationBarColor(),
-//            config.statusBarStyle.isDarkStatusBar()
-//        )
     }
 
 

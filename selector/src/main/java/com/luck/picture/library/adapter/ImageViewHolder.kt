@@ -6,6 +6,7 @@ import android.widget.TextView
 import com.luck.picture.library.R
 import com.luck.picture.library.entity.LocalMedia
 import com.luck.picture.library.utils.MediaUtils
+import com.tmmtmm.im.style.R as sR
 
 /**
  * @author：luck
@@ -22,11 +23,11 @@ open class ImageViewHolder(itemView: View) : ListMediaViewHolder(itemView) {
         when {
             isLongImage(media.width, media.height) -> {
                 tvMediaTag.visibility = View.VISIBLE
-                val longChartTag = itemView.context.getString(R.string.ps_long_chart)
+                val longChartTag = itemView.context.getString(sR.string.long_img)
                 when {
                     isGif(media.mimeType, media.getAvailablePath()) -> {
                         tvMediaTag.text =
-                            String.format("$longChartTag,${itemView.context.getString(R.string.ps_gif_tag)}")
+                            String.format("$longChartTag,${itemView.context.getString(sR.string.gif)}")
                     }
                     isWebp(media.mimeType, media.getAvailablePath()) -> {
                         tvMediaTag.text =

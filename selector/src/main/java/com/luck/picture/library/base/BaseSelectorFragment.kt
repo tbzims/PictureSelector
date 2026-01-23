@@ -163,7 +163,7 @@ abstract class BaseSelectorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setRequestedOrientation()
+//        setRequestedOrientation()
 //        setTranslucentStatusBar()
         isSavedInstanceState = savedInstanceState != null
         viewModel.onRestoreInstanceState(savedInstanceState)
@@ -645,6 +645,10 @@ abstract class BaseSelectorFragment : Fragment() {
                 if (intent.resolveActivity(context.packageManager) != null) {
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri)
                     intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, config.recordVideoMaxSecond)
+                    intent.putExtra(
+                        "android.intent.extra.MAX_DURATION",
+                        config.recordVideoMaxSecond
+                    )
                     intent.putExtra(SelectorConstant.QUICK_CAPTURE, config.isQuickCapture)
                     startActivityForResult(intent, SelectorConstant.REQUEST_CAMERA)
                     ForegroundService.startService(context, config.isForegroundService)
