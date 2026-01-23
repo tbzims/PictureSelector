@@ -269,10 +269,9 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                 }
                 mAdapter.notifyDataSetChanged()
                 onSelectionResultChange(null)
-//                mAdapter.setData(getSelectResult())
             }
-            SelectorLogUtils.info("当前选中数量->${getSelectResult().size}")
-            SelectorLogUtils.info("当前数量->${mAdapter.getData().size},mediaList:${mediaList.size}")
+//            SelectorLogUtils.info("当前选中数量->${getSelectResult().size}")
+//            SelectorLogUtils.info("当前数量->${mAdapter.getData().size},mediaList:${mediaList.size}")
         }
     }
 
@@ -714,13 +713,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                     val statusBarHeight = getStatusBarHeight(requireContext())
                     RecycleItemViewParams.build(mRecycler, if (isFullScreen) 0 else statusBarHeight)
                 }
-                onStartPreview(0, true, mutableListOf(media))
-//                if (config.selectionMode == SelectionMode.ONLY_SINGLE) {
-////                    mTvComplete?.performClick()
-//                    handleSelectResult(media)
-//                } else {
-//
-//                }
+                onStartPreview(position, false, mAdapter.getData())
             }
 
             override fun onComplete(isSelected: Boolean, position: Int, media: LocalMedia) {
@@ -1163,7 +1156,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
             this.bucketId = getCurrentAlbum().bucketId
             this.isBottomPreview = isBottomPreview
             this.isDisplayCamera = mAdapter.isDisplayCamera()
-            if (config.isOnlySandboxDir || source.size <= 1) {
+            if (config.isOnlySandboxDir) {
                 this.totalCount = source.size
             } else {
                 this.totalCount = if (isBottomPreview) source.size else getCurrentAlbum().totalCount

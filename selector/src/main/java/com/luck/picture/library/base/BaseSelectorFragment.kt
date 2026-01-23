@@ -71,6 +71,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import java.io.File
 import java.io.FileOutputStream
+import java.util.UUID
 import com.tmmtmm.im.style.R as sR
 
 /**
@@ -80,6 +81,7 @@ import com.tmmtmm.im.style.R as sR
  */
 abstract class BaseSelectorFragment : Fragment() {
 
+    private val uuidKey = UUID.randomUUID().hashCode()
     abstract fun getFragmentTag(): String
     abstract fun getResourceId(): Int
     open fun isNormalDefaultEnter(): Boolean {
@@ -173,6 +175,7 @@ abstract class BaseSelectorFragment : Fragment() {
         restoreEngine()
         createLoadingDialog()
         setFragmentKeyBackListener()
+
     }
 
     protected open fun initFitScreen(view: View) {
@@ -188,8 +191,9 @@ abstract class BaseSelectorFragment : Fragment() {
             insets
         }
     }
+
     fun getSelectResult(): MutableList<LocalMedia> {
-        return TempDataProvider.getInstance().selectResult
+        return TempDataProvider.getInstance().getSelectResult(uuidKey)
     }
 
     open fun setRequestedOrientation() {
@@ -308,6 +312,7 @@ abstract class BaseSelectorFragment : Fragment() {
                     requireActivity().supportFragmentManager.popBackStack()
                 }
                 SelectorProviders.getInstance().destroy()
+                TempDataProvider.getInstance().destroy(uuidKey)
             } else {
                 // Pop the top state off the back stack. This function is asynchronous
                 // it enqueues the request to pop, but the action will not be performed
@@ -364,9 +369,9 @@ abstract class BaseSelectorFragment : Fragment() {
                             }
                         }
                     }
+                    SelectorProviders.getInstance().destroy()
+                    TempDataProvider.getInstance().destroy(uuidKey)
                 }
-                TempDataProvider.getInstance().reset()
-                SelectorProviders.getInstance().destroy()
             }
         }
     }

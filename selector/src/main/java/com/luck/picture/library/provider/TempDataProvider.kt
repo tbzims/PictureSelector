@@ -1,5 +1,6 @@
 package com.luck.picture.library.provider
 
+import android.util.SparseArray
 import com.luck.picture.library.entity.LocalMedia
 import com.luck.picture.library.entity.LocalMediaAlbum
 import com.luck.picture.library.entity.PreviewDataWrap
@@ -35,7 +36,9 @@ class TempDataProvider {
     /**
      * select result
      */
-    var selectResult = mutableListOf<LocalMedia>()
+//    var selectResult = mutableListOf<LocalMedia>()
+
+    private var selectResultList = SparseArray<MutableList<LocalMedia>>()
 
     /**
      * Current apply permission
@@ -49,14 +52,28 @@ class TempDataProvider {
         if (albumSource.isNotEmpty()) {
             albumSource.clear()
         }
-        if (selectResult.isNotEmpty()) {
-            selectResult.clear()
-        }
+//        if (selectResultList) {
+//            selectResult.clear()
+//        }
         previewWrap.reset()
         currentMediaAlbum = LocalMediaAlbum.ofDefault()
         if (currentRequestPermission.isNotEmpty()) {
             currentRequestPermission = arrayOf()
         }
+    }
+
+    fun getSelectResult(selectResult: Int): MutableList<LocalMedia> {
+        return if (selectResultList.get(selectResult) == null) {
+            val list = mutableListOf<LocalMedia>()
+            selectResultList.put(selectResult, list)
+            list
+        } else {
+            selectResultList.get(selectResult)
+        }
+    }
+
+    fun destroy(selectResult: Int) {
+        selectResultList.remove(selectResult)
     }
 
     companion object {

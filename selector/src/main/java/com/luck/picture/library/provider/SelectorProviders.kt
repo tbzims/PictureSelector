@@ -21,7 +21,7 @@ class SelectorProviders {
     }
 
     fun getConfig(): SelectorConfig {
-        return if (configQueue.size > 0) configQueue.last else SelectorConfig()
+        return if (configQueue.isNotEmpty()) configQueue.last() else SelectorConfig()
     }
 
     fun destroy() {
