@@ -81,7 +81,7 @@ import com.tmmtmm.im.style.R as sR
  */
 abstract class BaseSelectorFragment : Fragment() {
 
-    private val uuidKey = UUID.randomUUID().hashCode()
+    protected var uuidKey = UUID.randomUUID().hashCode()
     abstract fun getFragmentTag(): String
     abstract fun getResourceId(): Int
     open fun isNormalDefaultEnter(): Boolean {

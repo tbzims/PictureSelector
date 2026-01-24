@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.WindowInsetsController
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.blankj.utilcode.util.AppUtils
 import com.luck.picture.library.factory.ClassFactory
 import com.luck.picture.library.helper.FragmentInjectManager
 import com.luck.picture.library.immersive.ImmersiveManager.immersiveAboveAPI23
@@ -30,7 +29,7 @@ class SelectorSupporterActivity : AppCompatActivity() {
         immersive()
 
         if (SelectorProviders.getInstance().getConfigQueue().isEmpty()) {
-            AppUtils.relaunchApp(true)
+            onBackPressedDispatcher.onBackPressed()
             return
         }
 

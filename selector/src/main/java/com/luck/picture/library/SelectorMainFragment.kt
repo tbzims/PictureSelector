@@ -1162,6 +1162,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                 this.totalCount = if (isBottomPreview) source.size else getCurrentAlbum().totalCount
             }
             this.source = source.toMutableList()
+            this.selectResultKey = uuidKey
         }
     }
 

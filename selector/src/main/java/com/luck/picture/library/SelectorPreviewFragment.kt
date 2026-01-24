@@ -196,6 +196,9 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
         if (config.previewWrap.source.isNotEmpty()) {
             setPreviewWrap(config.previewWrap.copy())
             viewModel.page = getPreviewWrap().page
+            if (getPreviewWrap().selectResultKey != 0) {
+                this.uuidKey = getPreviewWrap().selectResultKey
+            }
             config.previewWrap.source.clear()
         }
         mTvTitle?.visibility = if (getPreviewWrap().totalCount > 1) View.VISIBLE else View.GONE

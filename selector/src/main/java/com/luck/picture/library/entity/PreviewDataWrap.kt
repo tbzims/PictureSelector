@@ -14,6 +14,7 @@ class PreviewDataWrap {
     var isDisplayCamera: Boolean = false
     var isBottomPreview: Boolean = false
     var isDisplayDelete: Boolean = false
+    var selectResultKey: Int = 0
     var isExternalPreview: Boolean = false
     var source = mutableListOf<LocalMedia>()
 
@@ -28,6 +29,7 @@ class PreviewDataWrap {
         wrap.isDisplayCamera = isDisplayCamera
         wrap.isDisplayDelete = isDisplayDelete
         wrap.isExternalPreview = isExternalPreview
+        wrap.selectResultKey = selectResultKey
         wrap.source = source.toMutableList()
         return wrap
     }
@@ -40,6 +42,7 @@ class PreviewDataWrap {
         isDisplayCamera = false
         isBottomPreview = false
         isDisplayDelete = false
+        selectResultKey = 0
         if (source.isNotEmpty()) {
             source.clear()
         }
