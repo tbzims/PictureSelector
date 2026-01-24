@@ -1172,8 +1172,12 @@ open class SelectorMainFragment : BaseSelectorFragment() {
             onCheckDuplicateMedia(media)
             onMergeCameraAlbum(media)
             onMergeCameraMedia(media)
-
-            onStartPreview(0, true, mutableListOf(media))
+            if (MediaUtils.hasMimeTypeOfImage(media.mimeType)) {
+                onStartPreview(0, true, mutableListOf(media))
+            }
+            if (MediaUtils.hasMimeTypeOfVideo(media.mimeType)) {
+                handleSelectResult()
+            }
         } else {
             SelectorLogUtils.info("analysisCameraData: Parsing LocalMedia object as empty")
         }
