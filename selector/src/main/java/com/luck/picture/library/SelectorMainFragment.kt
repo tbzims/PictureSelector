@@ -578,7 +578,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                 if (getSelectResult().contains(change)) {
                     val lastPosition = previewAdapter?.itemCount ?: (0 - 1)
                     if (lastPosition >= 0) {
-                        psRvPreview?.smoothScrollToPosition(lastPosition)
+                        psRvPreview?.scrollToPosition(lastPosition)
                     }
                 }
             }
