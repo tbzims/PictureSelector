@@ -326,7 +326,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
         mTvComplete?.setDataStyle(config, getSelectResult())
 
         if (getSelectResult().isNotEmpty()) {
-            mTvComplete?.text = "${getSelectResult().size} ${getString(sR.string.next)}"
+            mTvComplete?.text = "${getSelectResult().size} ${getString(sR.string.next_button)}"
             mTvComplete?.visibility = View.VISIBLE
         } else {
             mTvComplete?.visibility = View.GONE

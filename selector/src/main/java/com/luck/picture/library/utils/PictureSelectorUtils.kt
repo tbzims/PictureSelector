@@ -86,7 +86,7 @@ class PictureSelectorUtils(
             )
             .isNotRequestMode(isNotRequest)
             .isPreviewZoomEffect(
-                isPreviewEffect = false,
+                isPreviewEffect = true,
                 isFullScreen = true
             )
             .isDisplayCamera(showCamera)

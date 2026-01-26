@@ -585,7 +585,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         }
 
         if (selectResult.isNotEmpty()) {
-            mTvComplete?.text = "${selectResult.size} ${getString(sR.string.next)}"
+            mTvComplete?.text = "${selectResult.size} ${getString(sR.string.next_button)}"
         }
 
         var totalSize: Long = 0
