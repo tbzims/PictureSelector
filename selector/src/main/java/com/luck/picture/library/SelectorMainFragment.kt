@@ -23,6 +23,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -162,6 +164,28 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         checkPermissions()
         registerLiveData()
         initWidgets()
+    }
+
+    private var targetBottomMargin = 0
+    override fun initFitScreen(view: View) {
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            mTitleBar?.setPadding(
+                mTitleBar?.paddingStart ?: 0,
+                statusBars.top,
+                mTitleBar?.paddingEnd ?: 0,
+                mTitleBar?.paddingBottom ?: 0
+            )
+            psBottomPreviewBar?.setPadding(
+                psBottomPreviewBar?.paddingStart ?: 0,
+                psBottomPreviewBar?.paddingTop ?: 0,
+                psBottomPreviewBar?.paddingRight ?: 0,
+                navBars.bottom
+            )
+            targetBottomMargin = resources.getDimension(sR.dimen.dp_56).toInt() + navBars.bottom
+            insets
+        }
     }
 
     open fun initViews(view: View) {
@@ -1284,10 +1308,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         if (psRecycler != null) {
             val layoutParams = psRecycler.layoutParams as ViewGroup.MarginLayoutParams
 //            val originalBottomMargin = layoutParams.bottomMargin
-
             // Calculate the target bottom margin (current margin + height of bottom bar)
-            val targetBottomMargin = resources.getDimension(sR.dimen.dp_56).toInt()
-
             // Animate the margin change
             bottomAnimator = ValueAnimator.ofInt(0, targetBottomMargin)
                 .apply {

@@ -223,7 +223,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ps_bottom_preview_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_56"
+        android:layout_height="wrap_content"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -233,12 +233,13 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/ps_rv_preview"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="@dimen/dp_56"
             android:layout_marginStart="@dimen/dp_8"
             android:layout_marginEnd="@dimen/dp_8"
             android:fadingEdgeLength="@dimen/dp_40"
             android:requiresFadingEdge="horizontal"
             android:visibility="gone"
+            tools:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ps_tv_complete"
             app:layout_constraintStart_toStartOf="parent"

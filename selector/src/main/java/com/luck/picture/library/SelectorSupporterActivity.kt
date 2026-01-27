@@ -40,7 +40,6 @@ class SelectorSupporterActivity : AppCompatActivity() {
     }
 
     private fun immersive() {
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             enableEdgeToEdge()
             window.insetsController?.let { controller ->

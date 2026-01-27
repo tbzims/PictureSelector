@@ -13,14 +13,19 @@
     <com.luck.picture.library.magical.MagicalView
         android:id="@+id/magical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ps_title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/preview_top_bg"
         android:clickable="true"
         android:focusable="true"
+        android:paddingBottom="@dimen/dp_29"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -67,8 +72,8 @@
 
         <com.luck.picture.library.widget.MediumBoldTextView
             android:id="@+id/ps_tv_selected"
-            android:layout_width="@dimen/dp_24"
-            android:layout_height="@dimen/dp_24"
+            android:layout_width="@dimen/dp_22"
+            android:layout_height="@dimen/dp_22"
             android:layout_marginEnd="20dp"
             android:background="@drawable/ps_checkbox_selector"
             android:gravity="center"
@@ -84,8 +89,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ps_bottom_nar_bar"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
+        android:layout_height="wrap_content"
         android:clickable="true"
+        android:background="?attr/bg_3"
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -128,7 +134,9 @@
             android:id="@+id/ps_tv_complete"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/dp_32"
+            android:layout_marginTop="@dimen/dp_8"
             android:layout_marginEnd="@dimen/dp_16"
+            android:layout_marginBottom="@dimen/dp_8"
             android:background="@drawable/btn_complete_bg"
             android:gravity="center"
             android:minWidth="@dimen/dp_78"

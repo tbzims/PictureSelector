@@ -145,10 +145,21 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
             val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            mTitleBar?.setPadding(0, statusBars.top, 0, 0)
-            val params = mBottomNarBar?.layoutParams as? ViewGroup.MarginLayoutParams
-            params?.bottomMargin = navBars.bottom
-            mBottomNarBar?.layoutParams = params
+            mTitleBar?.setPadding(
+                mTitleBar?.paddingStart ?: 0,
+                statusBars.top,
+                mTitleBar?.paddingEnd ?: 0,
+                mTitleBar?.paddingBottom ?: 0
+            )
+//            val params = mBottomNarBar?.layoutParams as? ViewGroup.MarginLayoutParams
+//            params?.bottomMargin = navBars.bottom
+//            mBottomNarBar?.layoutParams = params
+            mBottomNarBar?.setPadding(
+                mBottomNarBar?.paddingStart ?: 0,
+                mBottomNarBar?.paddingTop ?: 0,
+                mBottomNarBar?.paddingRight ?: 0,
+                navBars.bottom
+            )
             insets
         }
     }
@@ -234,7 +245,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
             if (getPreviewWrap().source.isNotEmpty()) getPreviewWrap().source[getPreviewWrap().position] else null
 //        val media = getPreviewWrap().source[getPreviewWrap().position]
         if (media == null) {
-            activity?.finish()
+            onBackPressed()
             return
         }
         mTvEditor?.visibility =
@@ -779,12 +790,19 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
         viewAnimSet.duration = 350
         viewAnimSet.start()
         isAnimationStart = true
+        if (!isInitTitleBar) {
+            if (SdkVersionUtils.isP() && isAdded) {
+                showHideStatusBar(isInitTitleBar)
+            }
+        }
         viewAnimSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 viewAnimSet.removeListener(this)
                 isAnimationStart = false
-                if (SdkVersionUtils.isP() && isAdded) {
-                    showHideStatusBar(isInitTitleBar)
+                if (isInitTitleBar) {
+                    if (SdkVersionUtils.isP() && isAdded) {
+                        showHideStatusBar(isInitTitleBar)
+                    }
                 }
             }
         })
