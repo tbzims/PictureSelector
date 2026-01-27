@@ -28,6 +28,7 @@ class PictureSelectorUtils(
     val maxSelectVideoNum: Int = 1,
     val isGif: Boolean = false,
     val isWebp: Boolean = false,
+    val isHeic: Boolean = false,
     val isUCrop: Boolean = false,
     val uCropRatio: SizeF = SizeF(-1f, -1f),
     val isPreviewImage: Boolean = isMultiple,
@@ -94,6 +95,7 @@ class PictureSelectorUtils(
             .registry(CustomPreviewExoVideoHolder::class.java)
             .isGif(isGif)
             .isWebp(isWebp)
+            .isHeic(isHeic)
             .isAllWithImageVideo(isAllWithImageVideo)
             .setMediaConverterEngine(MediaConverter.create())
             .setCropEngine(if (isUCrop) UCropEngine(uCropRatio) else null)
