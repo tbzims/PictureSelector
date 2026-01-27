@@ -887,14 +887,12 @@ abstract class BaseSelectorFragment : Fragment() {
 
             MediaType.IMAGE -> {
                 if (count >= config.totalCount) {
-                    ToastX.with(requireActivity())
-                        .text(
-                            getString(
-                                sR.string.select_photos_max,
-                                config.totalCount
-                            )
+                    ToastX.show(
+                        requireActivity(), getString(
+                            sR.string.select_photos_max,
+                            config.totalCount
                         )
-                        .show()
+                    )
 //                    showTipsDialog(
 //                        getString(
 //                            R.string.ps_message_max_num, config.totalCount.toString()
