@@ -549,6 +549,9 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                 }
             }
             mTvComplete?.setOnClickListener {
+                if (DoubleUtils.isFastDoubleClick()) {
+                    return@setOnClickListener
+                }
                 onCompleteClick(it)
             }
         }

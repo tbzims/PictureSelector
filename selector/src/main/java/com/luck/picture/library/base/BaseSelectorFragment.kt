@@ -341,7 +341,7 @@ abstract class BaseSelectorFragment : Fragment() {
             viewModel.viewModelScope.launch {
                 val mediaConverterEngine = config.mediaConverterEngine
                 if (mediaConverterEngine != null) {
-                    showLoading()
+//                    showLoading()
                     selectResult.forEach { media ->
                         mediaConverterEngine.converter(requireContext(), media)
                     }
