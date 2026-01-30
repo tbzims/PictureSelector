@@ -5,9 +5,9 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.isVisible
 import com.airbnb.lottie.LottieAnimationView
 import com.luck.picture.library.R
-import androidx.core.view.isVisible
 
 class NoDataEmptyView @JvmOverloads constructor(
     context: Context,
@@ -31,6 +31,14 @@ class NoDataEmptyView @JvmOverloads constructor(
             VISIBLE -> animationView?.playAnimation()
             GONE, INVISIBLE -> animationView?.pauseAnimation()
         }
+    }
+
+    fun setFirstMessage(firstMessage: String?) {
+        tvFirstMessage?.text = firstMessage
+    }
+
+    fun setSecondMessage(secondMessage: String?) {
+        tvSecondMessage?.text = secondMessage
     }
 
     override fun onAttachedToWindow() {

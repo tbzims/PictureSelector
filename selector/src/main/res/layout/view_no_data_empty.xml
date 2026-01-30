@@ -22,6 +22,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_12"
+        android:fontFamily="@font/figtree_semibold"
+        android:textFontWeight="600"
         android:text="@string/no_data_available"
         android:textColor="?attr/white_100"
         android:textSize="@dimen/sp_17" />
@@ -30,6 +32,8 @@
         android:id="@+id/tvSecondMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/figtree_regular"
+        android:textFontWeight="400"
         android:layout_marginTop="@dimen/dp_8"
         android:textSize="@dimen/sp_15"
         android:textColor="?attr/white_64"
