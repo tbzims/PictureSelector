@@ -70,7 +70,6 @@ class GlideEngine : ImageEngine {
         }
         Glide.with(context).load(url)
             .transform(CenterCrop(), RoundedCorners(round))
-            .placeholder(R.drawable.ps_image_placeholder)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(imageView)
     }

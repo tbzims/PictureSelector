@@ -34,5 +34,11 @@
         android:textColor="@color/ps_color_white"
         android:textSize="11sp" />
 
+    <ImageView
+        android:id="@+id/ivMask"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0"
+        android:src="?attr/black_50" />
 
 </com.luck.picture.library.widget.SquareRelativeLayout>

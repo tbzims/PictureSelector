@@ -1,13 +1,10 @@
 package com.luck.picture.library.adapter
 
-import android.graphics.ColorFilter
 import android.graphics.Rect
 import android.view.TouchDelegate
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
-import androidx.core.graphics.BlendModeColorFilterCompat
-import androidx.core.graphics.BlendModeCompat
 import com.luck.picture.library.R
 import com.luck.picture.library.adapter.base.BaseListViewHolder
 import com.luck.picture.library.config.SelectionMode
@@ -16,11 +13,8 @@ import com.luck.picture.library.constant.SelectorConstant
 import com.luck.picture.library.entity.LocalMedia
 import com.luck.picture.library.utils.DensityUtil
 import com.luck.picture.library.utils.MediaUtils
-import com.luck.picture.library.utils.StyleUtils
 import com.luck.picture.library.widget.StyleTextView
 import com.tmmtmm.im.style.utils.ClickUtil
-import com.tmmtmm.im.style.utils.getColorByAttr
-import com.tmmtmm.im.style.R as sR
 
 /**
  * @author：luck
@@ -30,15 +24,16 @@ import com.tmmtmm.im.style.R as sR
 open class ListMediaViewHolder(itemView: View) : BaseListViewHolder(itemView) {
     var tvSelectView: StyleTextView = itemView.findViewById(R.id.ps_tv_check)
     var ivCover: ImageView = itemView.findViewById(R.id.iv_cover)
-    var defaultColorFilter: ColorFilter =
-        StyleUtils.getColorFilter(itemView.context, sR.color.transparent)!!
+    var ivMark: ImageView = itemView.findViewById(R.id.ivMask)
+//    var defaultColorFilter: ColorFilter =
+//        StyleUtils.getColorFilter(itemView.context, sR.color.transparent)!!
 
     //    var selectColorFilter: ColorFilter =
 //        StyleUtils.getColorFilter(itemView.context, R.color.ps_color_80)!!
-    var maskWhiteColorFilter: ColorFilter =
-        BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-            itemView.context.getColorByAttr(sR.attr.black_50), BlendModeCompat.SRC_ATOP
-        )!!
+//    var maskWhiteColorFilter: ColorFilter =
+//        BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+//            itemView.context.getColorByAttr(sR.attr.black_50), BlendModeCompat.SRC_ATOP
+//        )!!
 
     open fun bindData(media: LocalMedia, position: Int) {
         setupTouchDelegate()
@@ -185,7 +180,9 @@ open class ListMediaViewHolder(itemView: View) : BaseListViewHolder(itemView) {
         }
         media.isEnabledMask = isDisplayMask
         if (media.isEnabledMask) {
-            ivCover.colorFilter = maskWhiteColorFilter
+            ivMark.animate().alpha(1f).setDuration(200).start()
+        } else {
+            ivMark.animate().alpha(0f).setDuration(200).start()
         }
     }
 
@@ -196,13 +193,12 @@ open class ListMediaViewHolder(itemView: View) : BaseListViewHolder(itemView) {
      */
     private fun isSelectedMedia(isSelected: Boolean) {
         if (config.selectionMode == SelectionMode.ONLY_SINGLE) {
-            ivCover.colorFilter = defaultColorFilter
+//            ivCover.colorFilter = defaultColorFilter
         } else {
             if (tvSelectView.isSelected != isSelected) {
                 tvSelectView.isSelected = isSelected
             }
 //            ivCover.colorFilter = if (isSelected) selectColorFilter else defaultColorFilter
-            ivCover.colorFilter = defaultColorFilter
         }
     }
 

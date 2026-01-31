@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.luck.picture.library.adapter.MediaListNewAdapter
 import com.luck.picture.library.adapter.PreviewAdapter
 import com.luck.picture.library.adapter.base.BaseMediaListAdapter
+import com.luck.picture.library.animators.CustomFadeAnimator
 import com.luck.picture.library.base.BaseSelectorFragment
 import com.luck.picture.library.config.LayoutSource
 import com.luck.picture.library.config.MediaType
@@ -501,6 +502,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         val layoutManager = LinearLayoutManager(requireContext())
         layoutManager.orientation = LinearLayoutManager.HORIZONTAL
         psRvPreview?.layoutManager = layoutManager
+        psRvPreview?.itemAnimator = CustomFadeAnimator()
         if (getSelectResult().isNotEmpty()) {
             psRvPreview?.layoutAnimation = AnimationUtils
                 .loadLayoutAnimation(requireContext(), R.anim.ps_anim_layout_fall_enter)
@@ -508,12 +510,8 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         psRvPreview?.addItemDecoration(
             HorizontalItemDecoration(Integer.MAX_VALUE, DensityUtil.dip2px(requireContext(), 8F))
         )
-        previewAdapter = PreviewAdapter(
-            config,
-            false,
-            getSelectResult()
-        )
-        previewAdapter?.selectResult = getSelectResult()
+        previewAdapter = PreviewAdapter(config)
+
         psRvPreview?.adapter = previewAdapter
         previewAdapter?.setOnItemClickListener(object : OnItemClickListener<LocalMedia> {
             override fun onItemClick(
@@ -600,12 +598,13 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                     hidePreviewBottomBarWithAnimation()
                     isShowPreview = false
                 }
-                previewAdapter?.selectResult = getSelectResult()
-                previewAdapter?.notifyDataSetChanged()
-                if (getSelectResult().contains(change)) {
-                    val lastPosition = previewAdapter?.itemCount ?: (0 - 1)
-                    if (lastPosition >= 0) {
-                        psRvPreview?.scrollToPosition(lastPosition)
+                if (change == null) {
+                    previewAdapter?.setNewData(selectResult)
+                } else {
+                    if (selectResult.contains(change)) {
+                        previewAdapter?.addData(change)
+                    } else {
+                        previewAdapter?.removeData(change)
                     }
                 }
             }

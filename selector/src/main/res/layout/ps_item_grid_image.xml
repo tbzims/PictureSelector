@@ -43,4 +43,10 @@
         android:src="@drawable/ps_ic_editor"
         android:visibility="gone" />
 
+    <ImageView
+        android:id="@+id/ivMask"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0"
+        android:src="?attr/black_50" />
 </com.luck.picture.library.widget.SquareRelativeLayout>

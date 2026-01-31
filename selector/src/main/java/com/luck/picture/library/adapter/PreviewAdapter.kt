@@ -13,15 +13,34 @@ import com.luck.picture.library.interfaces.OnItemClickListener
 import com.luck.picture.library.interfaces.OnLongClickListener
 import com.luck.picture.library.utils.DensityUtil
 import com.luck.picture.library.utils.MediaUtils
-import com.luck.picture.library.utils.StyleUtils.getColorFilter
 
-class PreviewAdapter(var config: SelectorConfig,
-                     var isBottomPreview: Boolean,
-                     var data: MutableList<LocalMedia>
+class PreviewAdapter(
+    var config: SelectorConfig
 ) :
     RecyclerView.Adapter<PreviewAdapter.GalleryViewHolder>() {
     var currentMedia: LocalMedia? = null
-    var selectResult: MutableList<LocalMedia>? = null
+
+    //    var selectResult: MutableList<LocalMedia>? = null
+    private var data: MutableList<LocalMedia> = mutableListOf()
+
+    fun setNewData(data: MutableList<LocalMedia>) {
+        this.data = data.toMutableList()
+        notifyDataSetChanged()
+    }
+
+    fun addData(data: LocalMedia) {
+        this.data.add(data)
+        notifyItemInserted(this.data.size - 1)
+    }
+
+    fun removeData(data: LocalMedia) {
+        val index = this.data.indexOf(data)
+        if (index >= 0) {
+            notifyItemChanged(index)
+            this.data.removeAt(index)
+            notifyItemRemoved(index)
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GalleryViewHolder {
         return GalleryViewHolder(
@@ -32,13 +51,7 @@ class PreviewAdapter(var config: SelectorConfig,
 
     override fun onBindViewHolder(holder: GalleryViewHolder, position: Int) {
         val media = data[position]
-        if (isBottomPreview) {
-            val colorFilter = getColorFilter(
-                holder.itemView.context,
-                if (selectResult?.contains(media) == true) R.color.ps_color_transparent else R.color.ps_color_half_white
-            )
-            holder.ivCover.colorFilter = colorFilter
-        }
+
         holder.viewBorder.visibility =
             if (isSelected(currentMedia, media)) View.VISIBLE else View.INVISIBLE
         holder.ivEditor.visibility = if (media.isEditor()) View.VISIBLE else View.GONE

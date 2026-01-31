@@ -212,7 +212,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
             }
             config.previewWrap.source.clear()
         }
-        mTvTitle?.visibility = if (getPreviewWrap().totalCount > 1) View.VISIBLE else View.GONE
+//        mTvTitle?.visibility = if (getPreviewWrap().totalCount > 1) View.VISIBLE else View.GONE
     }
 
     open fun initTitleBar() {
@@ -292,6 +292,12 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
             startSelectedAnim(v)
         }
         v.isSelected = isSelected
+        val selectedPosition = getSelectResult().indexOf(media)
+        if (selectedPosition >= 0) {
+            mTvSelected?.text = (selectedPosition + 1).toString()
+        } else {
+            mTvSelected?.text = ""
+        }
         if (config.selectionMode == SelectionMode.ONLY_SINGLE) {
             handleSelectResult()
         }
@@ -430,6 +436,8 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
 
     open fun startZoomEffect(holder: BasePreviewMediaHolder, media: LocalMedia) {
         viewPager.alpha = 0F
+        mTitleBar?.alpha = 0F
+        mBottomNarBar?.alpha = 0f
         holder.imageCover.scaleType =
             if (media.width == 0 && media.height == 0) ImageView.ScaleType.FIT_CENTER else ImageView.ScaleType.CENTER_CROP
         viewModel.viewModelScope.launch {
@@ -442,9 +450,9 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
             if (viewParams == null || width == 0 && height == 0) {
                 mMagicalView?.startNormal(width, height, false)
                 mMagicalView?.setBackgroundAlpha(1F)
-                navBarViews.forEach {
-                    it.alpha = 1F
-                }
+//                navBarViews.forEach {
+//                    it.alpha = 1F
+//                }
             } else {
                 mMagicalView?.setViewParams(
                     viewParams.left,
@@ -456,8 +464,11 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
                 )
                 mMagicalView?.start(false)
             }
+            mTitleBar?.animate()?.alpha(1f)?.setDuration(200)?.start()
+            mBottomNarBar?.animate()?.alpha(1f)?.setDuration(200)?.start()
+
             val objectAnimator = ObjectAnimator.ofFloat(viewPager, "alpha", 0F, 1F)
-            objectAnimator.duration = 50
+            objectAnimator.duration = 200
             objectAnimator.start()
         }
     }
@@ -569,6 +580,12 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
                 else getPreviewWrap().source[position + 1]
             mTvSelected?.isSelected =
                 getSelectResult().contains(currentMedia)
+            val selectedPosition = getSelectResult().indexOf(currentMedia)
+            if (selectedPosition >= 0) {
+                mTvSelected?.text = (selectedPosition + 1).toString()
+            } else {
+                mTvSelected?.text = ""
+            }
         }
     }
 
