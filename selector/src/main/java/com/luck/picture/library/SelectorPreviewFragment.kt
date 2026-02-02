@@ -19,6 +19,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -44,6 +45,7 @@ import com.luck.picture.library.magical.OnMagicalViewListener
 import com.luck.picture.library.magical.RecycleItemViewParams
 import com.luck.picture.library.provider.TempDataProvider
 import com.luck.picture.library.utils.DensityUtil
+import com.luck.picture.library.utils.DoubleUtils
 import com.luck.picture.library.utils.FileUtils
 import com.luck.picture.library.utils.MediaUtils
 import com.luck.picture.library.utils.SdkVersionUtils
@@ -71,6 +73,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
 
     var screenWidth = 0
     var screenHeight = 0
+    private var psFragmentPreview: ConstraintLayout? = null
     var mTitleBar: ViewGroup? = null
     var mIvLeftBack: ImageView? = null
     var mTvTitle: TextView? = null
@@ -127,6 +130,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         super.onViewCreated(view, savedInstanceState)
         screenWidth = DensityUtil.getRealScreenWidth(requireContext())
         screenHeight = DensityUtil.getScreenHeight(requireContext())
@@ -177,6 +181,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
     }
 
     open fun initViews(view: View) {
+        psFragmentPreview = view.findViewById(R.id.ps_fragment_preview)
         // TitleBar
         mTitleBar = view.findViewById(R.id.ps_title_bar)
         mIvLeftBack = view.findViewById(R.id.ps_iv_left_back)
@@ -259,6 +264,9 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
             onOriginalClick(tvOriginal)
         }
         mTvComplete?.setOnClickListener {
+            if (DoubleUtils.isFastDoubleClick()) {
+                return@setOnClickListener
+            }
             onCompleteClick(it)
         }
     }
@@ -435,6 +443,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
     }
 
     open fun startZoomEffect(holder: BasePreviewMediaHolder, media: LocalMedia) {
+        psFragmentPreview?.alpha = 0F
         viewPager.alpha = 0F
         mTitleBar?.alpha = 0F
         mBottomNarBar?.alpha = 0f
@@ -464,6 +473,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
                 )
                 mMagicalView?.start(false)
             }
+            psFragmentPreview?.animate()?.alpha(1f)?.setDuration(200)?.start()
             mTitleBar?.animate()?.alpha(1f)?.setDuration(200)?.start()
             mBottomNarBar?.animate()?.alpha(1f)?.setDuration(200)?.start()
 

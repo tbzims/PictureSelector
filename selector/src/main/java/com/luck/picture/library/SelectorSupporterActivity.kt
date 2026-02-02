@@ -40,7 +40,7 @@ class SelectorSupporterActivity : AppCompatActivity() {
     }
 
     private fun immersive() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             enableEdgeToEdge()
             window.insetsController?.let { controller ->
                 controller.setSystemBarsAppearance(

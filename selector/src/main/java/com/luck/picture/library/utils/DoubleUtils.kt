@@ -8,7 +8,7 @@ import android.os.SystemClock
  * @describe：DoubleUtils
  */
 object DoubleUtils {
-    private const val TIME: Long = 600
+    private const val TIME: Long = 800
 
     private var lastClickTime: Long = 0
 

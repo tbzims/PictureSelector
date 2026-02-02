@@ -154,9 +154,9 @@ open class SelectorMainFragment : BaseSelectorFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        initFitScreen(view)
         super.onViewCreated(view, savedInstanceState)
         initViews(view)
+        initFitScreen(view)
         onMergeSelectedSource()
         initAlbumWindow()
         initTitleBar()
@@ -167,7 +167,8 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         initWidgets()
     }
 
-    private var targetBottomMargin = 0
+    private var targetBottomPadding = 0
+    private var minBottomPadding = 0
     override fun initFitScreen(view: View) {
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
             val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
@@ -184,7 +185,14 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                 psBottomPreviewBar?.paddingRight ?: 0,
                 navBars.bottom
             )
-            targetBottomMargin = resources.getDimension(sR.dimen.dp_56).toInt() + navBars.bottom
+            targetBottomPadding = resources.getDimension(sR.dimen.dp_56).toInt() + navBars.bottom
+            minBottomPadding = navBars.bottom
+            mRecycler.setPadding(
+                mRecycler.paddingStart,
+                mRecycler.paddingTop,
+                mRecycler.paddingRight,
+                navBars.bottom
+            )
             insets
         }
     }
@@ -1307,38 +1315,41 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         val psRecycler = this.mRecycler // RecyclerView that needs to adjust
 
         // Animate the RecyclerView to shrink its bottom margin to make space for the preview bar
-        if (psRecycler != null) {
-            val layoutParams = psRecycler.layoutParams as ViewGroup.MarginLayoutParams
-//            val originalBottomMargin = layoutParams.bottomMargin
-            // Calculate the target bottom margin (current margin + height of bottom bar)
-            // Animate the margin change
-            bottomAnimator = ValueAnimator.ofInt(0, targetBottomMargin)
-                .apply {
-                    duration = 300
-                    interpolator = android.view.animation.DecelerateInterpolator()
-                    addUpdateListener { animator ->
-                        val animatedValue = animator.animatedValue as Int
-                        layoutParams.bottomMargin = animatedValue
-                        psRecycler.layoutParams = layoutParams
-                    }
-                    start()
-                }
-        }
-        if (psBottomPreviewBar != null) {
-            // Set initial position below screen
-            psBottomPreviewBar.translationY = psBottomPreviewBar.height.toFloat()
-
+//        if (psRecycler != null) {
+//            val layoutParams = psRecycler.layoutParams as ViewGroup.MarginLayoutParams
+////            val originalBottomMargin = layoutParams.bottomMargin
+//            // Calculate the target bottom margin (current margin + height of bottom bar)
+//            // Animate the margin change
+//            bottomAnimator = ValueAnimator.ofInt(minBottomPadding, targetBottomMargin)
+//                .apply {
+//                    duration = 300
+//                    interpolator = android.view.animation.DecelerateInterpolator()
+//                    addUpdateListener { animator ->
+//                        val animatedValue = animator.animatedValue as Int
+//                        layoutParams.bottomMargin = animatedValue
+//                        psRecycler.layoutParams = layoutParams
+//                    }
+//                    start()
+//                }
+//        }
+        psBottomPreviewBar?.post {
+            psBottomPreviewBar.translationY = targetBottomPadding.toFloat()
+            psBottomPreviewBar.visibility = View.VISIBLE
             // Background slide up animation (0.3s, decelerate interpolator for fast first then slow effect)
             psBottomPreviewBar.animate()
-                .withStartAction {
-                    psBottomPreviewBar.visibility = View.VISIBLE
-                }
                 .translationY(0f)
                 .setDuration(300)
                 .setInterpolator(android.view.animation.DecelerateInterpolator())
+                .withEndAction {
+                    this.mRecycler?.setPadding(
+                        psRecycler.paddingStart,
+                        psRecycler.paddingTop,
+                        psRecycler.paddingEnd,
+                        targetBottomPadding
+                    )
+                }
                 .start()
         }
-
 
         // Image list and button fade in after delay (0.2s duration with 0.1s delay)
         psBottomPreviewBar?.postDelayed({
@@ -1372,10 +1383,8 @@ open class SelectorMainFragment : BaseSelectorFragment() {
      * Background slides down after delay (0.3s, fast first then slow)
      */
     private fun hidePreviewBottomBarWithAnimation() {
-        val psBottomPreviewBar = this.psBottomPreviewBar // Preview bottom bar background
         val psRvPreview = this.psRvPreview // Image list
         val mTvComplete = this.mTvComplete // Complete button
-        val psRecycler = this.mRecycler // RecyclerView that needs to adjust
 
         // Image list and button fade out (0.2s)
         var fadeOutCount = 0
@@ -1384,35 +1393,35 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         psRvPreview?.animate()?.alpha(0f)?.setDuration(200)?.withEndAction {
             fadeOutCount++
             if (fadeOutCount == totalCount) {
-                animateHideBottomBarAndExpandRecycler(psBottomPreviewBar, psRecycler)
+                animateHideBottomBarAndExpandRecycler()
             }
         }?.start()
 
         mTvComplete?.animate()?.alpha(0f)?.setDuration(200)?.withEndAction {
             fadeOutCount++
             if (fadeOutCount == totalCount) {
-                animateHideBottomBarAndExpandRecycler(psBottomPreviewBar, psRecycler)
+                animateHideBottomBarAndExpandRecycler()
             }
         }?.start()
 
         // If no views to fade out, start background animation immediately
         if (totalCount == 0) {
-            animateHideBottomBarAndExpandRecycler(psBottomPreviewBar, psRecycler)
+            animateHideBottomBarAndExpandRecycler()
         }
     }
 
     /**
      * Animates the hiding of bottom bar and expansion of recycler
      */
-    private fun animateHideBottomBarAndExpandRecycler(
-        psBottomPreviewBar: ConstraintLayout?,
-        psRecycler: RecyclerPreloadView?
-    ) {
+    private fun animateHideBottomBarAndExpandRecycler() {
+        val psBottomPreviewBar = this.psBottomPreviewBar // Preview bottom bar background
+        val psRecycler = this.mRecycler// RecyclerView that needs to adjust
         // Start the background slide down animation after a small delay
-        psBottomPreviewBar?.animate()?.translationY(psBottomPreviewBar.height.toFloat())
+        psBottomPreviewBar?.animate()
+            ?.translationY(targetBottomPadding.toFloat())
             ?.setDuration(300)?.setInterpolator(android.view.animation.DecelerateInterpolator())
             ?.withEndAction {
-                psBottomPreviewBar.visibility = View.GONE
+                psBottomPreviewBar.visibility = View.INVISIBLE
             }?.start()
 
         // Animate the RecyclerView to expand back to original size
@@ -1420,19 +1429,24 @@ open class SelectorMainFragment : BaseSelectorFragment() {
             bottomAnimator?.cancel()
         }
         if (psRecycler != null) {
-            val layoutParams = psRecycler.layoutParams as ViewGroup.MarginLayoutParams
-            val currentBottomMargin = layoutParams.bottomMargin
-            val targetBottomMargin = 0 // Reset to original (assuming it was 0 initially)
+//            val layoutParams = psRecycler.layoutParams as ViewGroup.MarginLayoutParams
+            val currentBottomMargin = psRecycler.paddingBottom
+//            val targetBottomMargin = 0 // Reset to original (assuming it was 0 initially)
 
             // Animate the margin change back to original
-            bottomAnimator = ValueAnimator.ofInt(currentBottomMargin, targetBottomMargin).apply {
+            bottomAnimator = ValueAnimator.ofInt(currentBottomMargin, minBottomPadding).apply {
                 duration = 300
                 interpolator = android.view.animation.DecelerateInterpolator()
-
                 addUpdateListener { animator ->
                     val animatedValue = animator.animatedValue as Int
-                    layoutParams.bottomMargin = animatedValue
-                    psRecycler.layoutParams = layoutParams
+                    psRecycler.setPadding(
+                        psRecycler.paddingStart,
+                        psRecycler.paddingTop,
+                        psRecycler.paddingEnd,
+                        animatedValue
+                    )
+//                    layoutParams.bottomMargin = animatedValue
+//                    psRecycler.layoutParams = layoutParams
                 }
                 start()
             }
