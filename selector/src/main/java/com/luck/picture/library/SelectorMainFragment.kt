@@ -943,11 +943,10 @@ open class SelectorMainFragment : BaseSelectorFragment() {
     private fun checkPermissionsToUpdateUI() {
         if (PermissionChecker.isCheckReadStorage(requireContext(), config.mediaType)) {
             groupPermissionView?.visibility = View.GONE
-            if (isNeedRestore()) {
-                restoreMemoryData()
-            } else {
-                requestData()
-            }
+            TempDataProvider.getInstance().reset()
+            setDefaultAlbumTitle(getCurrentAlbum().bucketDisplayName)
+//            restoreMemoryData()
+            requestData()
         } else {
             groupPermissionView?.visibility = View.VISIBLE
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -957,11 +956,9 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                 ) == PackageManager.PERMISSION_GRANTED
                 if (hasPartialPermission) {
                     tvNoPermission?.text = getString(sR.string.tmm_can_only_access_a)
-                    if (isNeedRestore()) {
-                        restoreMemoryData()
-                    } else {
-                        requestData()
-                    }
+                    TempDataProvider.getInstance().reset()
+                    setDefaultAlbumTitle(getCurrentAlbum().bucketDisplayName)
+                    requestData()
                     return
                 }
             }

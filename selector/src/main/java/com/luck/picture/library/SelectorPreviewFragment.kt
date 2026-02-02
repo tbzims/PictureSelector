@@ -458,6 +458,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
 //                navBarViews.forEach {
 //                    it.alpha = 1F
 //                }
+
             } else {
                 mMagicalView?.setViewParams(
                     viewParams.left,
@@ -472,7 +473,6 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
             psFragmentPreview?.animate()?.alpha(1f)?.setDuration(200)?.start()
             mTitleBar?.animate()?.alpha(1f)?.setDuration(200)?.start()
             mBottomNarBar?.animate()?.alpha(1f)?.setDuration(200)?.start()
-
             val objectAnimator = ObjectAnimator.ofFloat(viewPager, "alpha", 0F, 1F)
             objectAnimator.duration = 200
             objectAnimator.start()

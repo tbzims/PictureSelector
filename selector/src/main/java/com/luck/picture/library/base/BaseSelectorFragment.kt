@@ -359,19 +359,20 @@ abstract class BaseSelectorFragment : Fragment() {
                     config.mListenerInfo.onResultCallbackListener?.onResult(selectResult)
                 }
 
-                if (!config.isNotRequestMode) {
-                    if (!isStateSaved) {
-                        if (isNormalDefaultEnter()) {
-                            requireActivity().finish()
-                        } else {
-                            requireActivity().supportFragmentManager.fragments.forEach { _ ->
-                                requireActivity().supportFragmentManager.popBackStack()
-                            }
+//                if (!config.isNotRequestMode) {
+//
+//                }
+                if (!isStateSaved) {
+                    if (isNormalDefaultEnter()) {
+                        requireActivity().finish()
+                    } else {
+                        requireActivity().supportFragmentManager.fragments.forEach { _ ->
+                            requireActivity().supportFragmentManager.popBackStack()
                         }
                     }
-                    SelectorProviders.getInstance().destroy()
-                    TempDataProvider.getInstance().destroy(uuidKey)
                 }
+                SelectorProviders.getInstance().destroy()
+                TempDataProvider.getInstance().destroy(uuidKey)
             }
         }
     }
@@ -645,10 +646,15 @@ abstract class BaseSelectorFragment : Fragment() {
                 if (intent.resolveActivity(context.packageManager) != null) {
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri)
                     intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, config.recordVideoMaxSecond)
-                    intent.putExtra(
-                        "android.intent.extra.MAX_DURATION",
-                        config.recordVideoMaxSecond
-                    )
+//                    if (Build.MANUFACTURER.equals("oneplus", ignoreCase = true)) {
+//                        try {
+//                            val bundle = Bundle()
+//                            bundle.putInt("max_duration", config.recordVideoMaxSecond)
+//                            intent.putExtras(bundle)
+//                        } catch (e: Exception) {
+//                            e.printStackTrace()
+//                        }
+//                    }
                     intent.putExtra(SelectorConstant.QUICK_CAPTURE, config.isQuickCapture)
                     startActivityForResult(intent, SelectorConstant.REQUEST_CAMERA)
                     ForegroundService.startService(context, config.isForegroundService)
