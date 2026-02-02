@@ -130,7 +130,6 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         super.onViewCreated(view, savedInstanceState)
         screenWidth = DensityUtil.getRealScreenWidth(requireContext())
         screenHeight = DensityUtil.getScreenHeight(requireContext())
@@ -155,9 +154,6 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
                 mTitleBar?.paddingEnd ?: 0,
                 mTitleBar?.paddingBottom ?: 0
             )
-//            val params = mBottomNarBar?.layoutParams as? ViewGroup.MarginLayoutParams
-//            params?.bottomMargin = navBars.bottom
-//            mBottomNarBar?.layoutParams = params
             mBottomNarBar?.setPadding(
                 mBottomNarBar?.paddingStart ?: 0,
                 mBottomNarBar?.paddingTop ?: 0,
