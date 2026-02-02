@@ -71,10 +71,10 @@ class PreviewAdapter(
             )
         }
         holder.itemView.setOnClickListener {
-            mItemClickListener?.onItemClick(position, media)
+            mItemClickListener?.onItemClick(holder.bindingAdapterPosition, media)
         }
         holder.itemView.setOnLongClickListener {
-            mLongClickListener?.onLongClick(holder, position, media)
+            mLongClickListener?.onLongClick(holder, holder.bindingAdapterPosition, media)
             true
         }
     }

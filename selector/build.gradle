@@ -61,7 +61,7 @@ dependencies {
 
     implementation 'id.zelory:compressor:3.0.1'
     implementation project(path: ':module:picture_selector:ucrop')
-    api 'io.github.lucksiege:camerax:v3.10.0'
+    api 'io.github.lucksiege:camerax:v3.11.2'
 
     compileOnly project(path: ':app:style')
     implementation 'androidx.media3:media3-ui:1.8.0'
