@@ -59,7 +59,7 @@ class SelectorConfig {
     var isOriginalControl = false
     var isPauseResumePlay = false
     var isEmptyResultBack = false
-    var isDisplayTimeAxis = true
+    var isDisplayTimeAxis = false
     var isFastSlidingSelect = false
     var isAllWithImageVideo = false
     var isForegroundService = false

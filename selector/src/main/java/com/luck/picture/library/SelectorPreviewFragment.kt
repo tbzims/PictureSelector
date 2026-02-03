@@ -23,6 +23,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.postDelayed
 import androidx.lifecycle.viewModelScope
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
@@ -268,9 +269,18 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
     }
 
 
+    private fun backView() {
+        mMagicalView?.backToMin()
+        psFragmentPreview?.postDelayed(100) {
+            psFragmentPreview?.animate()?.alpha(0f)?.setDuration(200)?.start()
+            mTitleBar?.animate()?.alpha(0f)?.setDuration(200)?.start()
+            mBottomNarBar?.animate()?.alpha(0f)?.setDuration(200)?.start()
+        }
+    }
+
     open fun onBackClick(v: View) {
         if (isHasMagicalEffect()) {
-            mMagicalView?.backToMin()
+            backView()
         } else {
             onBackPressed()
         }
@@ -336,7 +346,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
             previewFullScreenMode()
         } else {
             if (isHasMagicalEffect()) {
-                mMagicalView?.backToMin()
+                backView()
             } else {
                 onBackPressed()
             }
@@ -374,7 +384,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
             }
 
             isHasMagicalEffect() -> {
-                mMagicalView?.backToMin()
+                backView()
             }
 
             else -> {
