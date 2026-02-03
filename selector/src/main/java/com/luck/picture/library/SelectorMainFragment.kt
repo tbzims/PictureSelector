@@ -259,26 +259,26 @@ open class SelectorMainFragment : BaseSelectorFragment() {
             val position = mAdapter.getData().indexOf(media)
             if (checkNotifyStrategy(getSelectResult().indexOf(media) != -1)) {
                 mAdapter.notifyItemChanged(if (mAdapter.isDisplayCamera()) position + 1 else position)
-                Looper.myQueue().addIdleHandler {
-                    mAdapter.notifyDataSetChanged()
-                    return@addIdleHandler false
-                }
-//                val dataSize = mAdapter.getData().size
-//                if (dataSize > 0) {
-//                    val start = if (mAdapter.isDisplayCamera() && position == 0) 1 else 0
-//                    val end = if (mAdapter.isDisplayCamera()) {
-//                        if (position == 0) dataSize - 1 else dataSize
-//                    } else dataSize
-//
-//                    if (position < end) {
-//                        if (position > start) {
-//                            mAdapter.notifyItemRangeChanged(start, position - start)
-//                        }
-//                        if (position + 1 < end) {
-//                            mAdapter.notifyItemRangeChanged(position + 1, end - position - 1)
-//                        }
-//                    }
+//                Looper.myQueue().addIdleHandler {
+//                    mAdapter.notifyDataSetChanged()
+//                    return@addIdleHandler false
 //                }
+                val dataSize = mAdapter.getData().size
+                if (dataSize > 0) {
+                    val start = if (mAdapter.isDisplayCamera() && position == 0) 1 else 0
+                    val end = if (mAdapter.isDisplayCamera()) {
+                        if (position == 0) dataSize - 1 else dataSize
+                    } else dataSize
+
+                    if (position < end) {
+                        if (position > start) {
+                            mAdapter.notifyItemRangeChanged(start, position - start)
+                        }
+                        if (position + 1 < end) {
+                            mAdapter.notifyItemRangeChanged(position + 1, end - position - 1)
+                        }
+                    }
+                }
             } else {
                 mAdapter.notifyItemChanged(if (mAdapter.isDisplayCamera()) position + 1 else position)
             }

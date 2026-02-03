@@ -7,5 +7,26 @@
         <root-path
             name="camera_photos"
             path="" />
+        <external-path
+            name="external-path"
+            path="." />
+        <external-cache-path
+            name="external-cache-path"
+            path="." />
+        <external-files-path
+            name="external-files-path"
+            path="." />
+        <files-path
+            name="files_path"
+            path="." />
+        <cache-path
+            name="cache-path"
+            path="." />
+        <external-files-path
+            name="vivo_camera_photos"
+            path="DCIM/Camera/" />
+        <external-files-path
+            name="vivo_photos"
+            path="Pictures/" />
     </paths>
 </resources>

@@ -143,6 +143,8 @@
             android:gravity="center"
             android:minWidth="@dimen/dp_78"
             android:paddingHorizontal="@dimen/dp_16"
+            android:fontFamily="@font/figtree_medium"
+            android:textFontWeight="500"
             android:text="@string/next_button"
             android:textColor="?attr/white_100"
             android:textSize="@dimen/sp_15"
