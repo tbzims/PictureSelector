@@ -27,8 +27,8 @@ class PictureSelectorUtils(
     val maxSelectTotalNum: Int = 9,
     val maxSelectVideoNum: Int = 1,
     val isGif: Boolean = false,
-    val isWebp: Boolean = false,
-    val isHeic: Boolean = false,
+    val isWebp: Boolean = true,
+    val isHeic: Boolean = true,
     val isUCrop: Boolean = false,
     val uCropRatio: SizeF = SizeF(-1f, -1f),
     val isPreviewImage: Boolean = isMultiple,
@@ -41,7 +41,20 @@ class PictureSelectorUtils(
     val isAllWithImageVideo: Boolean = false,
     val isNotRequest: Boolean = injectorClasses.isNotEmpty()
 ) {
+    companion object {
+        fun getLocalMediaPath(localMedia: LocalMedia?): String {
+            if (localMedia == null) return ""
+            return localMedia.getAvailablePath() ?: ""
+        }
 
+        fun getStringList(result: List<LocalMedia>): List<String> {
+            return result.map { getLocalMediaPath(it) }.filter { it.isNotEmpty() }
+        }
+
+        fun getStringJson(result: List<LocalMedia>): String {
+            return getStringList(result).joinToString(",")
+        }
+    }
 
     fun createOnlyCamera(listener: (List<LocalMedia>) -> Unit) {
         return PictureSelector.create(context)

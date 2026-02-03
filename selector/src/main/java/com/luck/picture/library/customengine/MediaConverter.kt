@@ -1,8 +1,10 @@
 package com.luck.picture.library.customengine
 
 import android.content.Context
+import android.media.MediaMetadataRetriever
 import android.os.Environment
 import android.text.TextUtils
+import android.util.Log
 import com.luck.picture.library.engine.MediaConverterEngine
 import com.luck.picture.library.entity.LocalMedia
 import com.luck.picture.library.utils.FileUtils
@@ -10,6 +12,7 @@ import com.luck.picture.library.utils.MediaUtils
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.default
 import id.zelory.compressor.constraint.destination
+import id.zelory.compressor.constraint.size
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -54,6 +57,7 @@ class MediaConverter : MediaConverterEngine {
                             mimeType,
                             MediaUtils.getPostfix(context, path, "mp4")
                         )
+                        media.videoThumbnailPath = generateVideoThumbnail(context, path, media.id)
                     }
                 }
                 MediaUtils.hasMimeTypeOfAudio(mimeType) -> {
@@ -92,8 +96,9 @@ class MediaConverter : MediaConverterEngine {
             return path
         }
         val compressFile = Compressor.compress(context, File(path)) {
-            default()
+            default(4096, 4096)
             destination(getCompressFileDir(context))
+            size(1024 * 1024 * 50)
         }
         return compressFile.absolutePath
     }
@@ -103,6 +108,41 @@ class MediaConverter : MediaConverterEngine {
         return File(
             context.getExternalFilesDir(""), "/compressor/${System.currentTimeMillis()}.jpg"
         )
+    }
+
+    private fun generateVideoThumbnail(
+        context: Context,
+        videoPath: String,
+        videoId: Long
+    ): String? {
+        var retriever: MediaMetadataRetriever? = null
+        try {
+            retriever = MediaMetadataRetriever()
+            retriever.setDataSource(videoPath)
+
+            val bitmap = retriever.frameAtTime
+
+            if (bitmap != null) {
+                val thumbnailFile = File(
+                    context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                    "thumbnail_${videoId}_${System.currentTimeMillis()}.jpg"
+                )
+                val outputStream = thumbnailFile.outputStream()
+                bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 80, outputStream)
+                outputStream.flush()
+                outputStream.close()
+                return thumbnailFile.absolutePath
+            }
+        } catch (e: Exception) {
+            Log.e("MediaConverter", "生成视频缩略图失败: ${e.message}", e)
+        } finally {
+            try {
+                retriever?.release()
+            } catch (e: Exception) {
+                Log.e("MediaConverter", "释放MediaMetadataRetriever失败: ${e.message}", e)
+            }
+        }
+        return null
     }
 
     private fun getFileDir(context: Context, mimeType: String): File? {

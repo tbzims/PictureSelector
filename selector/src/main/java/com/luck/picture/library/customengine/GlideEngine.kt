@@ -32,7 +32,8 @@ class GlideEngine : ImageEngine {
         height: Int,
         imageView: ImageView
     ) {
-        Glide.with(context).load(url).override(width, height).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView)
+        Glide.with(context).load(url).override(width, height)
+            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).into(imageView)
     }
 
     override fun loadAlbumCover(context: Context, url: String?, imageView: ImageView) {
@@ -43,7 +44,7 @@ class GlideEngine : ImageEngine {
             .override(180, 180)
             .transform(CenterCrop(), RoundedCorners(DensityUtil.dip2px(context, 4f)))
             .placeholder(R.drawable.ps_image_placeholder)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
             .into(imageView)
     }
 
@@ -55,7 +56,7 @@ class GlideEngine : ImageEngine {
             .override(300, 300)
             .centerCrop()
             .placeholder(R.drawable.ps_image_placeholder)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
             .into(imageView)
     }
 
