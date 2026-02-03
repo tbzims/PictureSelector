@@ -1,10 +1,13 @@
 package com.luck.picture.library.customengine
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.os.Environment
 import android.text.TextUtils
 import android.util.Log
+import androidx.exifinterface.media.ExifInterface
 import com.luck.picture.library.engine.MediaConverterEngine
 import com.luck.picture.library.entity.LocalMedia
 import com.luck.picture.library.utils.FileUtils
@@ -16,6 +19,7 @@ import id.zelory.compressor.constraint.size
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileOutputStream
 
 /**
  * @author：luck
@@ -44,11 +48,34 @@ class MediaConverter : MediaConverterEngine {
                             MediaUtils.getPostfix(context, path, "jpg")
                         )
                         media.sandboxPath = realPath
-                        media.compressPath = realPath?.let { compress(context, realPath) }
+//                        media.compressPath = realPath?.let { compress(context, realPath) }
                     } else {
-                        media.compressPath = compress(context, path)
+//                        media.compressPath = compress(context, path)
+                    }
+                    media.compressPath =
+                        processImageWithSampling(context, media.sandboxPath ?: path, mimeType)
+//                    Log.d("MediaConverter", "图片路径: ${media.compressPath}")
+                    try {
+                        val exif = ExifInterface(path)
+                        media.orientation = when (exif.getAttributeInt(
+                            ExifInterface.TAG_ORIENTATION,
+                            ExifInterface.ORIENTATION_NORMAL
+                        )) {
+                            ExifInterface.ORIENTATION_ROTATE_90 -> 90
+                            ExifInterface.ORIENTATION_ROTATE_180 -> 180
+                            ExifInterface.ORIENTATION_ROTATE_270 -> 270
+                            else -> 0
+                        }
+                        if (media.orientation == 90 || media.orientation == 270) {
+                            val width = media.width
+                            media.width = media.height
+                            media.height = width
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
                 }
+
                 MediaUtils.hasMimeTypeOfVideo(mimeType) -> {
                     if (MediaUtils.isContent(path)) {
                         media.sandboxPath = copyToSandbox(
@@ -57,9 +84,11 @@ class MediaConverter : MediaConverterEngine {
                             mimeType,
                             MediaUtils.getPostfix(context, path, "mp4")
                         )
-                        media.videoThumbnailPath = generateVideoThumbnail(context, path, media.id)
                     }
+                    media.videoThumbnailPath =
+                        generateVideoThumbnail(context, media)
                 }
+
                 MediaUtils.hasMimeTypeOfAudio(mimeType) -> {
                     if (MediaUtils.isContent(path)) {
                         media.sandboxPath = copyToSandbox(
@@ -88,6 +117,89 @@ class MediaConverter : MediaConverterEngine {
         return FileUtils.copyFile(context, path, target)
     }
 
+    private suspend fun processImageWithSampling(
+        context: Context,
+        path: String,
+        mimeType: String
+    ): String? {
+        return try {
+            val options = BitmapFactory.Options().apply {
+                inJustDecodeBounds = true
+            }
+            BitmapFactory.decodeFile(path, options)
+
+            options.inSampleSize = calculateInSampleSize(options, 300, 300)
+            options.inJustDecodeBounds = false
+            options.inPreferredConfig = Bitmap.Config.RGB_565
+
+            val scaledBitmap = BitmapFactory.decodeFile(path, options)
+
+            if (scaledBitmap != null) {
+                val outputFile = File(
+                    context.filesDir,
+                    "converted_${System.currentTimeMillis()}.jpg"
+                )
+
+                val outputStream = FileOutputStream(outputFile)
+                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
+                outputStream.flush()
+                outputStream.close()
+
+                if (!scaledBitmap.isRecycled) {
+                    scaledBitmap.recycle()
+                }
+
+                outputFile.absolutePath
+            } else {
+                if (MediaUtils.isContent(path)) {
+                    val realPath = copyToSandbox(
+                        context,
+                        path,
+                        mimeType,
+                        MediaUtils.getPostfix(context, path, "jpg")
+                    )
+                    realPath?.let { compress(context, realPath) }
+                } else {
+                    compress(context, path)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("MediaConverter", "使用采样率处理图片时发生异常: ${e.message}", e)
+            if (MediaUtils.isContent(path)) {
+                val realPath = copyToSandbox(
+                    context,
+                    path,
+                    mimeType,
+                    MediaUtils.getPostfix(context, path, "jpg")
+                )
+                realPath?.let { compress(context, realPath) }
+            } else {
+                compress(context, path)
+            }
+        }
+    }
+
+    private fun calculateInSampleSize(
+        options: BitmapFactory.Options,
+        reqWidth: Int,
+        reqHeight: Int
+    ): Int {
+        val height = options.outHeight
+        val width = options.outWidth
+        var inSampleSize = 1
+
+        if (height > reqHeight || width > reqWidth) {
+            val halfHeight = height / 2
+            val halfWidth = width / 2
+
+            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+                inSampleSize *= 2
+            }
+        }
+
+        return inSampleSize
+    }
+
     /**
      * Compress files
      */
@@ -111,24 +223,49 @@ class MediaConverter : MediaConverterEngine {
     }
 
     private fun generateVideoThumbnail(
-        context: Context,
-        videoPath: String,
-        videoId: Long
+        context: Context, media: LocalMedia
     ): String? {
         var retriever: MediaMetadataRetriever? = null
         try {
             retriever = MediaMetadataRetriever()
-            retriever.setDataSource(videoPath)
+            retriever.setDataSource(media.sandboxPath ?: media.path)
 
             val bitmap = retriever.frameAtTime
 
             if (bitmap != null) {
+                val rotationStr =
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
+                media.orientation = rotationStr?.toIntOrNull() ?: 0
+                if (media.orientation == 90 || media.orientation == 270) {
+                    val width = media.width
+                    media.width = media.height
+                    media.height = width
+                }
+                val processedBitmap = if (media.orientation != 0) {
+                    val matrix = android.graphics.Matrix()
+                    matrix.postRotate(media.orientation.toFloat())
+                    val rotatedBitmap = android.graphics.Bitmap.createBitmap(
+                        bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true
+                    )
+
+                    if (bitmap != rotatedBitmap && !bitmap.isRecycled) {
+                        bitmap.recycle()
+                    }
+
+                    rotatedBitmap
+                } else {
+                    bitmap
+                }
                 val thumbnailFile = File(
-                    context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                    "thumbnail_${videoId}_${System.currentTimeMillis()}.jpg"
+                    context.filesDir,
+                    "thumbnail_${media.id}_${System.currentTimeMillis()}.jpg"
                 )
                 val outputStream = thumbnailFile.outputStream()
-                bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 80, outputStream)
+                processedBitmap.compress(
+                    android.graphics.Bitmap.CompressFormat.JPEG,
+                    80,
+                    outputStream
+                )
                 outputStream.flush()
                 outputStream.close()
                 return thumbnailFile.absolutePath
@@ -150,12 +287,15 @@ class MediaConverter : MediaConverterEngine {
             MediaUtils.hasMimeTypeOfImage(mimeType) -> {
                 context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
             }
+
             MediaUtils.hasMimeTypeOfVideo(mimeType) -> {
                 context.getExternalFilesDir(Environment.DIRECTORY_MOVIES)
             }
+
             MediaUtils.hasMimeTypeOfAudio(mimeType) -> {
                 context.getExternalFilesDir(Environment.DIRECTORY_MUSIC)
             }
+
             else -> null
         }
     }
