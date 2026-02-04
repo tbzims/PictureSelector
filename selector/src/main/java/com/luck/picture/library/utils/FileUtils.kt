@@ -1,11 +1,17 @@
 package com.luck.picture.library.utils
 
 import android.content.Context
-import android.net.Uri
+import androidx.core.net.toUri
 import com.luck.picture.library.constant.FileSizeUnitConstant
 import com.luck.picture.library.utils.ValueOf.toDouble
-import java.io.*
-import java.util.*
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
+import java.io.Closeable
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.OutputStream
+import java.util.Locale
 import kotlin.math.roundToInt
 
 /**
@@ -25,7 +31,7 @@ object FileUtils {
         var fileInputStream: InputStream? = null
         return try {
             fileInputStream = if (MediaUtils.isContent(from)) {
-                context.contentResolver.openInputStream(Uri.parse(from))
+                context.contentResolver.openInputStream(from.toUri())
             } else {
                 FileInputStream(from)
             }

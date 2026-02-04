@@ -13,13 +13,16 @@ import com.luck.picture.library.entity.LocalMedia
 import com.luck.picture.library.utils.FileUtils
 import com.luck.picture.library.utils.MediaUtils
 import id.zelory.compressor.Compressor
-import id.zelory.compressor.constraint.default
 import id.zelory.compressor.constraint.destination
+import id.zelory.compressor.constraint.format
+import id.zelory.compressor.constraint.quality
+import id.zelory.compressor.constraint.resolution
 import id.zelory.compressor.constraint.size
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import java.security.MessageDigest
 
 /**
  * @author：luck
@@ -40,6 +43,7 @@ class MediaConverter : MediaConverterEngine {
             }
             when {
                 MediaUtils.hasMimeTypeOfImage(mimeType) -> {
+                    Log.d("MediaConverter", "图片原路径: $path")
                     if (MediaUtils.isContent(path)) {
                         val realPath = copyToSandbox(
                             context,
@@ -47,16 +51,17 @@ class MediaConverter : MediaConverterEngine {
                             mimeType,
                             MediaUtils.getPostfix(context, path, "jpg")
                         )
+                        Log.d("MediaConverter", "图片沙盒路径: $realPath")
                         media.sandboxPath = realPath
-//                        media.compressPath = realPath?.let { compress(context, realPath) }
+                        media.compressPath = realPath?.let { compress(context, realPath) }
                     } else {
-//                        media.compressPath = compress(context, path)
+                        media.compressPath = compress(context, path)
                     }
-                    media.compressPath =
-                        processImageWithSampling(context, media.sandboxPath ?: path, mimeType)
-//                    Log.d("MediaConverter", "图片路径: ${media.compressPath}")
+//                    media.compressPath =
+//                        processImageWithSampling(context, media.sandboxPath ?: path, mimeType)
+                    Log.d("MediaConverter", "图片压缩路径: ${media.compressPath}")
                     try {
-                        val exif = ExifInterface(path)
+                        val exif = ExifInterface(media.sandboxPath ?: path)
                         media.orientation = when (exif.getAttributeInt(
                             ExifInterface.TAG_ORIENTATION,
                             ExifInterface.ORIENTATION_NORMAL
@@ -113,7 +118,13 @@ class MediaConverter : MediaConverterEngine {
         mimeType: String,
         postfix: String
     ): String? {
-        val target = "${getFileDir(context, mimeType)}/${System.currentTimeMillis()}.$postfix"
+        val pathHash = md5Hash(path)
+//        val target = "${getFileDir(context, mimeType)}/${System.currentTimeMillis()}.$postfix"
+        val target = "${getFileDir(context, mimeType)}/sandbox_${pathHash}.${postfix}"
+        val targetFile = File(target)
+        if (targetFile.exists()) {
+            return targetFile.absolutePath
+        }
         return FileUtils.copyFile(context, path, target)
     }
 
@@ -207,11 +218,31 @@ class MediaConverter : MediaConverterEngine {
         if (MediaUtils.isUrlHasGif(path)) {
             return path
         }
-        val compressFile = Compressor.compress(context, File(path)) {
-            default(4096, 4096)
-            destination(getCompressFileDir(context))
-            size(1024 * 1024 * 50)
+        val targetPath = context.filesDir.resolve("compressor").resolve("${md5Hash(path)}.jpg")
+        if (targetPath.exists()) {
+            return targetPath.absolutePath
         }
+        val compressFile = Compressor.compress(context, File(path)) {
+            resolution(2000, 2000)
+            quality(80)
+            format(Bitmap.CompressFormat.JPEG)
+            destination(targetPath)
+            size(1024 * 1024 * 10)
+        }
+//        val results = luban(context) {
+//            outputDir = targetPath
+//            compress(File(path))
+//        }
+//        var compressFileUrl: String? = null
+//        results.forEach { result ->
+//            result.getOrNull()?.let { file ->
+//                compressFileUrl = file.absolutePath
+//                Log.d("Luban", "压缩成功: ${file.absolutePath}")
+//            } ?: run {
+//                val error = result.exceptionOrNull()
+//                Log.e("Luban", "压缩失败: ${error?.message}")
+//            }
+//        }
         return compressFile.absolutePath
     }
 
@@ -298,6 +329,12 @@ class MediaConverter : MediaConverterEngine {
 
             else -> null
         }
+    }
+
+    private fun md5Hash(input: String): String {
+        val md = MessageDigest.getInstance("MD5")
+        val digest = md.digest(input.toByteArray(Charsets.UTF_8))
+        return digest.joinToString("") { "%02x".format(it) }
     }
 
     companion object {

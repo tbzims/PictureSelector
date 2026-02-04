@@ -16,7 +16,7 @@ import com.luck.picture.library.style.StatusBarStyle
 import com.luck.picture.library.style.WindowAnimStyle
 import com.tmmtmm.im.style.utils.getColorByAttr
 
-const val IMAGE_MAX_SIZE = 300 * 1024 * 1024L
+const val IMAGE_MAX_SIZE = 100 * 1024 * 1024L
 const val VIDEO_MAX_SIZE = 1024 * 1024 * 1024L
 const val VIDEO_MAX_SECOND = 15 * 60L
 

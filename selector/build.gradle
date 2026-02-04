@@ -60,6 +60,7 @@ dependencies {
     kapt "com.github.bumptech.glide:compiler:4.16.0"
 
     implementation 'id.zelory:compressor:3.0.1'
+//    implementation 'top.zibin:luban:2.0.1'
     implementation project(path: ':module:picture_selector:ucrop')
     api 'io.github.lucksiege:camerax:v3.11.2'
 
