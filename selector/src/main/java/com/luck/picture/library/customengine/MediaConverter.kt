@@ -12,12 +12,6 @@ import com.luck.picture.library.engine.MediaConverterEngine
 import com.luck.picture.library.entity.LocalMedia
 import com.luck.picture.library.utils.FileUtils
 import com.luck.picture.library.utils.MediaUtils
-import id.zelory.compressor.Compressor
-import id.zelory.compressor.constraint.destination
-import id.zelory.compressor.constraint.format
-import id.zelory.compressor.constraint.quality
-import id.zelory.compressor.constraint.resolution
-import id.zelory.compressor.constraint.size
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -222,13 +216,21 @@ class MediaConverter : MediaConverterEngine {
         if (targetPath.exists()) {
             return targetPath.absolutePath
         }
-        val compressFile = Compressor.compress(context, File(path)) {
-            resolution(2000, 2000)
-            quality(80)
-            format(Bitmap.CompressFormat.JPEG)
-            destination(targetPath)
-            size(1024 * 1024 * 10)
-        }
+//        val compressFile = Compressor.compress(context, File(path)) {
+//            resolution(2000, 2000)
+//            quality(80)
+//            format(Bitmap.CompressFormat.JPEG)
+//            destination(targetPath)
+//            size(1024 * 1024 * 10)
+//        }
+        val compressFilePath = CompressUtils.INSTANCE.compress(
+            path,
+            targetPath.absolutePath,
+            2000,
+            4000,
+            80,
+            1024 * 1024 * 10
+        )
 //        val results = luban(context) {
 //            outputDir = targetPath
 //            compress(File(path))
@@ -243,7 +245,7 @@ class MediaConverter : MediaConverterEngine {
 //                Log.e("Luban", "压缩失败: ${error?.message}")
 //            }
 //        }
-        return compressFile.absolutePath
+        return compressFilePath
     }
 
 
