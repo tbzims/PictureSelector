@@ -9,6 +9,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.SeekBar
+import androidx.annotation.Keep
 import com.luck.picture.library.R
 import com.luck.picture.library.adapter.base.BasePreviewMediaHolder
 import com.luck.picture.library.entity.LocalMedia
@@ -25,6 +26,7 @@ import com.luck.picture.library.utils.MediaUtils
  * @date：2023/1/4 4:55 下午
  * @describe：PreviewVideoHolder
  */
+@Keep
 open class PreviewVideoHolder(itemView: View) : BasePreviewMediaHolder(itemView) {
     var pbLoading: ProgressBar = itemView.findViewById(R.id.pb_loading)
     var ivPlay: ImageView = itemView.findViewById(R.id.iv_play)

@@ -4,6 +4,7 @@ import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.annotation.Keep
 import com.luck.picture.library.adapter.base.BasePreviewMediaHolder
 import com.luck.picture.library.entity.LocalMedia
 import com.luck.picture.library.utils.BitmapUtils
@@ -14,6 +15,7 @@ import com.luck.picture.library.utils.MediaUtils
  * @date：2023/1/4 4:55 下午
  * @describe：PreviewImageHolder
  */
+@Keep
 open class PreviewImageHolder(itemView: View) : BasePreviewMediaHolder(itemView) {
     override fun onViewAttachedToWindow() {}
     override fun onViewDetachedFromWindow() {}
