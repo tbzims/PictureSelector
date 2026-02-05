@@ -37,7 +37,8 @@ class MediaConverter : MediaConverterEngine {
             }
             when {
                 MediaUtils.hasMimeTypeOfImage(mimeType) -> {
-                    Log.d("MediaConverter", "图片原路径: $path")
+//                    Log.d("MediaConverter", "图片原路径: $path")
+                    val startTime = System.currentTimeMillis()
                     if (MediaUtils.isContent(path)) {
                         val realPath = copyToSandbox(
                             context,
@@ -45,15 +46,17 @@ class MediaConverter : MediaConverterEngine {
                             mimeType,
                             MediaUtils.getPostfix(context, path, "jpg")
                         )
-                        Log.d("MediaConverter", "图片沙盒路径: $realPath")
+//                        Log.d("MediaConverter", "图片沙盒路径: $realPath")
                         media.sandboxPath = realPath
                         media.compressPath = realPath?.let { compress(context, realPath) }
                     } else {
                         media.compressPath = compress(context, path)
                     }
+                    val endTime = System.currentTimeMillis()
+                    Log.d("MediaConverter", "rust compress time: ${endTime - startTime}")
 //                    media.compressPath =
 //                        processImageWithSampling(context, media.sandboxPath ?: path, mimeType)
-                    Log.d("MediaConverter", "图片压缩路径: ${media.compressPath}")
+//                    Log.d("MediaConverter", "图片压缩路径: ${media.compressPath}")
                     try {
                         val exif = ExifInterface(media.sandboxPath ?: path)
                         media.orientation = when (exif.getAttributeInt(
