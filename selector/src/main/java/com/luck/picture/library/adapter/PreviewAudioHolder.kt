@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.annotation.Keep
 import com.luck.picture.library.R
 import com.luck.picture.library.adapter.base.BasePreviewMediaHolder
 import com.luck.picture.library.entity.LocalMedia
@@ -25,6 +26,7 @@ import com.luck.picture.library.utils.FileUtils
  * @date：2023/1/4 4:55 下午
  * @describe：PreviewAudioHolder
  */
+@Keep
 open class PreviewAudioHolder(itemView: View) : BasePreviewMediaHolder(itemView) {
     private var tvAudioName: TextView = itemView.findViewById(R.id.tv_audio_name)
     var mediaPlayer = AudioMediaPlayer()
