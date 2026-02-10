@@ -492,8 +492,8 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
 
     open fun setMagicalViewParams(position: Int) {
         if (isHasMagicalEffect()) {
+            val media = getPreviewWrap().source.getOrNull(position) ?: return
             viewModel.viewModelScope.launch {
-                val media = getPreviewWrap().source[position]
                 val mediaSize = getMediaRealSizeFromMedia(media)
                 val width = mediaSize[0]
                 val height = mediaSize[1]
