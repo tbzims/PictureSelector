@@ -66,7 +66,7 @@ open class MediaPagingLoaderImpl(val application: Application) : MediaLoader() {
             }
 
             MediaType.VIDEO -> { // query the video
-                "$MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration"
+                "$MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration AND $videoFileSize"
             }
 
             MediaType.AUDIO -> { // query the audio
@@ -412,8 +412,10 @@ open class MediaPagingLoaderImpl(val application: Application) : MediaLoader() {
      * Get media size (maxFileSize or miniFileSize)
      */
     open fun getFileSizeCondition(): String {
-        val maxS =
-            if (config.filterMaxFileSize == 0L) Long.MAX_VALUE else config.filterMaxFileSize
+        val maxS = if (config.filterMaxFileSize == 0L) Long.MAX_VALUE else config.filterMaxFileSize
+
+        "${max(0, config.filterMinFileSize)} < " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= $maxS"
+
         return String.format(
             Locale.CHINA,
             "%d < " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= %d",
