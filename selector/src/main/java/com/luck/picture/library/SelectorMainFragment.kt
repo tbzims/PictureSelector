@@ -21,6 +21,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -54,6 +55,7 @@ import com.luck.picture.library.interfaces.OnRequestPermissionListener
 import com.luck.picture.library.interfaces.SelectorExpandViewInjector
 import com.luck.picture.library.interfaces.ViewInjectorController
 import com.luck.picture.library.magical.RecycleItemViewParams
+import com.luck.picture.library.model.MoreMenuItem
 import com.luck.picture.library.permissions.OnPermissionResultListener
 import com.luck.picture.library.permissions.PermissionChecker
 import com.luck.picture.library.permissions.PermissionUtil
@@ -63,13 +65,13 @@ import com.luck.picture.library.utils.DateUtils
 import com.luck.picture.library.utils.DensityUtil
 import com.luck.picture.library.utils.DensityUtil.getStatusBarHeight
 import com.luck.picture.library.utils.DoubleUtils
-import com.luck.picture.library.utils.FileUtils
 import com.luck.picture.library.utils.MediaUtils
 import com.luck.picture.library.utils.SdkVersionUtils
 import com.luck.picture.library.utils.SelectorLogUtils
 import com.luck.picture.library.utils.ToastUtils
 import com.luck.picture.library.widget.GridSpacingItemDecoration
 import com.luck.picture.library.widget.HorizontalItemDecoration
+import com.luck.picture.library.widget.MoreMenuPopWindow
 import com.luck.picture.library.widget.RecyclerPreloadView
 import com.luck.picture.library.widget.SlideSelectTouchListener
 import com.luck.picture.library.widget.SlideSelectionHandler
@@ -127,7 +129,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
      */
     var mBottomNarBar: ViewGroup? = null
     var mTvPreview: StyleTextView? = null
-    var mTvOriginal: TextView? = null
+    var mIvMore: AppCompatImageView? = null
     var mTvComplete: StyleTextView? = null
 
     private val anyLock = Any()
@@ -220,7 +222,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         // BottomNarBar
         mBottomNarBar = view.findViewById(R.id.ps_bottom_nar_bar)
         mTvPreview = view.findViewById(R.id.ps_tv_preview)
-        mTvOriginal = view.findViewById(R.id.ps_tv_original)
+        mIvMore = view.findViewById(R.id.ivMore)
         mTvComplete = view.findViewById(R.id.ps_tv_complete)
     }
 
@@ -387,7 +389,7 @@ open class SelectorMainFragment : BaseSelectorFragment() {
     }
 
     open fun onOriginalChange(isOriginal: Boolean) {
-        mTvOriginal?.isSelected = isOriginal
+//        mTvOriginal?.isSelected = isOriginal
     }
 
     open fun onCompleteClick(v: View) {
@@ -538,10 +540,24 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         } else {
             if (config.isOnlyCamera || config.systemGallery) {
             } else {
-                mTvOriginal?.visibility =
+                mIvMore?.visibility =
                     if (config.isOriginalControl) View.VISIBLE else View.GONE
-                mTvOriginal?.setOnClickListener { tvOriginal ->
-                    onOriginalClick(tvOriginal)
+                mIvMore?.setOnClickListener { tvOriginal ->
+                    val morePop = MoreMenuPopWindow(requireContext())
+                    val moreItems: MutableList<MoreMenuItem> = mutableListOf()
+                    moreItems.add(
+                        MoreMenuItem(
+                            id = 0,
+                            iconRes = R.drawable.icon_20_hd,
+                            title = getString(sR.string.send_in_high_quality),
+                            isSelected = globalViewMode.getOriginalLiveData().value ?: false
+                        )
+                    )
+                    morePop.setData(moreItems) {
+                        onOriginalClick(tvOriginal)
+                    }
+                    morePop.showAsDropDown(tvOriginal)
+//                    onOriginalClick(tvOriginal)
                 }
             }
             mTvPreview?.setOnClickListener {
@@ -626,14 +642,14 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         selectResult.forEach { media ->
             totalSize += media.size
         }
-        if (totalSize > 0) {
-            mTvOriginal?.text = getString(
-                R.string.ps_original_image,
-                FileUtils.formatAccurateUnitFileSize(totalSize)
-            )
-        } else {
-            mTvOriginal?.text = getString(R.string.ps_default_original_image)
-        }
+//        if (totalSize > 0) {
+//            mTvOriginal?.text = getString(
+//                R.string.ps_original_image,
+//                FileUtils.formatAccurateUnitFileSize(totalSize)
+//            )
+//        } else {
+//            mTvOriginal?.text = getString(R.string.ps_default_original_image)
+//        }
 
         if (!selectResult.contains(change)) {
             val currentItem = mAdapter.getData().indexOf(change)

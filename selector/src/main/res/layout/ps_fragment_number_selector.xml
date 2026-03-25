@@ -224,23 +224,23 @@
             app:psSelectedTextSize="15sp" />
 
 
-        <com.luck.picture.library.widget.MediumBoldTextView
-            android:id="@+id/ps_tv_original"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:drawableStart="@drawable/ps_original_checkbox"
-            android:drawablePadding="5dp"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:text="@string/ps_default_original_image"
-            android:textColor="@color/ps_color_white"
-            android:textSize="15sp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/ps_bottom_nar_bar"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/ps_bottom_nar_bar"
-            tools:visibility="visible" />
+        <!--        <com.luck.picture.library.widget.MediumBoldTextView-->
+        <!--            android:id="@+id/ps_tv_original"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:drawableStart="@drawable/ps_original_checkbox"-->
+        <!--            android:drawablePadding="5dp"-->
+        <!--            android:gravity="center"-->
+        <!--            android:includeFontPadding="false"-->
+        <!--            android:text="@string/ps_default_original_image"-->
+        <!--            android:textColor="@color/ps_color_white"-->
+        <!--            android:textSize="15sp"-->
+        <!--            android:visibility="gone"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@id/ps_bottom_nar_bar"-->
+        <!--            app:layout_constraintLeft_toLeftOf="parent"-->
+        <!--            app:layout_constraintRight_toRightOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="@id/ps_bottom_nar_bar"-->
+        <!--            tools:visibility="visible" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

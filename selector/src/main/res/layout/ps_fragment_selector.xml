@@ -113,7 +113,7 @@
         <ImageView
             android:id="@+id/ps_iv_left_back"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_48"
+            android:layout_height="@dimen/dp_44"
             android:scaleType="centerInside"
             android:src="@drawable/ps_ic_white_close"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -122,7 +122,7 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_height="@dimen/dp_44"
             android:gravity="center"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -156,17 +156,13 @@
                 android:src="@drawable/ps_ic_default_arrow" />
         </LinearLayout>
 
-        <com.luck.picture.library.widget.MediumBoldTextView
-            android:id="@+id/ps_tv_original"
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivMore"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_45"
-            android:layout_marginEnd="@dimen/dp_16"
-            android:drawableStart="@drawable/ps_original_checkbox"
-            android:drawablePadding="5dp"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:text="@string/ps_default_original_image"
-            android:textColor="@color/ps_color_white"
+            android:layout_height="@dimen/dp_44"
+            android:layout_marginEnd="@dimen/dp_8"
+            android:paddingHorizontal="@dimen/dp_12"
+            android:src="@drawable/icon_24_more"
             android:textSize="14sp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"

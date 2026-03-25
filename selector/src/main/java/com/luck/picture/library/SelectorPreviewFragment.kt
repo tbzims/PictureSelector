@@ -19,6 +19,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -47,7 +48,6 @@ import com.luck.picture.library.magical.RecycleItemViewParams
 import com.luck.picture.library.provider.TempDataProvider
 import com.luck.picture.library.utils.DensityUtil
 import com.luck.picture.library.utils.DoubleUtils
-import com.luck.picture.library.utils.FileUtils
 import com.luck.picture.library.utils.MediaUtils
 import com.luck.picture.library.utils.SdkVersionUtils
 import com.luck.picture.library.utils.SelectorLogUtils
@@ -83,7 +83,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
     lateinit var mAdapter: MediaPreviewAdapter
 
     var mTvEditor: TextView? = null
-    var mTvOriginal: TextView? = null
+    var mIvOriginal: AppCompatImageView? = null
     var mTvSelected: TextView? = null
 
     var mTvComplete: StyleTextView? = null
@@ -191,7 +191,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
         // BottomNarBar
         mBottomNarBar = view.findViewById(R.id.ps_bottom_nar_bar)
         mTvEditor = view.findViewById(R.id.ps_tv_editor)
-        mTvOriginal = view.findViewById(R.id.ps_tv_original)
+        mIvOriginal = view.findViewById(R.id.psIvOriginal)
         mTvComplete = view.findViewById(R.id.ps_tv_complete)
         mBottomNarBar?.let {
             navBarViews.add(it)
@@ -255,9 +255,9 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
         mTvEditor?.setOnClickListener {
             onEditorClick(it)
         }
-        mTvOriginal?.visibility =
+        mIvOriginal?.visibility =
             if (config.isOriginalControl) View.VISIBLE else View.GONE
-        mTvOriginal?.setOnClickListener { tvOriginal ->
+        mIvOriginal?.setOnClickListener { tvOriginal ->
             onOriginalClick(tvOriginal)
         }
         mTvComplete?.setOnClickListener {
@@ -291,7 +291,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
     }
 
     open fun onOriginalChange(isOriginal: Boolean) {
-        mTvOriginal?.isSelected = isOriginal
+        mIvOriginal?.isSelected = isOriginal
     }
 
     open fun onSelectedClick(v: View) {
@@ -367,14 +367,14 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
         getSelectResult().forEach { media ->
             totalSize += media.size
         }
-        if (totalSize > 0) {
-            mTvOriginal?.text = getString(
-                R.string.ps_original_image,
-                FileUtils.formatAccurateUnitFileSize(totalSize)
-            )
-        } else {
-            mTvOriginal?.text = getString(R.string.ps_default_original_image)
-        }
+//        if (totalSize > 0) {
+//            mTvOriginal?.text = getString(
+//                R.string.ps_original_image,
+//                FileUtils.formatAccurateUnitFileSize(totalSize)
+//            )
+//        } else {
+//            mTvOriginal?.text = getString(R.string.ps_default_original_image)
+//        }
     }
 
     override fun onKeyBackAction() {
