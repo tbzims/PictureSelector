@@ -3,8 +3,10 @@ package com.luck.picture.library.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.luck.picture.library.databinding.PsItemMoreMenuBinding
+import com.luck.picture.library.R
 import com.luck.picture.library.model.MoreMenuItem
 import com.tmmtmm.im.style.utils.getColorByAttr
 
@@ -25,10 +27,9 @@ class MoreMenuAdapter : RecyclerView.Adapter<MoreMenuAdapter.MoreMenuViewHolder>
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MoreMenuViewHolder {
-        val binding = PsItemMoreMenuBinding.inflate(
-            LayoutInflater.from(parent.context), parent, false
-        )
-        return MoreMenuViewHolder(binding)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.ps_item_more_menu, parent, false)
+        return MoreMenuViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: MoreMenuViewHolder, position: Int) {
@@ -38,14 +39,18 @@ class MoreMenuAdapter : RecyclerView.Adapter<MoreMenuAdapter.MoreMenuViewHolder>
 
     override fun getItemCount(): Int = mData.size
 
-    inner class MoreMenuViewHolder(private val binding: PsItemMoreMenuBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    inner class MoreMenuViewHolder(itemView: View) :
+        RecyclerView.ViewHolder(itemView) {
+
+        private val ivIcon: ImageView = itemView.findViewById(R.id.ivIcon)
+        private val tvTitle: TextView = itemView.findViewById(R.id.tvTitle)
+        private val ivCheck: ImageView = itemView.findViewById(R.id.ivCheck)
 
         fun bind(item: MoreMenuItem) {
-            binding.ivIcon.setImageResource(item.iconRes)
-            binding.tvTitle.text = item.title
-            binding.ivCheck.visibility = if (item.isSelected) View.VISIBLE else View.INVISIBLE
-            binding.tvTitle.setTextColor(
+            ivIcon.setImageResource(item.iconRes)
+            tvTitle.text = item.title
+            ivCheck.visibility = if (item.isSelected) View.VISIBLE else View.INVISIBLE
+            tvTitle.setTextColor(
                 itemView.context.getColorByAttr(com.tmmtmm.im.style.R.attr.special_3)
             )
             itemView.setOnClickListener {

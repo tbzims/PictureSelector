@@ -16,7 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/tvTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -24,7 +24,8 @@
         android:layout_marginStart="@dimen/dp_16"
         android:layout_marginEnd="@dimen/dp_16"
         android:textColor="?attr/special_2"
-        android:textSize="@dimen/sp_22"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/sp_17"
         android:fontFamily="@font/figtree_regular"
         android:textFontWeight="400"
         app:layout_constraintBottom_toBottomOf="parent"
