@@ -486,6 +486,33 @@ class SelectionMainModel constructor(private var selector: PictureSelector, medi
         return this
     }
 
+    fun setFilterMaxGifFileSize(sizeKb: Long): SelectionMainModel {
+        if (sizeKb >= FileSizeUnitConstant.MB) {
+            this.config.filterMaxGifFileSize = sizeKb
+        } else {
+            this.config.filterMaxGifFileSize = sizeKb * FileSizeUnitConstant.KB
+        }
+        return this
+    }
+
+    fun setFilterMinGifFileSize(sizeKb: Long): SelectionMainModel {
+        if (sizeKb >= FileSizeUnitConstant.MB) {
+            this.config.filterMinGifFileSize = sizeKb
+        } else {
+            this.config.filterMinGifFileSize = sizeKb * FileSizeUnitConstant.KB
+        }
+        return this
+    }
+
+    fun setOriginalImageMaxFileSize(sizeKb: Long): SelectionMainModel {
+        if (sizeKb >= FileSizeUnitConstant.MB) {
+            this.config.filterOriginalImageMaxFileSize = sizeKb
+        } else {
+            this.config.filterOriginalImageMaxFileSize = sizeKb * FileSizeUnitConstant.KB
+        }
+        return this
+    }
+
     fun setFilterMaxVideoFileSize(sizeKb: Long): SelectionMainModel {
         if (sizeKb >= FileSizeUnitConstant.MB) {
             this.config.filterMaxVideoFileSize = sizeKb

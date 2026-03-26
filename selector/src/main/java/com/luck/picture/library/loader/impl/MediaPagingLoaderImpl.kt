@@ -55,14 +55,25 @@ open class MediaPagingLoaderImpl(val application: Application) : MediaLoader() {
         val duration = getDurationCondition()
         val fileSize = getFileSizeCondition()
         val videoFileSize = getVideoFileSizeCondition()
+        val gifFileSize = getGifFileSizeCondition()
         return when (config.mediaType) {
             MediaType.ALL -> { // query the image or video
 //                "($MEDIA_TYPE=?${getImageMimeTypeCondition()} OR $MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration) AND $fileSize"
-                "($MEDIA_TYPE=?${getImageMimeTypeCondition()} AND $fileSize) OR ($MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $videoFileSize AND $duration)"
+                if (config.isGif) {
+                    "($MEDIA_TYPE=? AND ((${getImageMimeTypeCondition(excludeGif = true)} AND $fileSize) OR (${MediaStore.MediaColumns.MIME_TYPE}='${MediaUtils.ofGIF()}' AND $gifFileSize))) OR ($MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $videoFileSize AND $duration)"
+                } else {
+                    "($MEDIA_TYPE=?${getImageMimeTypeCondition()} AND $fileSize) OR ($MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $videoFileSize AND $duration)"
+                }
+//                "($MEDIA_TYPE=?${getImageMimeTypeCondition()} AND $fileSize) OR ($MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $videoFileSize AND $duration)"
             }
 
             MediaType.IMAGE -> { // query the image
-                "$MEDIA_TYPE=?${getImageMimeTypeCondition()} AND $fileSize"
+//                "$MEDIA_TYPE=?${getImageMimeTypeCondition()} AND $fileSize"
+                if (config.isGif) {
+                    "$MEDIA_TYPE=? AND ((${getImageMimeTypeCondition(excludeGif = true)} AND $fileSize) OR (${MediaStore.MediaColumns.MIME_TYPE}='image/gif' AND $gifFileSize))"
+                } else {
+                    "$MEDIA_TYPE=?${getImageMimeTypeCondition()} AND $fileSize"
+                }
             }
 
             MediaType.VIDEO -> { // query the video
@@ -79,11 +90,16 @@ open class MediaPagingLoaderImpl(val application: Application) : MediaLoader() {
         val duration = getDurationCondition()
         val fileSize = getFileSizeCondition()
         val videoFileSize = getVideoFileSizeCondition()
+        val gifFileSize = getGifFileSizeCondition()
         when (config.mediaType) {
             MediaType.ALL -> { // query the image or video
                 return if (bucketId == SelectorConstant.DEFAULT_ALL_BUCKET_ID) {
 //                    "($MEDIA_TYPE=?${getImageMimeTypeCondition()} OR $MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $videoFileSize AND $duration) AND $fileSize"
-                    "($MEDIA_TYPE=?${getImageMimeTypeCondition()} AND $fileSize) OR ($MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $videoFileSize AND $duration)"
+                    if (config.isGif) {
+                        "($MEDIA_TYPE=? AND (${getImageMimeTypeCondition(true)} AND $fileSize OR ${MediaStore.MediaColumns.MIME_TYPE}='${MediaUtils.ofGIF()}' AND $gifFileSize)) OR ($MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $videoFileSize AND $duration)"
+                    } else {
+                        "($MEDIA_TYPE=?${getImageMimeTypeCondition()} AND $fileSize) OR ($MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $videoFileSize AND $duration)"
+                    }
                 } else {
                     "($MEDIA_TYPE=?${getImageMimeTypeCondition()} OR $MEDIA_TYPE=?${getVideoMimeTypeCondition()} AND $duration) AND $fileSize AND $BUCKET_ID=?"
                 }
@@ -91,9 +107,17 @@ open class MediaPagingLoaderImpl(val application: Application) : MediaLoader() {
 
             MediaType.IMAGE -> { // query the image
                 return if (bucketId == SelectorConstant.DEFAULT_ALL_BUCKET_ID) {
-                    "($MEDIA_TYPE=?${getImageMimeTypeCondition()}) AND $fileSize"
+                    if (config.isGif) {
+                        "$MEDIA_TYPE=? AND ((${getImageMimeTypeCondition(excludeGif = true)} AND $fileSize) OR (${MediaStore.MediaColumns.MIME_TYPE}='image/gif' AND $gifFileSize))"
+                    } else {
+                        "($MEDIA_TYPE=?${getImageMimeTypeCondition()}) AND $fileSize"
+                    }
                 } else {
-                    "($MEDIA_TYPE=?${getImageMimeTypeCondition()}) AND $fileSize AND $BUCKET_ID=?"
+                    if (config.isGif) {
+                        "$MEDIA_TYPE=? AND ((${getImageMimeTypeCondition(excludeGif = true)} AND $fileSize) OR (${MediaStore.MediaColumns.MIME_TYPE}='image/gif' AND $gifFileSize)) AND $BUCKET_ID=?"
+                    } else {
+                        "($MEDIA_TYPE=?${getImageMimeTypeCondition()}) AND $fileSize AND $BUCKET_ID=?"
+                    }
                 }
             }
 
@@ -414,7 +438,12 @@ open class MediaPagingLoaderImpl(val application: Application) : MediaLoader() {
     open fun getFileSizeCondition(): String {
         val maxS = if (config.filterMaxFileSize == 0L) Long.MAX_VALUE else config.filterMaxFileSize
 
-        "${max(0, config.filterMinFileSize)} < " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= $maxS"
+        "${
+            max(
+                0,
+                config.filterMinFileSize
+            )
+        } < " + MediaStore.MediaColumns.SIZE + " and " + MediaStore.MediaColumns.SIZE + " <= $maxS"
 
         return String.format(
             Locale.CHINA,
@@ -434,32 +463,75 @@ open class MediaPagingLoaderImpl(val application: Application) : MediaLoader() {
 //        )
     }
 
+    open fun getGifFileSizeCondition(): String {
+        val maxS =
+            if (config.filterMaxGifFileSize == 0L) config.filterMaxFileSize else config.filterMaxGifFileSize
+        return "${config.filterMinGifFileSize} < ${MediaStore.MediaColumns.SIZE} and ${MediaStore.MediaColumns.SIZE} <= $maxS "
+    }
+
+
     /**
      * Only query image format media resources
      */
-    open fun getImageMimeTypeCondition(): String {
-        val stringBuilder = StringBuilder()
-        config.onlyQueryImageFormat.forEachIndexed { i, mimeType ->
-            stringBuilder.append(if (i == 0) " AND " else " OR ")
-                .append(MediaStore.MediaColumns.MIME_TYPE).append("='").append(mimeType)
-                .append("'")
+    open fun getImageMimeTypeCondition(excludeGif: Boolean = false): String {
+        val conditions = mutableListOf<String>()
+//        val stringBuilder = StringBuilder()
+        if (config.onlyQueryImageFormat.isNotEmpty()) {
+            val formats = if (excludeGif) {
+                config.onlyQueryImageFormat.filter { it != MediaUtils.ofGIF() }
+            } else {
+                config.onlyQueryImageFormat
+            }
+            if (formats.isNotEmpty()) {
+                val includeConditions = formats.map { "${MediaStore.MediaColumns.MIME_TYPE}='$it'" }
+                conditions.add("(" + includeConditions.joinToString(" OR ") + ")")
+            }
+//            formats.forEachIndexed { i, mimeType ->
+//                stringBuilder.append(if (i == 0) " AND " else " OR ")
+//                    .append(MediaStore.MediaColumns.MIME_TYPE).append("='").append(mimeType)
+//                    .append("'")
+//            }
         }
-        if (!config.isGif && !config.onlyQueryImageFormat.contains(MediaUtils.ofGIF())) {
-            stringBuilder.append(NOT_GIF)
+//        if (!config.isGif && !config.onlyQueryImageFormat.contains(MediaUtils.ofGIF())) {
+//            stringBuilder.append(NOT_GIF)
+//        }
+//        if (!config.isWebp && !config.onlyQueryImageFormat.contains(MediaUtils.ofWebp())) {
+//            stringBuilder.append(NOT_WEBP)
+//        }
+//        if (!config.isBmp && !config.onlyQueryImageFormat.contains(MediaUtils.ofBMP())
+//            && !config.onlyQueryImageFormat.contains(MediaUtils.ofXMSBMP())
+//            && !config.onlyQueryImageFormat.contains(MediaUtils.ofVNDBMP())
+//        ) {
+//            stringBuilder.append(NOT_BMP).append(NOT_XMS_BMP).append(NOT_VND_WAP_BMP)
+//        }
+//        if (!config.isHeic && !config.onlyQueryImageFormat.contains(MediaUtils.ofHeic())) {
+//            stringBuilder.append(NOT_HEIC)
+//        }
+        if (excludeGif || (!config.isGif && !config.onlyQueryImageFormat.contains(MediaUtils.ofGIF()))) {
+            conditions.add(NOT_GIF)
         }
+
         if (!config.isWebp && !config.onlyQueryImageFormat.contains(MediaUtils.ofWebp())) {
-            stringBuilder.append(NOT_WEBP)
+            conditions.add(NOT_WEBP)
         }
+
         if (!config.isBmp && !config.onlyQueryImageFormat.contains(MediaUtils.ofBMP())
             && !config.onlyQueryImageFormat.contains(MediaUtils.ofXMSBMP())
             && !config.onlyQueryImageFormat.contains(MediaUtils.ofVNDBMP())
         ) {
-            stringBuilder.append(NOT_BMP).append(NOT_XMS_BMP).append(NOT_VND_WAP_BMP)
+            conditions.add(NOT_BMP)
+            conditions.add(NOT_XMS_BMP)
+            conditions.add(NOT_VND_WAP_BMP)
         }
+
         if (!config.isHeic && !config.onlyQueryImageFormat.contains(MediaUtils.ofHeic())) {
-            stringBuilder.append(NOT_HEIC)
+            conditions.add(NOT_HEIC)
         }
-        return stringBuilder.toString()
+        return if (conditions.isEmpty()) "" else {
+            (if (excludeGif) "" else " AND ") + conditions.joinToString(
+                " AND "
+            )
+        }
     }
 
     /**

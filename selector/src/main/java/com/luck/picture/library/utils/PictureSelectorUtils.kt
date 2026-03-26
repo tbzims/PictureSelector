@@ -10,6 +10,7 @@ import com.luck.picture.library.customengine.MediaConverter
 import com.luck.picture.library.customengine.UCropEngine
 import com.luck.picture.library.entity.LocalMedia
 import com.luck.picture.library.interfaces.OnResultCallbackListener
+import com.luck.picture.library.interfaces.OnSelectFilterListener
 import com.luck.picture.library.interfaces.SelectorExpandViewInjector
 import com.luck.picture.library.model.PictureSelector
 import com.luck.picture.library.style.StatusBarStyle
@@ -26,6 +27,7 @@ class PictureSelectorUtils(
     val isMultiple: Boolean = true,
     val maxSelectTotalNum: Int = 9,
     val maxSelectVideoNum: Int = 1,
+    val isOriginalControl: Boolean = false,
     val isGif: Boolean = false,
     val isWebp: Boolean = true,
     val isHeic: Boolean = true,
@@ -35,11 +37,14 @@ class PictureSelectorUtils(
     val isPreviewVideo: Boolean = isMultiple,
     val maxFileSize: Long = IMAGE_MAX_SIZE,
     val maxVideoFileSize: Long = VIDEO_MAX_SIZE,
+    val maxGifFileSize: Long = IMAGE_MAX_SIZE,
     val videoMaxSecond: Long = VIDEO_MAX_SECOND,
+    val originalImageMaxFileSize: Long = IMAGE_MAX_SIZE,
     val injectorClasses: List<Class<out SelectorExpandViewInjector>> = emptyList(),
     val showCamera: Boolean = false,
     val isAllWithImageVideo: Boolean = false,
-    val isNotRequest: Boolean = injectorClasses.isNotEmpty()
+    val isNotRequest: Boolean = injectorClasses.isNotEmpty(),
+    val beforeSelectFilterListener: OnSelectFilterListener? = null
 ) {
     companion object {
         fun getLocalMediaPath(localMedia: LocalMedia?): String {
@@ -109,13 +114,17 @@ class PictureSelectorUtils(
             .isGif(isGif)
             .isWebp(isWebp)
             .isHeic(isHeic)
+            .isOriginalControl(isOriginalControl)
             .isAllWithImageVideo(isAllWithImageVideo)
             .setMediaConverterEngine(MediaConverter.create())
             .setCropEngine(if (isUCrop) UCropEngine(uCropRatio) else null)
             .setFilterMaxFileSize(maxFileSize)
             .setFilterMaxVideoFileSize(maxVideoFileSize)
             .setFilterVideoMaxSecond(videoMaxSecond)
+            .setFilterMaxGifFileSize(maxGifFileSize)
+            .setOriginalImageMaxFileSize(originalImageMaxFileSize)
             .setInjectorClasses(injectorClasses)
+            .setOnSelectFilterListener(beforeSelectFilterListener)
             .forResult(object : OnResultCallbackListener {
                 override fun onResult(result: List<LocalMedia>) {
                     listener.invoke(result)

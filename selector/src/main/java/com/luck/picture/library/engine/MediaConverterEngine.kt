@@ -19,5 +19,5 @@ interface MediaConverterEngine {
      * ...
      * Customize Other Actions [LocalMedia.customizeExtra]
      */
-    suspend fun converter(context: Context, media: LocalMedia): LocalMedia
+    suspend fun converter(context: Context, media: LocalMedia, isOriginalPath: Boolean): LocalMedia
 }

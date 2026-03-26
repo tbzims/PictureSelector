@@ -99,21 +99,27 @@ class LocalMedia() : Parcelable {
             isCrop() -> {
                 cropPath
             }
+
             isEditor() -> {
                 editorPath
             }
+
             isCompress() -> {
                 compressPath
             }
+
             isCopySandbox() -> {
                 sandboxPath
             }
+
             isOriginal() -> {
                 originalPath
             }
+
             isWatermark() -> {
                 watermarkPath
             }
+
             else -> path
         }
     }
@@ -202,5 +208,8 @@ class LocalMedia() : Parcelable {
         }
     }
 
+    override fun toString(): String {
+        return "LocalMedia(id=$id, displayName=$displayName, path=$path, absolutePath=$absolutePath, watermarkPath:$watermarkPath, originalPath=$originalPath, sandboxPath=$sandboxPath,compressPath=$compressPath, editorPath=$editorPath, cropPath=$cropPath, mimeType=$mimeType, width=$width, height=$height, duration=$duration, size=$size"
+    }
 
 }

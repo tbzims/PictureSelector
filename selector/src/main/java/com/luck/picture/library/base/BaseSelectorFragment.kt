@@ -120,6 +120,8 @@ abstract class BaseSelectorFragment : Fragment() {
 
     protected var isSavedInstanceState = false
 
+    protected var baseBottomHeight: Int = 0
+
     protected val viewModel by lazy {
         val activity = requireActivity()
         val savedStateViewModelFactory = SavedStateViewModelFactory(activity.application, this)
@@ -162,7 +164,13 @@ abstract class BaseSelectorFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val navBars =
+                insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars())
+            baseBottomHeight =
+                navBars.bottom + (context?.resources?.getDimensionPixelSize(sR.dimen.dp_68) ?: 0)
+            insets
+        }
 //        setRequestedOrientation()
 //        setTranslucentStatusBar()
         isSavedInstanceState = savedInstanceState != null
@@ -339,11 +347,33 @@ abstract class BaseSelectorFragment : Fragment() {
             }
             val selectResult = getSelectResult().toMutableList()
             viewModel.viewModelScope.launch {
+                val checkOriginal = globalViewMode.getOriginalLiveData().value ?: false
+                if (checkOriginal) {
+                    val filterSelectResult = MediaUtils.filterOriginalImageMaxFileSize(
+                        selectResult,
+                        config.filterOriginalImageMaxFileSize
+                    )
+                    if (filterSelectResult.isEmpty()) {
+                        ToastX.showToastQueue(
+                            activity = requireActivity(),
+                            text = context?.getString(
+                                sR.string.send_chat_full_image_size,
+                                MediaUtils.formatFileSize(config.filterOriginalImageMaxFileSize)
+                            ),
+                            baseBottomHeight = baseBottomHeight
+                        )
+                        return@launch
+                    }
+                }
                 val mediaConverterEngine = config.mediaConverterEngine
                 if (mediaConverterEngine != null) {
                     showLoading()
                     selectResult.forEach { media ->
-                        mediaConverterEngine.converter(requireContext(), media)
+                        mediaConverterEngine.converter(
+                            requireContext(),
+                            media,
+                            checkOriginal
+                        )
                     }
                     dismissLoading()
                 }
@@ -770,9 +800,10 @@ abstract class BaseSelectorFragment : Fragment() {
                     if (config.isAsTotalCount) {
                         // The number of maxVideoSelectNum in select all mode is included within maxSelectNum
                         if (count >= config.totalCount) {
-                            ToastX.show(
+                            ToastX.showToastQueue(
                                 requireActivity(),
-                                getString(sR.string.select_photos_max, config.totalCount)
+                                getString(sR.string.select_photos_max, config.totalCount),
+                                baseBottomHeight
                             )
 //                            showTipsDialog(
 //                                getString(
@@ -785,11 +816,12 @@ abstract class BaseSelectorFragment : Fragment() {
                         if (MediaUtils.hasMimeTypeOfVideo(media.mimeType)) {
                             // If the selected video exceeds the [config.maxVideoSelectNum] limit
                             if (videoSize >= config.maxVideoSelectNum) {
-                                ToastX.show(
+                                ToastX.showToastQueue(
                                     requireActivity(), getString(
                                         sR.string.select_video_max,
                                         config.maxVideoSelectNum.toString()
-                                    )
+                                    ),
+                                    baseBottomHeight
                                 )
 //                                showTipsDialog(
 //                                    getString(
@@ -804,11 +836,12 @@ abstract class BaseSelectorFragment : Fragment() {
                         if (MediaUtils.hasMimeTypeOfVideo(media.mimeType)) {
                             // If the selected video exceeds the [config.maxVideoSelectNum] limit
                             if (videoSize >= config.maxVideoSelectNum) {
-                                ToastX.show(
+                                ToastX.showToastQueue(
                                     requireActivity(), getString(
                                         sR.string.select_video_max,
                                         config.maxVideoSelectNum.toString()
-                                    )
+                                    ),
+                                    baseBottomHeight
                                 )
 //                                showTipsDialog(
 //                                    getString(
@@ -821,9 +854,10 @@ abstract class BaseSelectorFragment : Fragment() {
                         } else if (MediaUtils.hasMimeTypeOfImage(media.mimeType)) {
                             // If the selected image exceeds the [config.maxSelectNum] limit
                             if (imageSize >= config.totalCount) {
-                                ToastX.show(
+                                ToastX.showToastQueue(
                                     requireActivity(),
-                                    getString(sR.string.select_photos_max, config.totalCount)
+                                    getString(sR.string.select_photos_max, config.totalCount),
+                                    baseBottomHeight
                                 )
 //                                showTipsDialog(
 //                                    getString(
@@ -842,16 +876,18 @@ abstract class BaseSelectorFragment : Fragment() {
                         if (MediaUtils.hasMimeTypeOfImage(first.mimeType)) {
                             // Image has been selected
                             if (MediaUtils.hasMimeTypeOfVideo(media.mimeType)) {
-                                ToastX.show(
+                                ToastX.showToastQueue(
                                     requireActivity(),
-                                    getString(sR.string.moments_post_only)
+                                    getString(sR.string.moments_post_only),
+                                    baseBottomHeight
                                 )
                                 return SelectedState.INVALID
                             }
                             if (count >= config.totalCount) {
-                                ToastX.show(
+                                ToastX.showToastQueue(
                                     requireActivity(),
-                                    getString(sR.string.select_photos_max, config.totalCount)
+                                    getString(sR.string.select_photos_max, config.totalCount),
+                                    baseBottomHeight
                                 )
 //                                showTipsDialog(
 //                                    getString(
@@ -864,18 +900,20 @@ abstract class BaseSelectorFragment : Fragment() {
                         } else if (MediaUtils.hasMimeTypeOfVideo(first.mimeType)) {
                             // Video has been selected
                             if (MediaUtils.hasMimeTypeOfImage(media.mimeType)) {
-                                ToastX.show(
+                                ToastX.showToastQueue(
                                     requireActivity(),
-                                    getString(sR.string.moments_post_only)
+                                    getString(sR.string.moments_post_only),
+                                    baseBottomHeight
                                 )
                                 return SelectedState.INVALID
                             }
                             if (count >= config.maxVideoSelectNum) {
-                                ToastX.show(
+                                ToastX.showToastQueue(
                                     requireActivity(), getString(
                                         sR.string.select_video_max,
                                         config.maxVideoSelectNum.toString()
-                                    )
+                                    ),
+                                    baseBottomHeight
                                 )
 //                                showTipsDialog(
 //                                    getString(
@@ -893,11 +931,12 @@ abstract class BaseSelectorFragment : Fragment() {
 
             MediaType.IMAGE -> {
                 if (count >= config.totalCount) {
-                    ToastX.show(
+                    ToastX.showToastQueue(
                         requireActivity(), getString(
                             sR.string.select_photos_max,
                             config.totalCount
-                        )
+                        ),
+                        baseBottomHeight
                     )
 //                    showTipsDialog(
 //                        getString(
@@ -910,11 +949,12 @@ abstract class BaseSelectorFragment : Fragment() {
 
             MediaType.VIDEO -> {
                 if (count >= config.totalCount) {
-                    ToastX.show(
+                    ToastX.showToastQueue(
                         requireActivity(), getString(
                             sR.string.select_video_max,
                             config.maxVideoSelectNum.toString()
-                        )
+                        ),
+                        baseBottomHeight
                     )
 //                    showTipsDialog(
 //                        getString(

@@ -25,7 +25,11 @@ import java.security.MessageDigest
  */
 class MediaConverter : MediaConverterEngine {
 
-    override suspend fun converter(context: Context, media: LocalMedia): LocalMedia {
+    override suspend fun converter(
+        context: Context,
+        media: LocalMedia,
+        isOriginalPath: Boolean
+    ): LocalMedia {
         withContext(Dispatchers.IO) {
             val path = media.getAvailablePath()
             val mimeType = media.mimeType
@@ -46,10 +50,15 @@ class MediaConverter : MediaConverterEngine {
                             mimeType,
                             MediaUtils.getPostfix(context, path, "jpg")
                         )
-//                        Log.d("MediaConverter", "图片沙盒路径: $realPath")
                         media.sandboxPath = realPath
+                        if (isOriginalPath) {
+                            media.originalPath = realPath
+                        }
                         media.compressPath = realPath?.let { compress(context, realPath) }
                     } else {
+                        if (isOriginalPath) {
+                            media.originalPath = path
+                        }
                         media.compressPath = compress(context, path)
                     }
                     val endTime = System.currentTimeMillis()

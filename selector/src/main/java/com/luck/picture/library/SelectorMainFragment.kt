@@ -384,8 +384,8 @@ open class SelectorMainFragment : BaseSelectorFragment() {
         }
     }
 
-    open fun onOriginalClick(v: View) {
-        globalViewMode.setOriginalLiveData(!v.isSelected)
+    open fun onOriginalClick(isSelected: Boolean) {
+        globalViewMode.setOriginalLiveData(!isSelected)
     }
 
     open fun onOriginalChange(isOriginal: Boolean) {
@@ -553,10 +553,14 @@ open class SelectorMainFragment : BaseSelectorFragment() {
                             isSelected = globalViewMode.getOriginalLiveData().value ?: false
                         )
                     )
-                    morePop.setData(moreItems) {
-                        onOriginalClick(tvOriginal)
+                    morePop.setData(moreItems) { item, position ->
+                        onOriginalClick(morePop.getItem(position).isSelected)
+                        morePop.setChangeSelect(
+                            position,
+                            globalViewMode.getOriginalLiveData().value ?: false
+                        )
                     }
-                    morePop.showAsDropDown(tvOriginal)
+                    morePop.showAtBottom(tvOriginal)
 //                    onOriginalClick(tvOriginal)
                 }
             }

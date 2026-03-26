@@ -30,7 +30,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.InputStream
 import java.net.URLConnection
-import java.util.*
+import java.util.Locale
 import kotlin.coroutines.resume
 
 /**
@@ -193,12 +193,15 @@ object MediaUtils {
             hasMimeTypeOfImage(mimeType) -> {
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI
             }
+
             hasMimeTypeOfVideo(mimeType) -> {
                 MediaStore.Video.Media.EXTERNAL_CONTENT_URI
             }
+
             hasMimeTypeOfAudio(mimeType) -> {
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
             }
+
             else -> {
                 MediaStore.Files.getContentUri("external")
             }
@@ -544,9 +547,11 @@ object MediaUtils {
                     "image" -> {
                         contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                     }
+
                     "video" -> {
                         contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
                     }
+
                     "audio" -> {
                         contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
                     }
@@ -672,6 +677,38 @@ object MediaUtils {
             contentResolver.delete(uri, selection, arrayOf(id.toString()))
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
+        }
+    }
+
+    suspend fun filterOriginalImageMaxFileSize(
+        result: MutableList<LocalMedia>,
+        maxFileSize: Long
+    ): List<LocalMedia> = withContext(Dispatchers.IO) {
+        if (result.isEmpty()) return@withContext result
+        val filteredImages = result.filter {
+            !it.isOriginal() || (it.isOriginal() && it.size <= maxFileSize)
+        }
+        filteredImages
+    }
+
+    fun formatFileSize(sizeInBytes: Long): String {
+        return when {
+            sizeInBytes >= 1024 * 1024 -> {
+                // 转换为 MB，保留 1 位小数
+                val sizeInMB = sizeInBytes.toDouble() / (1024 * 1024)
+                String.format("%.1fMB", sizeInMB)
+            }
+
+            sizeInBytes >= 1024 -> {
+                // 转换为 KB，不保留小数
+                val sizeInKB = sizeInBytes / 1024
+                "${sizeInKB}KB"
+            }
+
+            else -> {
+                // 小于 1KB，直接显示字节数
+                "${sizeInBytes}B"
+            }
         }
     }
 }
