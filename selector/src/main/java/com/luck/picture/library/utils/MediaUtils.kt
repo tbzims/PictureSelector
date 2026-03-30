@@ -686,7 +686,7 @@ object MediaUtils {
     ): List<LocalMedia> = withContext(Dispatchers.IO) {
         if (result.isEmpty()) return@withContext result
         val filteredImages = result.filter {
-            !it.isOriginal() || (it.isOriginal() && it.size <= maxFileSize)
+            it.size <= maxFileSize
         }
         filteredImages
     }
@@ -696,7 +696,7 @@ object MediaUtils {
             sizeInBytes >= 1024 * 1024 -> {
                 // 转换为 MB，保留 1 位小数
                 val sizeInMB = sizeInBytes.toDouble() / (1024 * 1024)
-                String.format("%.1fMB", sizeInMB)
+                java.text.DecimalFormat("0.##MB").format(sizeInMB)
             }
 
             sizeInBytes >= 1024 -> {
