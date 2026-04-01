@@ -13,13 +13,13 @@ import android.os.Looper
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.view.View
+import android.view.View.LAYER_TYPE_SOFTWARE
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -83,7 +83,7 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
     lateinit var mAdapter: MediaPreviewAdapter
 
     var mTvEditor: TextView? = null
-    var mIvOriginal: AppCompatImageView? = null
+    var mIvOriginal: TextView? = null
     var mTvSelected: TextView? = null
 
     var mTvComplete: StyleTextView? = null
@@ -199,6 +199,10 @@ open class SelectorPreviewFragment : BaseSelectorFragment() {
 
         // MagicalView
         mMagicalView = view.findViewById(R.id.magical)
+        mIvOriginal?.apply {
+            setLayerType(LAYER_TYPE_SOFTWARE, null)
+//            setShadowLayer(13.33f, 0f, 0f, Color.parseColor("#80000000"))
+        }
     }
 
     open fun initWidgets() {
