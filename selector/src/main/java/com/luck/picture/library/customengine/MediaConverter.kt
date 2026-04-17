@@ -28,7 +28,8 @@ class MediaConverter : MediaConverterEngine {
     override suspend fun converter(
         context: Context,
         media: LocalMedia,
-        isOriginalPath: Boolean
+        isOriginalPath: Boolean,
+        isCompress: Boolean
     ): LocalMedia {
         withContext(Dispatchers.IO) {
             val path = media.getAvailablePath()
@@ -54,12 +55,16 @@ class MediaConverter : MediaConverterEngine {
                         if (isOriginalPath) {
                             media.originalPath = realPath
                         }
-                        media.compressPath = realPath?.let { compress(context, realPath) }
+                        if (isCompress) {
+                            media.compressPath = realPath?.let { compress(context, realPath) }
+                        }
                     } else {
                         if (isOriginalPath) {
                             media.originalPath = path
                         }
-                        media.compressPath = compress(context, path)
+                        if (isCompress) {
+                            media.compressPath = compress(context, path)
+                        }
                     }
                     val endTime = System.currentTimeMillis()
                     Log.d("MediaConverter", "rust compress time: ${endTime - startTime}")

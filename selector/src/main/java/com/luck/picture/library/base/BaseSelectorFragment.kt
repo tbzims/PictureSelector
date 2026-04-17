@@ -367,12 +367,15 @@ abstract class BaseSelectorFragment : Fragment() {
                 }
                 val mediaConverterEngine = config.mediaConverterEngine
                 if (mediaConverterEngine != null) {
-                    showLoading()
+                    if (!config.isOnlyCamera) {
+                        showLoading()
+                    }
                     selectResult.forEach { media ->
                         mediaConverterEngine.converter(
                             requireContext(),
                             media,
-                            checkOriginal
+                            checkOriginal,
+                            !config.isOnlyCamera
                         )
                     }
                     dismissLoading()
