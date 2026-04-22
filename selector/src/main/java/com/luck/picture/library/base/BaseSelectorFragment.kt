@@ -40,6 +40,7 @@ import com.luck.picture.library.config.SelectionMode
 import com.luck.picture.library.constant.CropWrap
 import com.luck.picture.library.constant.SelectedState
 import com.luck.picture.library.constant.SelectorConstant
+import com.luck.picture.library.customengine.MediaConverter
 import com.luck.picture.library.dialog.PictureLoadingDialog
 import com.luck.picture.library.dialog.ReminderDialog
 import com.luck.picture.library.entity.LocalMedia
@@ -67,6 +68,8 @@ import com.luck.picture.library.viewmodel.SelectorViewModel
 import com.tmmtmm.im.style.dialog.ThemedDialog
 import com.tmmtmm.im.style.utils.getColorByAttr
 import com.tmmtmm.im.style.widget.BottomSheetMenuFragment
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import java.io.File
@@ -365,12 +368,15 @@ abstract class BaseSelectorFragment : Fragment() {
                         return@launch
                     }
                 }
-                val mediaConverterEngine = config.mediaConverterEngine
-                if (mediaConverterEngine != null) {
-                    if (!config.isOnlyCamera) {
-                        showLoading()
-                    }
-                    selectResult.forEach { media ->
+                var mediaConverterEngine = config.mediaConverterEngine
+                if (mediaConverterEngine == null) {
+                    mediaConverterEngine = MediaConverter.create()
+                }
+                if (!config.isOnlyCamera) {
+                    showLoading()
+                }
+                val converterJobs = selectResult.map { media ->
+                    async {
                         mediaConverterEngine.converter(
                             requireContext(),
                             media,
@@ -378,8 +384,17 @@ abstract class BaseSelectorFragment : Fragment() {
                             !config.isOnlyCamera
                         )
                     }
-                    dismissLoading()
                 }
+                converterJobs.awaitAll()
+//                selectResult.forEach { media ->
+//                    mediaConverterEngine.converter(
+//                        requireContext(),
+//                        media,
+//                        checkOriginal,
+//                        !config.isOnlyCamera
+//                    )
+//                }
+                dismissLoading()
 
                 if (config.isActivityResult) {
                     requireActivity().intent?.apply {
