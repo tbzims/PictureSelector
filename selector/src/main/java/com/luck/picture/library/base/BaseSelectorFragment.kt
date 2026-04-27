@@ -748,6 +748,11 @@ abstract class BaseSelectorFragment : Fragment() {
                 }
             }
         }
+        menuFragment.setOnDismissListener {
+            if (config.isOnlyCamera) {
+                onBackPressed()
+            }
+        }
         menuFragment.show(childFragmentManager, "PhotoItemSelectedDialog")
     }
 
