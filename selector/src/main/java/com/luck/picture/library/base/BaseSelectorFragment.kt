@@ -748,7 +748,7 @@ abstract class BaseSelectorFragment : Fragment() {
                 }
             }
         }
-        menuFragment.setOnDismissListener {
+        menuFragment.setOnCancelListener {
             if (config.isOnlyCamera) {
                 onBackPressed()
             }
