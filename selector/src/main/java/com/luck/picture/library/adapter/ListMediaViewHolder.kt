@@ -212,10 +212,10 @@ open class ListMediaViewHolder(itemView: View) : BaseListViewHolder(itemView) {
 
             // 扩展触摸区域，增加可点击范围
             val extraSpace = DensityUtil.dip2px(tvSelectView.context, 7F) // 定义扩展空间大小（像素）
-            rect.left -= extraSpace
+            rect.left -= extraSpace * 4
             rect.top -= extraSpace
             rect.right += extraSpace
-            rect.bottom += extraSpace
+            rect.bottom += extraSpace * 2
 
             val touchDelegate = TouchDelegate(rect, tvSelectView)
             parent.touchDelegate = touchDelegate
