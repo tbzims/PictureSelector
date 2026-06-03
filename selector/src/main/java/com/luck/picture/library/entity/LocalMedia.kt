@@ -124,6 +124,26 @@ class LocalMedia() : Parcelable {
         }
     }
 
+    fun getUncompressedPath(): String {
+        return when {
+            isCopySandbox() -> {
+                sandboxPath ?: ""
+            }
+
+            isOriginal() -> {
+                originalPath ?: ""
+            }
+
+            isWatermark() -> {
+                watermarkPath ?: ""
+            }
+
+            else -> {
+                path ?: ""
+            }
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is LocalMedia) return false
