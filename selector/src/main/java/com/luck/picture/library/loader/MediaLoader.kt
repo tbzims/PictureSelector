@@ -18,6 +18,7 @@ const val NOT_BMP = "(${MediaStore.MediaColumns.MIME_TYPE}!='image/bmp')"
 const val NOT_XMS_BMP = "(${MediaStore.MediaColumns.MIME_TYPE}!='image/x-ms-bmp')"
 const val NOT_VND_WAP_BMP = "(${MediaStore.MediaColumns.MIME_TYPE}!='image/vnd.wap.wbmp')"
 const val NOT_HEIC = "(${MediaStore.MediaColumns.MIME_TYPE}!='image/heic')"
+const val NOT_TIFF = "(${MediaStore.MediaColumns.MIME_TYPE}!='image/tiff')"
 const val MEDIA_TYPE = MediaStore.Files.FileColumns.MEDIA_TYPE
 
 val PROJECTION = arrayOf(
