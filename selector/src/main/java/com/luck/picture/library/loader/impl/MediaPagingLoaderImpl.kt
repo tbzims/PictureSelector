@@ -18,6 +18,7 @@ import com.luck.picture.library.loader.MediaLoader
 import com.luck.picture.library.loader.NOT_BMP
 import com.luck.picture.library.loader.NOT_GIF
 import com.luck.picture.library.loader.NOT_HEIC
+import com.luck.picture.library.loader.NOT_TIFF
 import com.luck.picture.library.loader.NOT_VND_WAP_BMP
 import com.luck.picture.library.loader.NOT_WEBP
 import com.luck.picture.library.loader.NOT_XMS_BMP
@@ -526,6 +527,9 @@ open class MediaPagingLoaderImpl(val application: Application) : MediaLoader() {
 
         if (!config.isHeic && !config.onlyQueryImageFormat.contains(MediaUtils.ofHeic())) {
             conditions.add(NOT_HEIC)
+        }
+        if (!config.isTiff && !config.onlyQueryImageFormat.contains(MediaUtils.ofTiff())) {
+            conditions.add(NOT_TIFF)
         }
         return if (conditions.isEmpty()) "" else {
             (if (excludeGif) "" else " AND ") + conditions.joinToString(

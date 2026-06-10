@@ -122,6 +122,10 @@ object MediaUtils {
         return "image/heic"
     }
 
+    fun ofTiff(): String {
+        return "image/tiff"
+    }
+
     fun ofWebp(): String {
         return "image/webp"
     }

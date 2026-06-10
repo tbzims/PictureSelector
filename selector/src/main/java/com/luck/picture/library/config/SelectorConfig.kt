@@ -49,6 +49,7 @@ class SelectorConfig {
     var isGif = false
     var isBmp = false
     var isHeic = false
+    var isTiff = false
     var isWebp = false
     var isAutoPlay = false
     var isOnlyCamera = false

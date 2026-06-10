@@ -31,6 +31,7 @@ class PictureSelectorUtils(
     val isGif: Boolean = false,
     val isWebp: Boolean = true,
     val isHeic: Boolean = true,
+    val isTiff: Boolean = false,
     val isUCrop: Boolean = false,
     val uCropRatio: SizeF = SizeF(-1f, -1f),
     val isPreviewImage: Boolean = isMultiple,
@@ -114,6 +115,7 @@ class PictureSelectorUtils(
             .isGif(isGif)
             .isWebp(isWebp)
             .isHeic(isHeic)
+            .isTiff(isTiff)
             .isOriginalControl(isOriginalControl)
             .isAllWithImageVideo(isAllWithImageVideo)
             .setMediaConverterEngine(MediaConverter.create())
