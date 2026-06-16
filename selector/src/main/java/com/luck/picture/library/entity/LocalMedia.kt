@@ -104,9 +104,9 @@ class LocalMedia() : Parcelable {
                 editorPath
             }
 
-            isCompress() -> {
-                compressPath
-            }
+//            isCompress() -> {
+//                compressPath
+//            }
 
             isCopySandbox() -> {
                 sandboxPath
