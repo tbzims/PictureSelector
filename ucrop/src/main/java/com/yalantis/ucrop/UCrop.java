@@ -77,7 +77,7 @@ public class UCrop {
      * @param source      Uri for image to crop
      * @param destination Uri for saving the cropped image
      */
-    public static <T> UCrop of(@NonNull Uri source, @NonNull Uri destination) {
+    public static UCrop of(@NonNull Uri source, @NonNull Uri destination) {
         return new UCrop(source, destination);
     }
 

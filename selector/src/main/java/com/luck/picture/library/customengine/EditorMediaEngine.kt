@@ -34,7 +34,7 @@ class EditorMediaEngine :OnEditorMediaListener {
         val destinationUri = Uri.fromFile(
             File(fragment.requireContext().cacheDir, "${System.currentTimeMillis()}.jpg")
         )
-            val uCrop = UCrop.of<UCrop>(sourceUri, destinationUri)
+            val uCrop = UCrop.of(sourceUri, destinationUri)
             uCrop.setImageEngine(object : UCropImageEngine {
                 override fun loadImage(
                     context: Context,

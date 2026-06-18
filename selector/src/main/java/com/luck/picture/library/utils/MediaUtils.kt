@@ -102,6 +102,34 @@ object MediaUtils {
         } else url.startsWith("content://")
     }
 
+    /**
+     * 获取音频时长（毫秒）。
+     *
+     * 迁移自 picture_library v2 的 MediaUtils.getAudioSize()，
+     * 原实现返回 MediaExtraInfo，这里仅保留调用方实际使用的时长字段。
+     */
+    fun getAudioDuration(context: Context, url: String?): Long {
+        if (url.isNullOrEmpty() || isHasHttp(url)) {
+            return 0L
+        }
+        val retriever = MediaMetadataRetriever()
+        return try {
+            if (isContent(url)) {
+                retriever.setDataSource(context, Uri.parse(url))
+            } else {
+                retriever.setDataSource(url)
+            }
+            val duration = retriever
+                .extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                ?.toLongOrNull() ?: 0L
+            retriever.release()
+            duration
+        } catch (e: Exception) {
+            e.printStackTrace()
+            0L
+        }
+    }
+
     fun ofGIF(): String {
         return "image/gif"
     }

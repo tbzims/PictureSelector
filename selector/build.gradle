@@ -79,7 +79,7 @@ dependencies {
 //        exclude group: 'androidx.core', module: 'core-ktx'
 //        exclude group: 'androidx.core', module: 'core'
 //    }
-    implementation project(path: ':module:picture_selector:ucrop')
+    api project(path: ':module:picture_selector:ucrop')
     api 'io.github.lucksiege:camerax:v3.11.2'
 
     compileOnly project(path: ':app:style')
