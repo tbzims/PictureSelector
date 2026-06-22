@@ -34,6 +34,7 @@ ext {
     PUBLISH_ARTIFACT_ID = "ucrop"
 }
 
+apply from: '../config.gradle'
 apply from: '../publish.gradle'
 
 dependencies {
@@ -44,5 +45,5 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:3.12.13"
     implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation "com.google.code.gson:gson:2.8.6"
-    compileOnly project(path: ':app:style')
+    compileOnly project(path: ':style')
 }
