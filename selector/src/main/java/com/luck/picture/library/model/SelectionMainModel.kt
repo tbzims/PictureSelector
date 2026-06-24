@@ -179,6 +179,37 @@ class SelectionMainModel constructor(private var selector: PictureSelector, medi
     }
 
     /**
+     * 配置选择完成后是否需要生成图片压缩路径。
+     *
+     * 关闭后转换器不会主动生成新的 `compressPath`，
+     * 但不会清空裁剪、编辑或调用方已经写入的路径。
+     */
+    fun isNeedCompressPath(needCompressPath: Boolean): SelectionMainModel {
+        this.config.needCompressPath = needCompressPath
+        return this
+    }
+
+    /**
+     * 配置选择完成后是否需要无条件准备沙盒文件路径。
+     *
+     * 关闭后仍允许其它已启用能力在确实需要文件路径时执行最终兜底复制。
+     */
+    fun isNeedSandboxPath(needSandboxPath: Boolean): SelectionMainModel {
+        this.config.needSandboxPath = needSandboxPath
+        return this
+    }
+
+    /**
+     * 配置是否需要返回一个可供仅支持文件路径的业务直接使用的本地路径。
+     *
+     * 转换器会优先使用相册原文件，无法取得时才复用或创建沙盒文件。
+     */
+    fun isNeedOriginalAbsolutePath(needOriginalAbsolutePath: Boolean): SelectionMainModel {
+        this.config.needOriginalAbsolutePath = needOriginalAbsolutePath
+        return this
+    }
+
+    /**
      * Edit Media Resource
      */
     fun setOnEditorMediaListener(l: OnEditorMediaListener?): SelectionMainModel {

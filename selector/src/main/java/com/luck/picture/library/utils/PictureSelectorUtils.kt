@@ -45,12 +45,30 @@ class PictureSelectorUtils(
     val showCamera: Boolean = false,
     val isAllWithImageVideo: Boolean = false,
     val isNotRequest: Boolean = injectorClasses.isNotEmpty(),
-    val beforeSelectFilterListener: OnSelectFilterListener? = null
+    val beforeSelectFilterListener: OnSelectFilterListener? = null,
+    /**
+     * 是否需要选择器在返回结果前生成图片压缩路径。
+     *
+     * 默认值保持原行为，聊天相册会显式关闭以减少批量选图等待时间。
+     */
+    val needCompressPath: Boolean = true,
+    /**
+     * 是否需要选择器为 `content://` 资源无条件准备沙盒路径。
+     *
+     * 关闭后仍会在其它能力确实需要本地文件时执行最终兜底复制。
+     */
+    val needSandboxPath: Boolean = true,
+    /**
+     * 是否需要选择器准备一个已经验证可读、可供路径型业务使用的本地文件。
+     *
+     * 转换器会优先复用相册原文件，无法取得时才复制到沙盒。
+     */
+    val needOriginalAbsolutePath: Boolean = false,
 ) {
     companion object {
         fun getLocalMediaPath(localMedia: LocalMedia?): String {
             if (localMedia == null) return ""
-            return localMedia.getAvailablePath() ?: ""
+            return localMedia.getPreparedLocalPathFun() ?: ""
         }
 
         fun getStringList(result: List<LocalMedia>): List<String> {
@@ -68,13 +86,17 @@ class PictureSelectorUtils(
             .setAllOfCameraMode(mediaType)
             .isCameraForegroundService(true)
             .setMediaConverterEngine(MediaConverter.Companion.create())
+            .isNeedCompressPath(needCompressPath)
+            .isNeedSandboxPath(needSandboxPath)
+            .isNeedOriginalAbsolutePath(needOriginalAbsolutePath)
             .setCropEngine(if (isUCrop) UCropEngine(uCropRatio) else null)
             .forResult(object : OnResultCallbackListener {
                 override fun onResult(result: List<LocalMedia>) {
                     listener(result)
                 }
 
-                override fun onCancel() = Unit
+                override fun onCancel() {
+                }
 
             })
     }
@@ -119,6 +141,9 @@ class PictureSelectorUtils(
             .isOriginalControl(isOriginalControl)
             .isAllWithImageVideo(isAllWithImageVideo)
             .setMediaConverterEngine(MediaConverter.create())
+            .isNeedCompressPath(needCompressPath)
+            .isNeedSandboxPath(needSandboxPath)
+            .isNeedOriginalAbsolutePath(needOriginalAbsolutePath)
             .setCropEngine(if (isUCrop) UCropEngine(uCropRatio) else null)
             .setFilterMaxFileSize(maxFileSize)
             .setFilterMaxVideoFileSize(maxVideoFileSize)
@@ -132,8 +157,7 @@ class PictureSelectorUtils(
                     listener.invoke(result)
                 }
 
-                override fun onCancel() {
-                }
+                override fun onCancel() = Unit
             })
     }
 

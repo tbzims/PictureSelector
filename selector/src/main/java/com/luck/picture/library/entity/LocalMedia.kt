@@ -33,6 +33,14 @@ class LocalMedia() : Parcelable {
     var editorData: String? = null
     var sandboxPath: String? = null
     var originalPath: String? = null
+
+    /**
+     * 选择器为仅支持文件路径的业务准备好的可读本地路径。
+     *
+     * 该字段可能指向相册原文件，也可能指向最终兜底生成的沙盒副本，
+     * 因此不会复用 `absolutePath`，避免混淆“原始位置”和“工作副本”的语义。
+     */
+    var preparedLocalPath: String? = null
     var compressPath: String? = null
     var watermarkPath: String? = null
     var customizeExtra: String? = null
@@ -63,6 +71,7 @@ class LocalMedia() : Parcelable {
         editorData = parcel.readString()
         sandboxPath = parcel.readString()
         originalPath = parcel.readString()
+        preparedLocalPath = parcel.readString()
         compressPath = parcel.readString()
         watermarkPath = parcel.readString()
         customizeExtra = parcel.readString()
@@ -92,6 +101,21 @@ class LocalMedia() : Parcelable {
 
     fun isCopySandbox(): Boolean {
         return !TextUtils.isEmpty(sandboxPath)
+    }
+
+    /**
+     * 返回选择器已经验证可读的本地文件路径。
+     *
+     * 裁剪和编辑结果属于用户明确修改后的最终资源，优先级高于准备路径；
+     * 其余场景优先使用 `preparedLocalPath`，最后兼容原有可用路径规则。
+     */
+    fun getPreparedLocalPathFun(): String? {
+        return when {
+            isCrop() -> cropPath
+            isEditor() -> editorPath
+            !preparedLocalPath.isNullOrEmpty() -> preparedLocalPath
+            else -> getAvailablePath()
+        }
     }
 
     fun getAvailablePath(): String? {
@@ -126,6 +150,10 @@ class LocalMedia() : Parcelable {
 
     fun getUncompressedPath(): String {
         return when {
+            !preparedLocalPath.isNullOrEmpty() -> {
+                preparedLocalPath ?: ""
+            }
+
             isCopySandbox() -> {
                 sandboxPath ?: ""
             }
@@ -175,6 +203,7 @@ class LocalMedia() : Parcelable {
         result = 31 * result + (editorData?.hashCode() ?: 0)
         result = 31 * result + (sandboxPath?.hashCode() ?: 0)
         result = 31 * result + (originalPath?.hashCode() ?: 0)
+        result = 31 * result + (preparedLocalPath?.hashCode() ?: 0)
         result = 31 * result + (compressPath?.hashCode() ?: 0)
         result = 31 * result + (watermarkPath?.hashCode() ?: 0)
         result = 31 * result + (customizeExtra?.hashCode() ?: 0)
@@ -207,6 +236,7 @@ class LocalMedia() : Parcelable {
         parcel.writeString(editorData)
         parcel.writeString(sandboxPath)
         parcel.writeString(originalPath)
+        parcel.writeString(preparedLocalPath)
         parcel.writeString(compressPath)
         parcel.writeString(watermarkPath)
         parcel.writeString(customizeExtra)
@@ -229,7 +259,7 @@ class LocalMedia() : Parcelable {
     }
 
     override fun toString(): String {
-        return "LocalMedia(id=$id, displayName=$displayName, path=$path, absolutePath=$absolutePath, watermarkPath:$watermarkPath, originalPath=$originalPath, sandboxPath=$sandboxPath,compressPath=$compressPath, editorPath=$editorPath, cropPath=$cropPath, mimeType=$mimeType, width=$width, height=$height, duration=$duration, size=$size"
+        return "LocalMedia(id=$id, displayName=$displayName, path=$path, absolutePath=$absolutePath, watermarkPath:$watermarkPath, originalPath=$originalPath, preparedLocalPath=$preparedLocalPath, sandboxPath=$sandboxPath,compressPath=$compressPath, editorPath=$editorPath, cropPath=$cropPath, mimeType=$mimeType, width=$width, height=$height, duration=$duration, size=$size"
     }
 
 }

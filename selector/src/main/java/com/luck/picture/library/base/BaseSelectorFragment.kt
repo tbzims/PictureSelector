@@ -43,6 +43,7 @@ import com.luck.picture.library.constant.SelectorConstant
 import com.luck.picture.library.customengine.MediaConverter
 import com.luck.picture.library.dialog.PictureLoadingDialog
 import com.luck.picture.library.dialog.ReminderDialog
+import com.luck.picture.library.engine.MediaConverterEngine
 import com.luck.picture.library.entity.LocalMedia
 import com.luck.picture.library.factory.ClassFactory
 import com.luck.picture.library.helper.ActivityCompatHelper
@@ -368,20 +369,46 @@ abstract class BaseSelectorFragment : Fragment() {
                         return@launch
                     }
                 }
-                var mediaConverterEngine = config.mediaConverterEngine
-                if (mediaConverterEngine == null) {
-                    mediaConverterEngine = MediaConverter.create()
+                /**
+                 * 当前选择器最终使用的非空媒体转换引擎。
+                 *
+                 * 调用方没有提供自定义实现时使用内置转换器。
+                 */
+                val mediaConverterEngine = config.mediaConverterEngine ?: MediaConverter.create()
+
+                /**
+                 * 当前选择结果执行转换时使用的完整配置。
+                 *
+                 * 将三个路径能力显式传给转换引擎，避免继续把“是否压缩”
+                 * 和“是否需要本地文件”混在同一个布尔参数里。
+                 */
+                val convertOptions = MediaConverterEngine.ConvertOptions(
+                    isOriginalSelected = checkOriginal,
+                    needCompressPath = config.needCompressPath && !config.isOnlyCamera,
+                    needSandboxPath = config.needSandboxPath,
+                    needOriginalAbsolutePath = config.needOriginalAbsolutePath,
+                )
+
+                /**
+                 * 当前批次是否包含需要向用户展示阻塞式 loading 的重任务。
+                 *
+                 * 本地路径命中后的轻量 EXIF 处理仍会执行，但不会为了这类工作闪一下 loading。
+                 */
+                val requiresLoading = selectResult.any { media ->
+                    mediaConverterEngine.requiresLoading(media, convertOptions)
                 }
-                if (!config.isOnlyCamera) {
+                if (!config.isOnlyCamera && requiresLoading) {
                     showLoading()
                 }
                 val converterJobs = selectResult.map { media ->
                     async {
+                        if (!mediaConverterEngine.requiresConversion(media, convertOptions)) {
+                            return@async
+                        }
                         mediaConverterEngine.converter(
-                            requireContext(),
-                            media,
-                            checkOriginal,
-                            !config.isOnlyCamera
+                            context = requireContext(),
+                            media = media,
+                            options = convertOptions,
                         )
                     }
                 }
@@ -394,7 +421,9 @@ abstract class BaseSelectorFragment : Fragment() {
 //                        !config.isOnlyCamera
 //                    )
 //                }
-                dismissLoading()
+                if (!config.isOnlyCamera && requiresLoading) {
+                    dismissLoading()
+                }
 
                 if (config.isActivityResult) {
                     requireActivity().intent?.apply {

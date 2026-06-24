@@ -126,6 +126,30 @@ class SelectionSystemModel constructor(
     }
 
     /**
+     * 配置系统选择器返回后是否需要生成图片压缩路径。
+     */
+    fun isNeedCompressPath(needCompressPath: Boolean): SelectionSystemModel {
+        this.config.needCompressPath = needCompressPath
+        return this
+    }
+
+    /**
+     * 配置系统选择器返回后是否需要准备沙盒文件路径。
+     */
+    fun isNeedSandboxPath(needSandboxPath: Boolean): SelectionSystemModel {
+        this.config.needSandboxPath = needSandboxPath
+        return this
+    }
+
+    /**
+     * 配置系统选择器返回后是否需要准备可供路径型业务直接使用的本地文件。
+     */
+    fun isNeedOriginalAbsolutePath(needOriginalAbsolutePath: Boolean): SelectionSystemModel {
+        this.config.needOriginalAbsolutePath = needOriginalAbsolutePath
+        return this
+    }
+
+    /**
      * Cropping
      */
     fun setCropEngine(engine: CropEngine?): SelectionSystemModel {

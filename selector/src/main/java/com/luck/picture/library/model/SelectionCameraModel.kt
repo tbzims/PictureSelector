@@ -109,6 +109,30 @@ class SelectionCameraModel constructor(
     }
 
     /**
+     * 配置拍摄完成后是否需要生成图片压缩路径。
+     */
+    fun isNeedCompressPath(needCompressPath: Boolean): SelectionCameraModel {
+        this.config.needCompressPath = needCompressPath
+        return this
+    }
+
+    /**
+     * 配置拍摄完成后是否需要准备沙盒文件路径。
+     */
+    fun isNeedSandboxPath(needSandboxPath: Boolean): SelectionCameraModel {
+        this.config.needSandboxPath = needSandboxPath
+        return this
+    }
+
+    /**
+     * 配置拍摄完成后是否需要准备可供路径型业务直接使用的本地文件。
+     */
+    fun isNeedOriginalAbsolutePath(needOriginalAbsolutePath: Boolean): SelectionCameraModel {
+        this.config.needOriginalAbsolutePath = needOriginalAbsolutePath
+        return this
+    }
+
+    /**
      * Custom recording callback listening
      */
     fun setOnRecordAudioListener(l: OnRecordAudioListener?): SelectionCameraModel {

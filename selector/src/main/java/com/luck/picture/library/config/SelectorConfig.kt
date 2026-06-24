@@ -62,6 +62,27 @@ class SelectorConfig {
     var isActivityResult = false
     var isOnlySandboxDir = false
     var isOriginalControl = false
+
+    /**
+     * 是否需要在选择完成后生成 [LocalMedia.compressPath]。
+     *
+     * 默认保持为 true，确保没有显式配置的新旧调用方继续沿用原来的压缩行为。
+     */
+    var needCompressPath = true
+
+    /**
+     * 是否需要为无法直接作为本地文件读取的资源准备 [LocalMedia.sandboxPath]。
+     *
+     * 默认保持为 true，确保依赖沙盒文件路径的旧调用方行为不发生变化。
+     */
+    var needSandboxPath = true
+
+    /**
+     * 是否需要为仅支持文件路径的调用方准备一个可读本地路径。
+     *
+     * 该配置优先复用相册原文件，只有无法取得可读本地文件时才复制到沙盒。
+     */
+    var needOriginalAbsolutePath = false
     var isPauseResumePlay = false
     var isEmptyResultBack = false
     var isDisplayTimeAxis = false
@@ -147,6 +168,9 @@ class SelectorConfig {
         this.isEnablePreviewAudio = true
         this.isOnlySandboxDir = false
         this.isOriginalControl = false
+        this.needCompressPath = true
+        this.needSandboxPath = true
+        this.needOriginalAbsolutePath = false
         this.isPreviewZoomEffect = false
         this.isPreviewFullScreenMode = false
         this.isActivityResult = false
